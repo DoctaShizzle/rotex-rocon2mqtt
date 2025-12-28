@@ -3,6 +3,7 @@
   <Folder Name="/Solution Items/" />
   <Folder Name="/Solution Items/docu/">
     <File Path="docu/CAN_ENCODING_README.md" />
+    <File Path="docu/DEPLOYMENT.md" />
   </Folder>
   <Project Path="src/RoconMqtt/RoconMqtt.csproj" />
 </Solution>

@@ -13,8 +13,11 @@ public class CanEncoderDecoderTests
 
     public CanEncoderDecoderTests()
     {
-        _encoder = new CanEncoder();
-        _loggerMock = new Mock<ILogger<CanDecoder>>();
+        var encoderLoggerMock = new Mock<ILogger<CanEncoder>>();
+        var decoderLoggerMock = new Mock<ILogger<CanDecoder>>();
+        
+        _encoder = new CanEncoder(encoderLoggerMock.Object);
+        _loggerMock = decoderLoggerMock;
         _decoder = new CanDecoder(_loggerMock.Object);
         
         // Register test parameters in the registry

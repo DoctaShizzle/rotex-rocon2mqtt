@@ -13,20 +13,28 @@ public static class Program
 {
     private static void Main(string[] args)
     {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
+        
         Log.Logger = new LoggerConfiguration()
             .ReadFrom.Configuration(
                 new ConfigurationBuilder()
                     .AddJsonFile("appsettings.json")
+                    .AddJsonFile($"appsettings.{environment}.json", optional: true)
                     .Build()
             )
             .CreateLogger();
 
         try
         {
+            //test
+
+            /*
             var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x0A, 0x06, 0x01, 0xE0 };
 
             var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input);
             var output = new CanEncoder().Encode(decoded.Definition.InfoNumber, decoded.Value);
+
+            */
 
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()

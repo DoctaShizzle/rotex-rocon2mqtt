@@ -1,7 +1,16 @@
+using Microsoft.Extensions.Logging;
+
 namespace RoconMqtt.Can;
 
-public class CanEncoder : ICanEncoder
+public partial class CanEncoder : ICanEncoder
 {
+    private readonly ILogger<CanEncoder> _logger;
+
+    public CanEncoder(ILogger<CanEncoder> logger)
+    {
+        _logger = logger;
+    }
+
     public byte[] Encode(InfoNumber info, object value)
     {
         var frame = new byte[CanConstants.StandardFrameLength];
@@ -22,20 +31,28 @@ public class CanEncoder : ICanEncoder
         {
             isBigEndian = def.BigEndian;
             factor = def.Factor;
+            LogEncodingParameter(_logger, def.Name, info);
+        }
+        else
+        {
+            LogParameterDefinitionNotFound(_logger, info);
         }
         
         // Value encoding
         if (value is int intValue)
         {
+            LogEncodingInt(_logger, intValue);
             CanFrameHelper.EncodeInt16(frame, 5, intValue, isBigEndian);
         }
         else if (value is double doubleValue)
         {
             var intVal = (int)(doubleValue * factor);
+            LogEncodingDouble(_logger, doubleValue, factor, intVal);
             CanFrameHelper.EncodeInt16(frame, 5, intVal, isBigEndian);
         }
         else if (value is bool boolValue)
         {
+            LogEncodingBool(_logger, boolValue);
             frame[5] = boolValue ? (byte)1 : (byte)0;
             frame[6] = 0;
         }
@@ -51,10 +68,37 @@ public class CanEncoder : ICanEncoder
             byte startQh = CanFrameHelper.MinutesToQuarterHour(startMinutes);
             byte endQh = CanFrameHelper.MinutesToQuarterHour(endMinutes);
             
+            LogEncodingTimeRange(_logger, timeRangeValue, startQh, endQh);
+            
             frame[5] = startQh;
             frame[6] = endQh;
+        }
+        else
+        {
+            LogUnsupportedValueType(_logger, value?.GetType().Name ?? "null");
         }
         
         return frame;
     }
+
+    [LoggerMessage(EventId = 1001, Level = LogLevel.Debug, Message = "Encoding parameter {ParameterName} with InfoNumber {InfoNumber}")]
+    private static partial void LogEncodingParameter(ILogger logger, string parameterName, InfoNumber infoNumber);
+
+    [LoggerMessage(EventId = 1002, Level = LogLevel.Warning, Message = "Parameter definition not found for InfoNumber {InfoNumber}")]
+    private static partial void LogParameterDefinitionNotFound(ILogger logger, InfoNumber infoNumber);
+
+    [LoggerMessage(EventId = 1003, Level = LogLevel.Debug, Message = "Encoding int value: {Value}")]
+    private static partial void LogEncodingInt(ILogger logger, int value);
+
+    [LoggerMessage(EventId = 1004, Level = LogLevel.Debug, Message = "Encoding double value: {Value} (factor: {Factor}, encoded as: {EncodedValue})")]
+    private static partial void LogEncodingDouble(ILogger logger, double value, double factor, int encodedValue);
+
+    [LoggerMessage(EventId = 1005, Level = LogLevel.Debug, Message = "Encoding bool value: {Value}")]
+    private static partial void LogEncodingBool(ILogger logger, bool value);
+
+    [LoggerMessage(EventId = 1006, Level = LogLevel.Debug, Message = "Encoding time range: {TimeRange} (start: {StartQh}, end: {EndQh})")]
+    private static partial void LogEncodingTimeRange(ILogger logger, string timeRange, byte startQh, byte endQh);
+
+    [LoggerMessage(EventId = 1007, Level = LogLevel.Warning, Message = "Unsupported value type for encoding: {ValueType}")]
+    private static partial void LogUnsupportedValueType(ILogger logger, string valueType);
 }
