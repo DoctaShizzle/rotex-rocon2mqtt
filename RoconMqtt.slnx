@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="tests/RoconMqtt.Tests/RoconMqtt.Tests.csproj" />
+  <Folder Name="/Solution Items/" />
+  <Folder Name="/Solution Items/docu/">
+    <File Path="docu/CAN_ENCODING_README.md" />
+  </Folder>
+  <Project Path="src/RoconMqtt/RoconMqtt.csproj" />
+</Solution>
