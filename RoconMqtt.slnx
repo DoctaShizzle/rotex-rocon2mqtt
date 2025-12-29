@@ -1,11 +1,8 @@
 <Solution>
   <Folder Name="/Solution Items/" />
   <Folder Name="/Solution Items/docu/">
-    <File Path="docu/CAN_ENCODING_README.md" />
-    <File Path="docu/CAN_GET_ANSWER_CYCLE.md" />
+    <File Path="docu/CAN.md" />
     <File Path="docu/DEPLOYMENT.md" />
-    <File Path="docu/PARAMETER_SUBSYSTEM_MAPPING.md" />
-    <File Path="docu/PARAMETER_SUBSYSTEM_MAPPING_USAGE.md" />
   </Folder>
   <Project Path="src/RoconMqtt/RoconMqtt.csproj" />
   <Project Path="tests/RoconMqtt.Tests/RoconMqtt.Tests.csproj" />
