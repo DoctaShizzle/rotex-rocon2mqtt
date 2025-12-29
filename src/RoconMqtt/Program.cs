@@ -12,8 +12,15 @@ namespace RoconMqtt;
 
 public static class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
+        // Check if user wants to run the CAN test
+        if (args.Length > 0 && args[0].Equals("test-can", StringComparison.OrdinalIgnoreCase))
+        {
+            await TestCanCommunication.RunAsync(args);
+            return;
+        }
+
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
         
         Log.Logger = new LoggerConfiguration()
