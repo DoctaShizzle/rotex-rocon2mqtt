@@ -55,7 +55,7 @@ public static class Program
             */
 
 
-            
+            /*
 
             // Find the parameter definition by name
             var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cGERAETE_KENNUNG");
@@ -70,6 +70,8 @@ public static class Program
                 DeviceType.HeatingCircuitModule => CanParameterRegistry.HeatingCircuitModules[0],
                 _ => CanParameterRegistry.HeatGenerators[0]
             };
+
+            */
 
             // Encode the value using Answer command format
             var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Get, paramDef.InfoNumber, 0);
