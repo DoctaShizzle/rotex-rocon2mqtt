@@ -5,6 +5,7 @@ using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
 using RoconMqtt.Can.Options;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 
 namespace RoconMqtt;
 
@@ -91,6 +92,9 @@ public class TestCanCommunication
 
         Console.WriteLine("\n=== Querying Parameters ===\n");
 
+        // Start timing
+        var stopwatch = Stopwatch.StartNew();
+
         // Query each parameter for each device
         foreach (var device in devices)
         {
@@ -118,6 +122,9 @@ public class TestCanCommunication
         Console.WriteLine($"\nWaiting up to {responseTimeoutMs * 2}ms for remaining responses...");
         await Task.Delay(responseTimeoutMs * 2);
 
+        // Stop timing
+        stopwatch.Stop();
+
         // Stop listening
         cts.Cancel();
         try
@@ -133,7 +140,8 @@ public class TestCanCommunication
         Console.WriteLine("\n=== Results Summary ===\n");
         Console.WriteLine($"Total requests sent: {totalRequests}");
         Console.WriteLine($"Total responses received: {responsesReceived}");
-        Console.WriteLine($"Success rate: {(responsesReceived * 100.0 / totalRequests):F1}%\n");
+        Console.WriteLine($"Success rate: {(responsesReceived * 100.0 / totalRequests):F1}%");
+        Console.WriteLine($"Total time: {stopwatch.Elapsed.TotalSeconds:F2}s ({stopwatch.ElapsedMilliseconds}ms)\n");
 
         // Print all results organized by device
         foreach (var device in devices)
