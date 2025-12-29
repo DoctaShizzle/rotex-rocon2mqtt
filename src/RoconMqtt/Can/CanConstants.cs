@@ -1,21 +1,37 @@
 namespace RoconMqtt.Can;
 
+/// <summary>
+/// Protocol-level constants for CAN bus communication with Rocon G1 controller.
+/// </summary>
 public static class CanConstants
 {
-    // CAN Frame Header
-    public const byte HeaderByte0 = 0xD2;
-    public const byte HeaderByte1 = 0x1D;
-    public const byte HeaderByte2 = 0xFA;
-    
-    // Frame Structure
+    /// <summary>
+    /// Standard length of a CAN frame payload for parameter communication.
+    /// Format: [Header:3 bytes][InfoNumber:2 bytes][Value:2 bytes] = 7 bytes total
+    /// </summary>
     public const int StandardFrameLength = 7;
-    public const int HeaderLength = 3;
-    public const int InfoNumberLength = 2;
-    public const int ValueLength = 2;
     
-    // TimeRange Encoding
+    /// <summary>
+    /// Number of minutes in one quarter-hour time unit.
+    /// Used for encoding/decoding TimeRange parameters.
+    /// </summary>
     public const int MinutesPerQuarterHour = 15;
-    public const byte MaxQuarterHourIndex = 95; // Represents 23:45
-    public const byte OffMarker = 0x80; // Special marker for inactive time slots
-    public const byte QuarterHourCapValue = 96; // Value that gets capped to 95
+    
+    /// <summary>
+    /// Maximum valid quarter-hour index (represents 23:45).
+    /// Valid range is 0-95, covering a full 24-hour period in 15-minute increments.
+    /// </summary>
+    public const byte MaxQuarterHourIndex = 95;
+    
+    /// <summary>
+    /// Special marker value indicating an inactive or disabled time slot.
+    /// When encountered in TimeRange decoding, it's treated as 00:00.
+    /// </summary>
+    public const byte OffMarker = 0x80;
+    
+    /// <summary>
+    /// Quarter-hour values at or above this value are capped to MaxQuarterHourIndex.
+    /// This prevents invalid time values beyond 23:45.
+    /// </summary>
+    public const byte QuarterHourCapValue = 96;
 }

@@ -12,7 +12,7 @@ public class CanDecoder : ICanDecoder
         _logger = logger;
     }
 
-    public DecodedParameter? Decode(byte[] data)
+    public DecodedParameter? Decode(byte[] data, CommunicationCommand command)
     {
         // Must be at least header + infoNumber + 2 bytes value
         if (data.Length < CanConstants.StandardFrameLength)
@@ -21,10 +21,19 @@ public class CanDecoder : ICanDecoder
             return null;
         }
 
-        // Header check
-        if (data[0] != CanConstants.HeaderByte0 || data[1] != CanConstants.HeaderByte1 || data[2] != CanConstants.HeaderByte2)
+        // Validate command has expected header bytes
+        if (command.Bytes.Length < 3)
         {
-            _logger.LogDebug("Invalid CAN frame: bad header ({High:X2} {Mid:X2} {Low:X2})", data[0], data[1], data[2]);
+            _logger.LogError("Communication command has invalid header (expected at least 3 bytes, got {Length})", 
+                command.Bytes.Length);
+            return null;
+        }
+        
+        // Header check
+        if (data[0] != command.Bytes[0] || data[1] != command.Bytes[1] || data[2] != command.Bytes[2])
+        {
+            _logger.LogDebug("Invalid CAN frame: bad header ({High:X2} {Mid:X2} {Low:X2}), expected ({ExpHigh:X2} {ExpMid:X2} {ExpLow:X2})", 
+                data[0], data[1], data[2], command.Bytes[0], command.Bytes[1], command.Bytes[2]);
             return null;
         }
 

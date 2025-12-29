@@ -36,8 +36,18 @@ internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder
             throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
         }
 
-        // Encode the value
-        var frameData = _canEncoder.Encode(paramDef.InfoNumber, value);
+        // Determine which device/subsystem this parameter belongs to
+        var subsystem = CanParameterRegistry.GetSubsystemForParameter(paramDef.InfoNumber);
+        var device = subsystem switch
+        {
+            DeviceType.HeatGenerator => CanParameterRegistry.HeatGenerators[0],
+            DeviceType.HeatingCircuit => CanParameterRegistry.HeatingCircuits[0],
+            DeviceType.HeatingCircuitModule => CanParameterRegistry.HeatingCircuitModules[0],
+            _ => throw new InvalidOperationException($"Unknown subsystem for parameter {parameterName}")
+        };
+
+        // Encode the value using SET command
+        var frameData = _canEncoder.Encode(device.Profile.Set, paramDef.InfoNumber, value);
 
         // Send the frame using the configured send CAN ID
         LogEncodedFrameData(_logger, parameterName, _canOptions.Value.SendCanFrameId);
@@ -56,7 +66,11 @@ internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder
             await foreach (var frame in _canReader.ReadFramesAsync(token).Where(f => f.Id >= _canOptions.Value.ReceiveFromCanFrameId && f.Id <= _canOptions.Value.ReceiveToCanFrameId))
             {
                 LogProcessingFrame(_logger, frame.Id);
-                var decoded = _canDecoder.Decode(frame.Data);
+                
+                // Try to decode with each device's ANSWER command until one succeeds
+                // Since all ANSWER frames share the same header (0xD2 0x1D 0xFA), we can use any device's Answer command
+                var decoded = _canDecoder.Decode(frame.Data, CanParameterRegistry.HeatGenerators[0].Profile.Answer);
+                
                 if (decoded != null)
                 {
                     LogSuccessfullyDecodedParameter(_logger, decoded.Name);

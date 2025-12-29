@@ -501,12 +501,12 @@ The subsystem determination logic (`GetSubsystemForParameter()`) is correct, nec
 ### CanDecoder
 
 **Methods:**
-- `Decode(byte[] data)` → `DecodedParameter?` - Decode 7-byte CAN frame to parameter value
+- `Decode(byte[] data, CommunicationCommand command)` → `DecodedParameter?` - Decode CAN frame (GET/SET/ANSWER) to parameter value. Validates header against command bytes and decodes InfoNumber and value.
 
 ### CanEncoder
 
 **Methods:**
-- `Encode(InfoNumber info, object value)` → `byte[]` - Encode parameter value to 7-byte frame
+- `Encode(CommunicationCommand command, InfoNumber info, object value)` → `byte[]` - Encode parameter value to CAN frame using specified command (GET/SET/ANSWER). Frame size is 7 bytes for ANSWER frames or may differ for GET/SET frames based on command configuration.
 
 ### Data Models
 
@@ -524,6 +524,7 @@ The subsystem determination logic (`GetSubsystemForParameter()`) is correct, nec
 **CommunicationCommand** - Single CAN command
 - `CanId` - CAN identifier (uint)
 - `Bytes` - Command bytes (byte[])
+- `CommandType` - Type of command: Get (read request), Set (write request), or Answer (controller response)
 
 **ParameterDefinition** - Parameter metadata
 - `Name` - Parameter name

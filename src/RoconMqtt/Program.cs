@@ -32,19 +32,22 @@ public static class Program
             // Find the parameter definition by name
             var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cAUSSENTEMP");
 
-            // Encode the value
+            // Get appropriate communication profile based on parameter subsystem
+            var subsystem = CanParameterRegistry.GetSubsystemForParameter(paramDef!.InfoNumber);
+            var testDevice = subsystem switch
+            {
+                DeviceType.HeatGenerator => CanParameterRegistry.HeatGenerators[0],
+                DeviceType.HeatingCircuit => CanParameterRegistry.HeatingCircuits[0],
+                DeviceType.HeatingCircuitModule => CanParameterRegistry.HeatingCircuitModules[0],
+                _ => CanParameterRegistry.HeatGenerators[0]
+            };
 
-            var canId = 0x69D;
-
-            var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(paramDef!.InfoNumber, 0);
-
-
-
+            // Encode the value using Answer command format
+            var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Answer, paramDef.InfoNumber, 0);
 
             var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x00, 0x0E, 0x01, 0x5A };
-
-            var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input);
-            var output = new CanEncoder(new NullLogger<CanEncoder>()).Encode(decoded.Definition.InfoNumber, decoded.Value);
+            var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input, testDevice.Profile.Answer);
+            var output = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Answer, decoded.Definition.InfoNumber, decoded.Value);
 
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()

@@ -11,6 +11,7 @@ public class CanEncoderDecoderTests
     private readonly CanEncoder _encoder;
     private readonly CanDecoder _decoder;
     private readonly Mock<ILogger<CanDecoder>> _loggerMock;
+    private readonly CommunicationCommand _testCommand;
 
     public CanEncoderDecoderTests()
     {
@@ -20,6 +21,9 @@ public class CanEncoderDecoderTests
         _encoder = new CanEncoder(encoderLoggerMock.Object);
         _loggerMock = decoderLoggerMock;
         _decoder = new CanDecoder(_loggerMock.Object);
+        
+        // Use HG1 Answer command for testing (since we're encoding/decoding parameter values)
+        _testCommand = CanParameterRegistry.HeatGenerators[0].Profile.Answer;
         
         // Register test parameters in the registry
         CanParameterRegistry.RegisterTestParameter(
@@ -71,8 +75,8 @@ public class CanEncoderDecoderTests
         int originalValue = 1234;
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -88,8 +92,8 @@ public class CanEncoderDecoderTests
         int originalValue = 5678;
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -105,8 +109,8 @@ public class CanEncoderDecoderTests
         double originalValue = 42.5;
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -122,8 +126,8 @@ public class CanEncoderDecoderTests
         bool originalValue = true;
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -139,8 +143,8 @@ public class CanEncoderDecoderTests
         bool originalValue = false;
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -156,8 +160,8 @@ public class CanEncoderDecoderTests
         string originalValue = "08:30-16:45";
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -173,8 +177,8 @@ public class CanEncoderDecoderTests
         string originalValue = "00:00-23:45";
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -190,8 +194,8 @@ public class CanEncoderDecoderTests
         string originalValue = "12:00-15:45"; // Exactly 3 and 63 quarter-hours
 
         // Act
-        var encoded = _encoder.Encode(info, originalValue);
-        var decoded = _decoder.Decode(encoded);
+        var encoded = _encoder.Encode(_testCommand, info, originalValue);
+        var decoded = _decoder.Decode(encoded, _testCommand);
 
         // Assert
         Assert.NotNull(decoded);
@@ -207,7 +211,7 @@ public class CanEncoderDecoderTests
         string timeRange = "09:00-17:00";
 
         // Act
-        var encoded = _encoder.Encode(info, timeRange);
+        var encoded = _encoder.Encode(_testCommand, info, timeRange);
 
         // Assert
         Assert.Equal(7, encoded.Length);
@@ -221,7 +225,7 @@ public class CanEncoderDecoderTests
         int value = 100;
 
         // Act
-        var encoded = _encoder.Encode(info, value);
+        var encoded = _encoder.Encode(_testCommand, info, value);
 
         // Assert
         Assert.Equal(7, encoded.Length);
@@ -235,7 +239,7 @@ public class CanEncoderDecoderTests
         int value = 42;
 
         // Act
-        var encoded = _encoder.Encode(info, value);
+        var encoded = _encoder.Encode(_testCommand, info, value);
 
         // Assert
         Assert.Equal(0xD2, encoded[0]);
@@ -251,10 +255,11 @@ public class CanEncoderDecoderTests
         int value = 999;
 
         // Act
-        var encoded = _encoder.Encode(info, value);
+        var encoded = _encoder.Encode(_testCommand, info, value);
 
         // Assert
         Assert.Equal(0xAB, encoded[3]);
         Assert.Equal(0xCD, encoded[4]);
     }
 }
+

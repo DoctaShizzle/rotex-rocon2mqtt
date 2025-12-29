@@ -12,14 +12,20 @@ public partial class CanEncoder : ICanEncoder
         _logger = logger;
     }
 
-    public byte[] Encode(InfoNumber info, object value)
+    public byte[] Encode(CommunicationCommand command, InfoNumber info, object value)
     {
+        // Validate command has header bytes
+        if (command.Bytes.Length < 3)
+        {
+            throw new ArgumentException($"Communication command has invalid header (expected at least 3 bytes, got {command.Bytes.Length})");
+        }
+        
         var frame = new byte[CanConstants.StandardFrameLength];
         
-        // Header
-        frame[0] = CanConstants.HeaderByte0;
-        frame[1] = CanConstants.HeaderByte1;
-        frame[2] = CanConstants.HeaderByte2;
+        // Header from communication command
+        frame[0] = command.Bytes[0];
+        frame[1] = command.Bytes[1];
+        frame[2] = command.Bytes[2];
         
         // InfoNumber
         frame[3] = info.High;
