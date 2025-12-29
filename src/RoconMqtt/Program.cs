@@ -27,10 +27,32 @@ public static class Program
 
         try
         {
+            /*
+
             //test
 
+            Dictionary<DeviceType, List<string>> deviceParameters = new Dictionary<DeviceType, List<string>>();
+
+            foreach (var parameter in CanParameterRegistry.Parameters.Values)
+            {
+                var subsystem = CanParameterRegistry.GetSubsystemForParameter(parameter!.InfoNumber);
+                if (subsystem.HasValue)
+                {
+                    if (!deviceParameters.ContainsKey(subsystem.Value))
+                    {
+                        deviceParameters[subsystem.Value] = new List<string>();
+                    }
+                    deviceParameters[subsystem.Value].Add(parameter.Name);
+                }
+            }
+            */
+
+
+            
+
             // Find the parameter definition by name
-            var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cAUSSENTEMP");
+            var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cGERAETE_KENNUNG");
+            //var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cAUSSENTEMP");
 
             // Get appropriate communication profile based on parameter subsystem
             var subsystem = CanParameterRegistry.GetSubsystemForParameter(paramDef!.InfoNumber);
@@ -43,11 +65,13 @@ public static class Program
             };
 
             // Encode the value using Answer command format
-            var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Answer, paramDef.InfoNumber, 0);
+            var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Get, paramDef.InfoNumber, 0);
 
-            var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x00, 0x0E, 0x01, 0x5A };
+            var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x01, 0x48, 0x00, 0x00 };
             var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input, testDevice.Profile.Answer);
             var output = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Answer, decoded.Definition.InfoNumber, decoded.Value);
+
+            
 
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
