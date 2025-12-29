@@ -31,4 +31,28 @@ public class MqttOptions
     /// Gets or sets the topic associated with the current instance.
     /// </summary>
     public required string Topic { get; set; }
+
+    /// <summary>
+    /// List of device names to query (e.g., "HG1", "HC1", "HCM1").
+    /// If empty or null, no devices will be queried.
+    /// </summary>
+    public List<string> Devices { get; set; } = [];
+
+    /// <summary>
+    /// List of parameter names to query (e.g., "cAUSSENTEMP", "cTAG").
+    /// If empty or null, no parameters will be queried.
+    /// </summary>
+    public List<string> Parameters { get; set; } = [];
+
+    /// <summary>
+    /// Interval in milliseconds between GET requests for each parameter.
+    /// Default is 5000ms (5 seconds).
+    /// </summary>
+    public int PollingIntervalMs { get; set; } = 5000;
+
+    /// <summary>
+    /// Timeout in milliseconds to wait for ANSWER after sending GET request.
+    /// Default is 1000ms (1 second).
+    /// </summary>
+    public int ResponseTimeoutMs { get; set; } = 1000;
 }

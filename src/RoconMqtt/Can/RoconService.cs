@@ -21,12 +21,12 @@ internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder
         await _canReader.SendFrameAsync(canId, data, token);
     }
 
-    public async Task SendRequestAsync(string parameterName, object value, CancellationToken token)
+    public async Task SendRequestAsync(string deviceName, string parameterName, CommandType commandType, object? value, CancellationToken token)
     {
+        ArgumentNullException.ThrowIfNull(deviceName);
         ArgumentNullException.ThrowIfNull(parameterName);
-        ArgumentNullException.ThrowIfNull(value);
 
-        LogSendingRequest(_logger, parameterName, value);
+        LogSendingRequest(_logger, deviceName, parameterName, commandType);
 
         // Find the parameter definition by name
         var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
@@ -36,23 +36,31 @@ internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder
             throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
         }
 
-        // Determine which device/subsystem this parameter belongs to
-        var subsystem = CanParameterRegistry.GetSubsystemForParameter(paramDef.InfoNumber);
-        var device = subsystem switch
+        // Get the specific device by name
+        var device = CanParameterRegistry.GetDevice(deviceName);
+        if (device == null)
         {
-            DeviceType.HeatGenerator => CanParameterRegistry.HeatGenerators[0],
-            DeviceType.HeatingCircuit => CanParameterRegistry.HeatingCircuits[0],
-            DeviceType.HeatingCircuitModule => CanParameterRegistry.HeatingCircuitModules[0],
-            _ => throw new InvalidOperationException($"Unknown subsystem for parameter {parameterName}")
+            LogDeviceNotFound(_logger, deviceName);
+            throw new ArgumentException($"Device '{deviceName}' not found in registry", nameof(deviceName));
+        }
+
+        // Select the appropriate command based on CommandType
+        var command = commandType switch
+        {
+            CommandType.Get => device.Profile.Get,
+            CommandType.Set => device.Profile.Set,
+            CommandType.Answer => throw new ArgumentException("Cannot send ANSWER commands - they are responses from the controller", nameof(commandType)),
+            _ => throw new ArgumentException($"Unknown command type: {commandType}", nameof(commandType))
         };
 
-        // Encode the value using SET command
-        var frameData = _canEncoder.Encode(device.Profile.Set, paramDef.InfoNumber, value);
+        // For GET requests, value is ignored (use 0). For SET, use the provided value
+        var encodedValue = commandType == CommandType.Get ? 0 : (value ?? 0);
+        var frameData = _canEncoder.Encode(command, paramDef.InfoNumber, encodedValue);
 
-        // Send the frame using the configured send CAN ID
-        LogEncodedFrameData(_logger, parameterName, _canOptions.Value.SendCanFrameId);
-        await _canReader.SendFrameAsync(_canOptions.Value.SendCanFrameId, frameData, token);
-        LogRequestSentSuccessfully(_logger, parameterName);
+        // Send the frame using the command's CAN ID
+        LogEncodedFrameData(_logger, deviceName, parameterName, commandType, command.CanId);
+        await _canReader.SendFrameAsync(command.CanId, frameData, token);
+        LogRequestSentSuccessfully(_logger, deviceName, parameterName, commandType);
     }
 
     public async Task ListenForResponses(Func<DecodedParameter, Task> responseAction, CancellationToken token = default)
@@ -91,17 +99,17 @@ internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder
     [LoggerMessage(EventId = 3001, Level = LogLevel.Debug, Message = "Sending raw CAN frame with ID 0x{CanId:X8}, DataLength={DataLength}")]
     private static partial void LogSendingRawCanFrame(ILogger logger, uint canId, int dataLength);
 
-    [LoggerMessage(EventId = 3002, Level = LogLevel.Information, Message = "Sending request for parameter {ParameterName} with value {Value}")]
-    private static partial void LogSendingRequest(ILogger logger, string parameterName, object value);
+    [LoggerMessage(EventId = 3002, Level = LogLevel.Information, Message = "Sending {CommandType} request for device {DeviceName}, parameter {ParameterName}")]
+    private static partial void LogSendingRequest(ILogger logger, string deviceName, string parameterName, CommandType commandType);
 
     [LoggerMessage(EventId = 3003, Level = LogLevel.Error, Message = "Parameter '{ParameterName}' not found in registry")]
     private static partial void LogParameterNotFound(ILogger logger, string parameterName);
 
-    [LoggerMessage(EventId = 3004, Level = LogLevel.Debug, Message = "Encoded frame data for parameter {ParameterName}, sending with CAN ID 0x{SendCanFrameId:X8}")]
-    private static partial void LogEncodedFrameData(ILogger logger, string parameterName, uint sendCanFrameId);
+    [LoggerMessage(EventId = 3004, Level = LogLevel.Debug, Message = "Encoded {CommandType} frame for device {DeviceName}, parameter {ParameterName}, sending with CAN ID 0x{CanId:X8}")]
+    private static partial void LogEncodedFrameData(ILogger logger, string deviceName, string parameterName, CommandType commandType, uint canId);
 
-    [LoggerMessage(EventId = 3005, Level = LogLevel.Information, Message = "Request sent successfully for parameter {ParameterName}")]
-    private static partial void LogRequestSentSuccessfully(ILogger logger, string parameterName);
+    [LoggerMessage(EventId = 3005, Level = LogLevel.Information, Message = "{CommandType} request sent successfully for device {DeviceName}, parameter {ParameterName}")]
+    private static partial void LogRequestSentSuccessfully(ILogger logger, string deviceName, string parameterName, CommandType commandType);
 
     [LoggerMessage(EventId = 3006, Level = LogLevel.Information, Message = "Starting to listen for responses (CAN ID range: 0x{FromId:X8} - 0x{ToId:X8})")]
     private static partial void LogStartListeningForResponses(ILogger logger, uint fromId, uint toId);
@@ -117,4 +125,7 @@ internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder
 
     [LoggerMessage(EventId = 3010, Level = LogLevel.Information, Message = "Response listening cancelled")]
     private static partial void LogResponseListeningCancelled(ILogger logger);
+
+    [LoggerMessage(EventId = 3012, Level = LogLevel.Error, Message = "Device '{DeviceName}' not found in registry")]
+    private static partial void LogDeviceNotFound(ILogger logger, string deviceName);
 }
