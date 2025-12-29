@@ -1,0 +1,1832 @@
+=== Auto-Detecting Endianness for All Parameters ===
+
+Testing cGERAETE_KENNUNG (info=0148, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01480000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 48 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing cAUSSENTEMP (info=000C, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA000C0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 0C 00 1E
+  --> value bytes: 00 1E
+  --> interpreted big-endian: 30
+  --> interpreted little-endian: 7680
+  --> endianness: ambiguous
+
+Testing cAUSSENTEMP_WAERMEPUMPE (info=0A0C, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA0A0C0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 0A 0C 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cTAG (info=0122, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01220000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 22 1D 00
+  --> value bytes: 1D 00
+  --> interpreted big-endian: 7424
+  --> interpreted little-endian: 29
+  --> endianness: ambiguous
+
+Testing cMONAT (info=0123, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01230000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 23 0C 00
+  --> value bytes: 0C 00
+  --> interpreted big-endian: 3072
+  --> interpreted little-endian: 12
+  --> endianness: ambiguous
+
+Testing cJAHR (info=0124, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01240000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 24 19 00
+  --> value bytes: 19 00
+  --> interpreted big-endian: 6400
+  --> interpreted little-endian: 25
+  --> endianness: ambiguous
+
+Testing cSTUNDE (info=0125, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01250000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 25 12 00
+  --> value bytes: 12 00
+  --> interpreted big-endian: 4608
+  --> interpreted little-endian: 18
+  --> endianness: ambiguous
+
+Testing cMINUTE (info=0126, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01260000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 26 13 00
+  --> value bytes: 13 00
+  --> interpreted big-endian: 4864
+  --> interpreted little-endian: 19
+  --> endianness: ambiguous
+
+Testing cPROGRAMMSCHALTER (info=0112, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01120000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 12 0C 00
+  --> value bytes: 0C 00
+  --> interpreted big-endian: 3072
+  --> interpreted little-endian: 12
+  --> endianness: ambiguous
+
+Testing cSPEICHERISTTEMP (info=000E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA000E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 0E 01 CD
+  --> value bytes: 01 CD
+  --> interpreted big-endian: 461
+  --> interpreted little-endian: 52481
+  --> endianness: big-endian
+
+Testing cVERSTELLTE_SPEICHERSOLLTEMP (info=0003, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00030000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 03 01 5E
+  --> value bytes: 01 5E
+  --> interpreted big-endian: 350
+  --> interpreted little-endian: 24065
+  --> endianness: big-endian
+
+Testing cEINSTELL_SPEICHERSOLLTEMP (info=0013, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00130000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 13 01 E0
+  --> value bytes: 01 E0
+  --> interpreted big-endian: 480
+  --> interpreted little-endian: 57345
+  --> endianness: big-endian
+
+Testing cEINSTELL_SPEICHERSOLLTEMP2 (info=0A06, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA0A060000
+  <-- raw frame: can0  180   [7]  D2 1D FA 0A 06 01 E0
+  --> value bytes: 01 E0
+  --> interpreted big-endian: 480
+  --> interpreted little-endian: 57345
+  --> endianness: big-endian
+
+Testing cEINSTELL_SPEICHERSOLLTEMP3 (info=013E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA013E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 3E 01 E0
+  --> value bytes: 01 E0
+  --> interpreted big-endian: 480
+  --> interpreted little-endian: 57345
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1 (info=1700, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17000000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 00 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_1_MO (info=1710, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17100000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 10 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_MO_SCHALT_2 (info=1711, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17110000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 11 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MO_SCHALT_3 (info=1712, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17120000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 12 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_DI (info=1720, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17200000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 20 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_DI_SCHALT_2 (info=1721, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17210000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 21 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_DI_SCHALT_3 (info=1722, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17220000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 22 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MI (info=1730, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17300000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 30 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_MI_SCHALT_2 (info=1731, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17310000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 31 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MI_SCHALT_3 (info=1732, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17320000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 32 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_DO (info=1740, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17400000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 40 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_DO_SCHALT_2 (info=1741, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17410000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 41 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_DO_SCHALT_3 (info=1742, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17420000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 42 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_FR (info=1750, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17500000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 50 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_FR_SCHALT_2 (info=1751, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17510000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 51 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_FR_SCHALT_3 (info=1752, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17520000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 52 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_SA (info=1760, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17600000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 60 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_SA_SCHALT_2 (info=1761, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17610000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 61 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_SA_SCHALT_3 (info=1762, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17620000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 62 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_SO (info=1770, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17700000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 70 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_SO_SCHALT_2 (info=1771, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17710000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 71 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_SO_SCHALT_3 (info=1772, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17720000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 72 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MO_FR (info=1780, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17800000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 80 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_MO_FR_SCHALT_2 (info=1781, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17810000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 81 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MO_FR_SCHALT_3 (info=1782, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17820000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 82 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_SA_SO (info=1790, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17900000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 90 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_SA_SO_SCHALT_2 (info=1791, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17910000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 91 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_SA_SO_SCHALT_3 (info=1792, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17920000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 92 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MO_SO (info=17A0, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17A00000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 A0 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cW_WASSERPROG_1_MO_SO_SCHALT_2 (info=17A1, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17A10000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 A1 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MO_SO_SCHALT_3 (info=17A2, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17A20000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 A2 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_1_MO_DO (info=17B0, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17B00000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 B0 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_1_MO_DO_SCHALT_2 (info=17B1, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17B10000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 B1 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_1_MO_DO_SCHALT_3 (info=17B2, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA17B20000
+  <-- raw frame: can0  600   [7]  D2 1D FA 17 B2 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_2 (info=1800, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18000000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 00 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_2_MO (info=1810, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18100000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 10 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_SCHALT_2 (info=1811, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18110000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 11 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_SCHALT_3 (info=1812, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18120000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 12 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_DI (info=1820, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18200000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 20 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_DI_SCHALT_2 (info=1821, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18210000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 21 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_DI_SCHALT_3 (info=1822, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18220000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 22 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MI (info=1830, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18300000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 30 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MI_SCHALT_2 (info=1831, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18310000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 31 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MI_SCHALT_3 (info=1832, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18320000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 32 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_DO (info=1840, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18400000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 40 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_DO_SCHALT_2 (info=1841, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18410000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 41 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_DO_SCHALT_3 (info=1842, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18420000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 42 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_FR (info=1850, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18500000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 50 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_FR_SCHALT_2 (info=1851, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18510000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 51 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_FR_SCHALT_3 (info=1852, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18520000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 52 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SA (info=1860, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18600000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 60 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SA_SCHALT_2 (info=1861, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18610000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 61 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SA_SCHALT_3 (info=1862, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18620000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 62 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SO (info=1870, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18700000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 70 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SO_SCHALT_2 (info=1871, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18710000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 71 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SO_SCHALT_3 (info=1872, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18720000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 72 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_FR (info=1880, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18800000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 80 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_FR_SCHALT_2 (info=1881, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18810000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 81 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_FR_SCHALT_3 (info=1882, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18820000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 82 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SA_SO (info=1890, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18900000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 90 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SA_SO_SCHALT_2 (info=1891, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18910000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 91 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_SA_SO_SCHALT_3 (info=1892, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18920000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 92 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_SO (info=18A0, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18A00000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 A0 18 1C
+  --> value bytes: 18 1C
+  --> interpreted big-endian: 6172
+  --> interpreted little-endian: 7192
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_SO_SCHALT_2 (info=18A1, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18A10000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 A1 40 44
+  --> value bytes: 40 44
+  --> interpreted big-endian: 16452
+  --> interpreted little-endian: 17472
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_SO_SCHALT_3 (info=18A2, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18A20000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 A2 58 5C
+  --> value bytes: 58 5C
+  --> interpreted big-endian: 22620
+  --> interpreted little-endian: 23640
+  --> endianness: ambiguous
+
+Testing cW_WASSERPROG_2_MO_DO (info=18B0, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18B00000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 B0 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_2_MO_DO_SCHALT_2 (info=18B1, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18B10000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 B1 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cW_WASSERPROG_2_MO_DO_SCHALT_3 (info=18B2, opcode=C1, expect ID=600)...
+  --> GET frame: 69D#C100FA18B20000
+  <-- raw frame: can0  600   [7]  D2 1D FA 18 B2 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cEINMAL_WW_AKTIV (info=0144, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01440000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 44 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing cWW_AKTIV (info=005E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA005E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 5E 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing cRAUMISTTEMP (info=0011, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00110000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 11 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cVERSTELLTE_RAUMSOLLTEMP (info=0012, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00120000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 12 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cRAUMSOLLTEMP_I (info=0005, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00050000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 05 00 C8
+  --> value bytes: 00 C8
+  --> interpreted big-endian: 200
+  --> interpreted little-endian: 51200
+  --> endianness: big-endian
+
+Testing cRAUMSOLLTEMP_II (info=0006, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00060000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 06 00 C8
+  --> value bytes: 00 C8
+  --> interpreted big-endian: 200
+  --> interpreted little-endian: 51200
+  --> endianness: big-endian
+
+Testing cRAUMSOLLTEMP_III (info=0007, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00070000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 07 00 C8
+  --> value bytes: 00 C8
+  --> interpreted big-endian: 200
+  --> interpreted little-endian: 51200
+  --> endianness: big-endian
+
+Testing eNACHTRAUMSOLLTEMP (info=0008, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00080000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 08 00 C8
+  --> value bytes: 00 C8
+  --> interpreted big-endian: 200
+  --> interpreted little-endian: 51200
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1 (info=1400, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14000000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 00 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_1_MO (info=1410, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14100000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 10 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_MO_SCHALT_2 (info=1411, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14110000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 11 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MO_SCHALT_3 (info=1412, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14120000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 12 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_DI (info=1420, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14200000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 20 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_DI_SCHALT_2 (info=1421, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14210000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 21 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_DI_SCHALT_3 (info=1422, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14220000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 22 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MI (info=1430, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14300000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 30 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_MI_SCHALT_2 (info=1431, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14310000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 31 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MI_SCHALT_3 (info=1432, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14320000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 32 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_DO (info=1440, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14400000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 40 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_DO_SCHALT_2 (info=1441, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14410000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 41 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_DO_SCHALT_3 (info=1442, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14420000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 42 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_FR (info=1450, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14500000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 50 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_FR_SCHALT_2 (info=1451, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14510000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 51 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_FR_SCHALT_3 (info=1452, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14520000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 52 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_SA (info=1460, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14600000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 60 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_SA_SCHALT_2 (info=1461, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14610000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 61 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_SA_SCHALT_3 (info=1462, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14620000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 62 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_SO (info=1470, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14700000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 70 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_SO_SCHALT_2 (info=1471, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14710000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 71 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_SO_SCHALT_3 (info=1472, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14720000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 72 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MO_FR (info=1480, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14800000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 80 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_MO_FR_SCHALT_2 (info=1481, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14810000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 81 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MO_FR_SCHALT_3 (info=1482, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14820000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 82 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_SA_SO (info=1490, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14900000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 90 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_SA_SO_SCHALT_2 (info=1491, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14910000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 91 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_SA_SO_SCHALT_3 (info=1492, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14920000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 92 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MO_SO (info=14A0, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14A00000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 A0 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing cHEIZPROG_1_MO_SO_SCHALT_2 (info=14A1, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14A10000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 A1 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MO_SO_SCHALT_3 (info=14A2, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14A20000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 A2 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_1_MO_DO (info=14B0, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14B00000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 B0 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_1_MO_DO_SCHALT_2 (info=14B1, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14B10000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 B1 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_1_MO_DO_SCHALT_3 (info=14B2, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA14B20000
+  <-- raw frame: can0  300   [7]  D2 1D FA 14 B2 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_2 (info=1500, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15000000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 00 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_2_MO (info=1510, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15100000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 10 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_SCHALT_2 (info=1511, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15110000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 11 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_SCHALT_3 (info=1512, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15120000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 12 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_DI (info=1520, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15200000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 20 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_DI_SCHALT_2 (info=1521, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15210000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 21 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_DI_SCHALT_3 (info=1522, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15220000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 22 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MI (info=1530, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15300000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 30 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MI_SCHALT_2 (info=1531, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15310000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 31 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MI_SCHALT_3 (info=1532, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15320000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 32 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_DO (info=1540, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15400000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 40 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_DO_SCHALT_2 (info=1541, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15410000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 41 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_DO_SCHALT_3 (info=1542, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15420000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 42 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_FR (info=1550, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15500000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 50 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_FR_SCHALT_2 (info=1551, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15510000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 51 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_FR_SCHALT_3 (info=1552, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15520000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 52 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SA (info=1560, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15600000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 60 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SA_SCHALT_2 (info=1561, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15610000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 61 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SA_SCHALT_3 (info=1562, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15620000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 62 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SO (info=1570, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15700000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 70 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SO_SCHALT_2 (info=1571, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15710000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 71 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SO_SCHALT_3 (info=1572, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15720000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 72 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_FR (info=1580, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15800000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 80 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_FR_SCHALT_2 (info=1581, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15810000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 81 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_FR_SCHALT_3 (info=1582, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15820000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 82 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SA_SO (info=1590, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15900000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 90 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SA_SO_SCHALT_2 (info=1591, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15910000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 91 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_SA_SO_SCHALT_3 (info=1592, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15920000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 92 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_SO (info=15A0, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15A00000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 A0 04 1C
+  --> value bytes: 04 1C
+  --> interpreted big-endian: 1052
+  --> interpreted little-endian: 7172
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_SO_SCHALT_2 (info=15A1, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15A10000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 A1 2C 44
+  --> value bytes: 2C 44
+  --> interpreted big-endian: 11332
+  --> interpreted little-endian: 17452
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_SO_SCHALT_3 (info=15A2, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15A20000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 A2 80 80
+  --> value bytes: 80 80
+  --> interpreted big-endian: 32896
+  --> interpreted little-endian: 32896
+  --> endianness: ambiguous
+
+Testing cHEIZPROG_2_MO_DO (info=15B0, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15B00000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 B0 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_2_MO_DO_SCHALT_2 (info=15B1, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15B10000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 B1 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cHEIZPROG_2_MO_DO_SCHALT_3 (info=15B2, opcode=61, expect ID=300)...
+  --> GET frame: 69D#6100FA15B20000
+  <-- raw frame: can0  300   [7]  D2 1D FA 15 B2 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing cSOFTWARE_NUMMER (info=0199, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01990000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 99 01 6E
+  --> value bytes: 01 6E
+  --> interpreted big-endian: 366
+  --> interpreted little-endian: 28161
+  --> endianness: big-endian
+
+Testing cSOFTWARE_VERSION (info=019A, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA019A0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 9A 00 03
+  --> value bytes: 00 03
+  --> interpreted big-endian: 3
+  --> interpreted little-endian: 768
+  --> endianness: ambiguous
+
+Testing cSOFTWARE_UNTERINDEX (info=024B, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA024B0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 02 4B 20 41
+  --> value bytes: 20 41
+  --> interpreted big-endian: 8257
+  --> interpreted little-endian: 16672
+  --> endianness: ambiguous
+
+cMODUS_PARTY_DAUER: unknown subsystem (high=13)
+
+Testing cMODUS_URLAUB_ANFANG_TAG (info=011B, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA011B0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 1B 01 00
+  --> value bytes: 01 00
+  --> interpreted big-endian: 256
+  --> interpreted little-endian: 1
+  --> endianness: ambiguous
+
+Testing cMODUS_URLAUB_ANFANG_MONAT (info=011C, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA011C0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 1C 01 00
+  --> value bytes: 01 00
+  --> interpreted big-endian: 256
+  --> interpreted little-endian: 1
+  --> endianness: ambiguous
+
+Testing cMODUS_URLAUB_ANFANG_JAHR (info=011D, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA011D0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 1D 0C 00
+  --> value bytes: 0C 00
+  --> interpreted big-endian: 3072
+  --> interpreted little-endian: 12
+  --> endianness: ambiguous
+
+Testing cMODUS_URLAUB_ENDE_TAG (info=011E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA011E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 1E 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing cMODUS_URLAUB_ENDE_MONAT (info=011F, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA011F0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 1F 01 00
+  --> value bytes: 01 00
+  --> interpreted big-endian: 256
+  --> interpreted little-endian: 1
+  --> endianness: ambiguous
+
+Testing cMODUS_URLAUB_ENDE_JAHR (info=0120, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01200000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 20 0C 00
+  --> value bytes: 0C 00
+  --> interpreted big-endian: 3072
+  --> interpreted little-endian: 12
+  --> endianness: ambiguous
+
+Testing cKESSELISTTEMP (info=000D, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA000D0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 0D 01 19
+  --> value bytes: 01 19
+  --> interpreted big-endian: 281
+  --> interpreted little-endian: 6401
+  --> endianness: ambiguous
+
+Testing cKESSELSOLLTEMP (info=0002, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00020000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 02 01 1F
+  --> value bytes: 01 1F
+  --> interpreted big-endian: 287
+  --> interpreted little-endian: 7937
+  --> endianness: ambiguous
+
+Testing cRUECKLAUFTEMP (info=0016, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00160000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 16 01 09
+  --> value bytes: 01 09
+  --> interpreted big-endian: 265
+  --> interpreted little-endian: 2305
+  --> endianness: ambiguous
+
+Testing cVOLUMENSTROM (info=01DA, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01DA0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 DA 05 16
+  --> value bytes: 05 16
+  --> interpreted big-endian: 1302
+  --> interpreted little-endian: 5637
+  --> endianness: ambiguous
+
+cPWM_SIGNAL: unknown subsystem (high=C0)
+
+Testing cMISCHERSTELLUNG_1_3UV1 (info=069B, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA069B0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 9B 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+cMISCHERSTELLUNG_2_3UVB: unknown subsystem (high=C0)
+
+cT_TVBH1: unknown subsystem (high=C1)
+
+cT_TVBHMIX: unknown subsystem (high=C0)
+
+cT_TVBH: unknown subsystem (high=C1)
+
+cDEFROST_AKTIV: unknown subsystem (high=C0)
+
+Testing cPUMPENLAUFZEIT (info=06A4, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06A40000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 A4 39 EE
+  --> value bytes: 39 EE
+  --> interpreted big-endian: 14830
+  --> interpreted little-endian: 60985
+  --> endianness: big-endian
+
+Testing cKOMPRESSORLAUFZEIT (info=06A5, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06A50000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 A5 30 20
+  --> value bytes: 30 20
+  --> interpreted big-endian: 12320
+  --> interpreted little-endian: 8240
+  --> endianness: ambiguous
+
+Testing cVMIN_A1 (info=0661, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06610000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 61 00 96
+  --> value bytes: 00 96
+  --> interpreted big-endian: 150
+  --> interpreted little-endian: 38400
+  --> endianness: big-endian
+
+Testing cVMIN_WP (info=0688, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06880000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 88 00 78
+  --> value bytes: 00 78
+  --> interpreted big-endian: 120
+  --> interpreted little-endian: 30720
+  --> endianness: big-endian
+
+cVMIN_GCU: unknown subsystem (high=C0)
+
+cFEHLER_AKTUELL: unknown subsystem (high=13)
+
+Testing eZEITMASTER (info=0A1F, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA0A1F0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 0A 1F 01 00
+  --> value bytes: 01 00
+  --> interpreted big-endian: 256
+  --> interpreted little-endian: 1
+  --> endianness: ambiguous
+
+eSCHALTSCHWELLE_TDHW: unknown subsystem (high=C0)
+
+eSONDERFKT_SCHALTKONTAKT: unknown subsystem (high=C0)
+
+eWARTEZEIT_SONDERFKT: unknown subsystem (high=C0)
+
+Testing eWASSER_MAX_DRUCKVERLUST (info=0726, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA07260000
+  <-- raw frame: can0  180   [7]  D2 1D FA 07 26 01 F4
+  --> value bytes: 01 F4
+  --> interpreted big-endian: 500
+  --> interpreted little-endian: 62465
+  --> endianness: big-endian
+
+Testing eWASSER_MAXIMALDRUCK (info=0727, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA07270000
+  <-- raw frame: can0  180   [7]  D2 1D FA 07 27 0B B8
+  --> value bytes: 0B B8
+  --> interpreted big-endian: 3000
+  --> interpreted little-endian: 47115
+  --> endianness: big-endian
+
+Testing eWASSER_MINIMALDRUCK (info=0728, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA07280000
+  <-- raw frame: can0  180   [7]  D2 1D FA 07 28 01 F4
+  --> value bytes: 01 F4
+  --> interpreted big-endian: 500
+  --> interpreted little-endian: 62465
+  --> endianness: big-endian
+
+Testing eWASSER_SOLLDRUCK (info=0725, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA07250000
+  <-- raw frame: can0  180   [7]  D2 1D FA 07 25 03 84
+  --> value bytes: 03 84
+  --> interpreted big-endian: 900
+  --> interpreted little-endian: 33795
+  --> endianness: big-endian
+
+Testing eWP_FLUESTERBETRIEB (info=0696, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06960000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 96 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eWP_LEISTUNG_HEIZSTAB_S1 (info=0669, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06690000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 69 00 64
+  --> value bytes: 00 64
+  --> interpreted big-endian: 100
+  --> interpreted little-endian: 25600
+  --> endianness: big-endian
+
+Testing eWP_LEISTUNG_HEIZSTAB_S2 (info=066A, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA066A0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 6A 00 64
+  --> value bytes: 00 64
+  --> interpreted big-endian: 100
+  --> interpreted little-endian: 25600
+  --> endianness: big-endian
+
+Testing eWP_LEISTUNG_HZU_BIV (info=066B, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA066B0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 6B 05 DC
+  --> value bytes: 05 DC
+  --> interpreted big-endian: 1500
+  --> interpreted little-endian: 56325
+  --> endianness: big-endian
+
+Testing eWP_MAX_TEMP_HEIZUNG (info=066E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA066E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 6E 02 58
+  --> value bytes: 02 58
+  --> interpreted big-endian: 600
+  --> interpreted little-endian: 22530
+  --> endianness: big-endian
+
+Testing eWP_MOD_HYST_DURCHFLUSS (info=0682, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06820000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 82 00 04
+  --> value bytes: 00 04
+  --> interpreted big-endian: 4
+  --> interpreted little-endian: 1024
+  --> endianness: ambiguous
+
+Testing eWP_SOLLWERT_ANPASSUNG_HEIZEN (info=06A0, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06A00000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 A0 00 32
+  --> value bytes: 00 32
+  --> interpreted big-endian: 50
+  --> interpreted little-endian: 12800
+  --> endianness: ambiguous
+
+Testing eWP_SOLLWERT_ANPASSUNG_KUEHLEN (info=06A1, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06A10000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 A1 00 32
+  --> value bytes: 00 32
+  --> interpreted big-endian: 50
+  --> interpreted little-endian: 12800
+  --> endianness: ambiguous
+
+Testing eWP_SPREIZUNG_HZ_BETRIEB (info=0683, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06830000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 83 00 46
+  --> value bytes: 00 46
+  --> interpreted big-endian: 70
+  --> interpreted little-endian: 17920
+  --> endianness: ambiguous
+
+Testing eWP_SPREIZUNG_WW_BETRIEB (info=0684, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06840000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 84 00 14
+  --> value bytes: 00 14
+  --> interpreted big-endian: 20
+  --> interpreted little-endian: 5120
+  --> endianness: ambiguous
+
+Testing eWP_START_MAX_TEMP (info=068C, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA068C0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 8C 02 58
+  --> value bytes: 02 58
+  --> interpreted big-endian: 600
+  --> interpreted little-endian: 22530
+  --> endianness: big-endian
+
+Testing eWP_VERZ_ZEIT_PUMPE (info=0685, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06850000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 85 01 2C
+  --> value bytes: 01 2C
+  --> interpreted big-endian: 300
+  --> interpreted little-endian: 11265
+  --> endianness: ambiguous
+
+Testing eABSENKOPTIMIERUNG (info=012E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA012E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 2E 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eADAPTION (info=0115, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01150000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 15 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eAUFHEIZOPTIMIERUNG (info=0103, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01030000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 03 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eFROSTSCHUTZTEMP (info=0A00, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA0A000000
+  <-- raw frame: can0  180   [7]  D2 1D FA 0A 00 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eHEIZGRENZE_NACHT (info=0117, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01170000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 17 00 64
+  --> value bytes: 00 64
+  --> interpreted big-endian: 100
+  --> interpreted little-endian: 25600
+  --> endianness: big-endian
+
+Testing eHEIZGRENZE_TAG (info=0116, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01160000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 16 00 BE
+  --> value bytes: 00 BE
+  --> interpreted big-endian: 190
+  --> interpreted little-endian: 48640
+  --> endianness: big-endian
+
+Testing eHZK_FUNKTION (info=0141, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01410000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 41 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eHZKKURVE (info=010E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA010E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 0E 00 32
+  --> value bytes: 00 32
+  --> interpreted big-endian: 50
+  --> interpreted little-endian: 12800
+  --> endianness: ambiguous
+
+eKUEHLSOLLWERT_KORR_HZK_0: unknown subsystem (high=13)
+
+Testing eMAX_AUFHEIZVORVERLEGUNG (info=0110, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01100000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 10 08 00
+  --> value bytes: 08 00
+  --> interpreted big-endian: 2048
+  --> interpreted little-endian: 8
+  --> endianness: ambiguous
+
+eMAX_KUEHLEN_AUSSENTEMP_HZK0: unknown subsystem (high=13)
+
+Testing eMAX_VORLAUFTEMP (info=0028, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00280000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 28 03 20
+  --> value bytes: 03 20
+  --> interpreted big-endian: 800
+  --> interpreted little-endian: 8195
+  --> endianness: ambiguous
+
+Testing eMIN_VORLAUFTEMP (info=012B, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA012B0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 2B 00 64
+  --> value bytes: 00 64
+  --> interpreted big-endian: 100
+  --> interpreted little-endian: 25600
+  --> endianness: big-endian
+
+Testing eRAUMEINFLUSS (info=010F, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA010F0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 0F 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+eSTART_KUEHLEN_AUSSENTEMP_HZK0: unknown subsystem (high=13)
+
+eVL_SOLL_MAX_KUEHLEN_HZK0: unknown subsystem (high=13)
+
+eVL_SOLL_START_KUEHLEN_HZK_0: unknown subsystem (high=13)
+
+Testing eVORLAUFSOLLTEMP_NACHT (info=012A, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA012A0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 2A 00 64
+  --> value bytes: 00 64
+  --> interpreted big-endian: 100
+  --> interpreted little-endian: 25600
+  --> endianness: big-endian
+
+Testing eVORLAUFSOLLTEMP_TAG (info=0129, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01290000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 29 01 A4
+  --> value bytes: 01 A4
+  --> interpreted big-endian: 420
+  --> interpreted little-endian: 41985
+  --> endianness: big-endian
+
+Testing eWP_AUSSENGERAET (info=069A, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA069A0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 9A 00 03
+  --> value bytes: 00 03
+  --> interpreted big-endian: 3
+  --> interpreted little-endian: 768
+  --> endianness: ambiguous
+
+Testing eWP_HT_NT_FKT_ANSCHLUSS (info=0670, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06700000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 70 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eWP_HT_NT_FUNKTION (info=066F, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA066F0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 6F 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eWP_INNENGERAET (info=0699, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06990000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 99 00 02
+  --> value bytes: 00 02
+  --> interpreted big-endian: 2
+  --> interpreted little-endian: 512
+  --> endianness: ambiguous
+
+Testing eWP_INTERLINKFUNKTION (info=0679, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06790000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 79 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eWP_MODUS_SMART_GRID (info=0694, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06940000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 94 00 01
+  --> value bytes: 00 01
+  --> interpreted big-endian: 1
+  --> interpreted little-endian: 256
+  --> endianness: ambiguous
+
+Testing eWP_PWM_LEISTUNG_MAX (info=067E, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA067E0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 7E 00 60
+  --> value bytes: 00 60
+  --> interpreted big-endian: 96
+  --> interpreted little-endian: 24576
+  --> endianness: big-endian
+
+Testing eWP_PWM_LEISTUNG_MIN (info=067F, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA067F0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 7F 00 32
+  --> value bytes: 00 32
+  --> interpreted big-endian: 50
+  --> interpreted little-endian: 12800
+  --> endianness: ambiguous
+
+Testing eWP_RAUMTHERMOSTAT (info=0678, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06780000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 78 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eWP_SMART_GRID (info=0693, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06930000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 93 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+eANTILEG_START_ZEIT: unknown subsystem (high=FD)
+
+Testing eANTILEG_TEMP (info=0587, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA05870000
+  <-- raw frame: can0  180   [7]  D2 1D FA 05 87 02 8A
+  --> value bytes: 02 8A
+  --> interpreted big-endian: 650
+  --> interpreted little-endian: 35330
+  --> endianness: big-endian
+
+Testing eZIRKPUMPE_BEI_WWFREIGABE (info=0182, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA01820000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 82 00 00
+  --> value bytes: 00 00
+  --> interpreted big-endian: 0
+  --> interpreted little-endian: 0
+  --> endianness: ambiguous
+
+Testing eABWESEND_RAUMSOLLTEMP (info=013D, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA013D0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 01 3D 00 96
+  --> value bytes: 00 96
+  --> interpreted big-endian: 150
+  --> interpreted little-endian: 38400
+  --> endianness: big-endian
+
+Testing eWP_HYSTERESE_DHW (info=0691, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06910000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 91 00 32
+  --> value bytes: 00 32
+  --> interpreted big-endian: 50
+  --> interpreted little-endian: 12800
+  --> endianness: ambiguous
+
+Testing eWP_WARTEZEIT_BOH (info=0692, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA06920000
+  <-- raw frame: can0  180   [7]  D2 1D FA 06 92 00 32
+  --> value bytes: 00 32
+  --> interpreted big-endian: 50
+  --> interpreted little-endian: 12800
+  --> endianness: ambiguous
+
+eFEIERTAGENDE_JAHR: unknown subsystem (high=13)
+
+Testing eVORLAUFSOLLTEMP (info=0004, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA00040000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 04 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
+Testing eVORLAUFISTTEMP (info=000F, opcode=31, expect ID=180)...
+  --> GET frame: 69D#3100FA000F0000
+  <-- raw frame: can0  180   [7]  D2 1D FA 00 0F 80 00
+  --> value bytes: 80 00
+  --> interpreted big-endian: 32768
+  --> interpreted little-endian: 128
+  --> endianness: little-endian
+
