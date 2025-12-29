@@ -12,24 +12,49 @@ The CAN parameter system in RoconMqtt is responsible for encoding and decoding d
 │         (RoconService, MqttPublisher, etc.)             │
 └────────────────────┬────────────────────────────────────┘
                      │
-        ┌────────────┴────────────┐
-        │                         │
-   ┌────▼─────┐            ┌──────▼───────┐
-   │CanDecoder│◄─────────►│CanEncoder   │
-   └────┬─────┘            └──────┬───────┘
-        │                         │
-        └────────────┬────────────┘
+        ┌────────────┴─────────────┐
+        │                          │
+   ┌────▼──────┐        ┌─────────▼──────┐
+   │CanDecoder │◄──────►│CanEncoder      │
+   └────┬──────┘        └─────────┬──────┘
+        │                          │
+        └────────────┬─────────────┘
                      │
-        ┌────────────▼────────────┐
-        │   CanFrameHelper        │
-        │  (Byte Operations)      │
-        └────────────┬────────────┘
+        ┌────────────▼──────────────┐
+        │   CanFrameHelper          │
+        │  (Byte & Time Operations) │
+        └────────────┬──────────────┘
                      │
-        ┌────────────▼────────────┐
-        │ CanParameterRegistry    │
-        │  (Parameter Metadata)   │
-        └────────────────────────┘
+        ┌────────────▼──────────────────────┐
+        │  CanParameterRegistry              │
+        │  (Parameter Metadata +             │
+        │   Communication Profiles)          │
+        └────────────────────────────────────┘
 ```
+
+## Key Components
+
+### 1. **CanParameterRegistry**
+Central registry containing:
+- **Parameter definitions** - metadata for all supported parameters
+- **Communication profiles** - device routing information (Heat Generators, Heating Circuits, Heating Circuit Modules)
+
+### 2. **CanDecoder / CanEncoder**
+- Encode/decode parameter values based on parameter type
+- Use registry to look up encoding metadata (Factor, BigEndian, etc.)
+- Validate frames and handle errors
+
+### 3. **CanFrameHelper**
+Centralized byte and time operations for:
+- Encoding/decoding 16-bit integers with endianness handling
+- Time string parsing and formatting
+- Quarter-hour index conversions
+
+### 4. **Communication Profiles**
+Define how to communicate with specific devices:
+- `CanDevice` - a device instance (HG1, HC5, HCM10, etc.)
+- `CommunicationProfile` - GET/SET/ANSWER commands for a device
+- `CommunicationCommand` - CAN ID + data bytes for a command
 
 ## CAN Frame Structure
 
@@ -44,11 +69,20 @@ Byte 5-6:  Value (parameter-specific encoding)
 ### Example
 ```
 Frame: D2 1D FA 0A 06 01 E0
-       ││ │└────────────┬──────── Header
-       ││ │              
-       └┴┴─────────────────────── InfoNumber: 0x0A06
-                         ││──────── Value: 0x01E0
+Byte 0-2: D2 1D FA  ← Header
+Byte 3-4: 0A 06     ← InfoNumber: 0x0A06
+Byte 5-6: 01 E0     ← Value: 0x01E0
 ```
+
+### Frame Structure Details
+
+| Bytes | Purpose | Example | Notes |
+|-------|---------|---------|-------|
+| 0-2 | Header | `D2 1D FA` | Fixed header for all frames |
+| 3-4 | InfoNumber (High, Low) | `0A 06` | Unique parameter identifier |
+| 5-6 | Parameter Value | `01 E0` | Format depends on parameter type |
+
+**Note**: Frames must be **at least 7 bytes**. Additional bytes are ignored during decoding.
 
 ## Parameter Registry (`CanParameterRegistry`)
 
@@ -344,43 +378,196 @@ HeaderByte2 = 0xFA
 
 // Frame Structure
 StandardFrameLength = 7 bytes
+HeaderLength = 3 bytes
+InfoNumberLength = 2 bytes
+ValueLength = 2 bytes
 
 // TimeRange Encoding
 MinutesPerQuarterHour = 15
 MaxQuarterHourIndex = 95      // Represents 23:45
-OffMarker = 0x80              // Special marker
-QuarterHourCapValue = 96      // Capped to 95
+OffMarker = 0x80              // Special marker for inactive time slots
+QuarterHourCapValue = 96      // Value that gets capped to 95
 ```
 
-## Extending the System
+## Communication Profiles
 
-### Adding a New Parameter
+Communication Profiles define how to communicate with specific devices (Heat Generators, Heating Circuits, Heating Circuit Modules).
 
-1. **Create Definition** in `CanParameterRegistry`:
+### Overview
+
+Each device has a **Communication Profile** that specifies:
+- **GET command** - CAN ID and bytes to request a parameter
+- **SET command** - CAN ID and bytes to write a parameter
+- **ANSWER command** - Expected response CAN ID and header bytes
+
+### Subsystem Determination
+
+Parameters are automatically associated with subsystems based on their **InfoNumber.High byte**:
+
+| InfoNumber.High Range | Subsystem | GET Opcode | SET Opcode | Answer CAN ID |
+|------------------------|-----------|------------|------------|----------------|
+| 0x00–0x0F | Heat Generator (HG) | 0x31 | 0x30 | 0x180–0x187 |
+| 0x14–0x1F* | Heating Circuit (HC) | 0x61 | 0x60 | 0x300–0x30F |
+| 0x17–0x1B* | Heating Circuit Module (HCM) | 0xA1 | 0xA0 | 0x600–0x60F |
+
+**Note:** The range 0x17–0x1B overlaps with Heating Circuits.  
+For these values, **HCM takes precedence**.
+
+### Why InfoNumber Ranges Map to Subsystems
+
+The Rocon G1 controller internally groups parameters into functional modules.  
+Each module owns a **contiguous range of InfoNumber.High values**, and the firmware uses this high byte to route GET/SET requests to the correct subsystem.
+
+This behavior is not documented by the manufacturer, but it is fully observable from the controller’s CAN responses.
+
+#### 1. Heat Generator (HG) — `0x00–0x0F`
+These values correspond to core system parameters:
+
+- temperatures  
+- setpoints  
+- date/time  
+- operating modes  
+- system‑wide configuration  
+
+When sending a GET with a high byte in this range, the controller **always** responds on CAN IDs `0x180–0x187` and only accepts GET opcode `0x31`.
+
+This proves that the firmware routes these InfoNumbers to the **heat generator module**.
+
+#### 2. Heating Circuit (HC) — `0x14–0x1F`
+These values correspond to heating program schedules:
+
+- day schedules  
+- multi‑day schedules  
+- time ranges  
+- heating program 1 and 2  
+
+GET requests with a high byte in this range always produce responses on `0x300–0x30F` and only accept GET opcode `0x61`.
+
+This shows that the firmware routes these InfoNumbers to the **heating circuit module**.
+
+#### 3. Heating Circuit Module (HCM) — `0x17–0x1B`
+This range overlaps with the HC range, but the parameters here are exclusively:
+
+- warm‑water programs  
+- warm‑water schedules  
+- module‑specific time ranges  
+
+These InfoNumbers respond only to GET opcode `0xA1` and answer on `0x600–0x60F`.
+
+Because this range is a **subset** of the HC range, the firmware gives **priority** to the HCM module for `0x17–0x1B`.
+
+This is why HCM must be checked before HC in code.
+
+---
+
+### Summary Table
+
+| InfoNumber.High Range | Subsystem | Notes |
+|------------------------|-----------|-------|
+| `0x00–0x0F` | Heat Generator (HG) | Core system parameters |
+| `0x14–0x1F` | Heating Circuit (HC) | Heating schedules |
+| `0x17–0x1B` | Heating Circuit Module (HCM) | Warm‑water schedules (subset of HC) |
+
+---
+
+### Mermaid Diagram — Subsystem Routing Logic
+
+```mermaid
+flowchart TD
+
+    A[Incoming GET Request<br/>InfoNumber.High] --> B{High Byte Range?}
+
+    B -->|0x00–0x0F| HG[Heat Generator<br/>GET=0x31<br/>ANS=0x180–0x187]
+    B -->|0x17–0x1B| HCM[Heating Circuit Module<br/>GET=0xA1<br/>ANS=0x600–0x60F]
+    B -->|0x14–0x1F| HC[Heating Circuit<br/>GET=0x61<br/>ANS=0x300–0x30F]
+
+    HG --> R1[Route to HG subsystem]
+    HC --> R2[Route to HC subsystem]
+    HCM --> R3[Route to HCM subsystem]
+
+    R1 --> S1[Return D2 response on 0x180–0x187]
+    R2 --> S2[Return D2 response on 0x300–0x30F]
+    R3 --> S3[Return D2 response on 0x600–0x60F]
+```
+
+### Data Structures
+
 ```csharp
+// Device instance (e.g., "HG1", "HC5", "HCM10")
+public class CanDevice
 {
-    new InfoNumber(0x01, 0x99),
-    new ParameterDefinition(
-        Name: "cNEW_PARAMETER",
-        InfoNumber: new InfoNumber(0x01, 0x99),
-        Type: ParameterType.Float,
-        Factor: 10,
-        BigEndian: true,
-        Min: 0,
-        Max: 100,
-        Default: 50
-    )
+    public string Name { get; set; }              // e.g., "HG1"
+    public DeviceType Type { get; set; }          // HeatGenerator, HeatingCircuit, HeatingCircuitModule
+    public CommunicationProfile Profile { get; set; }
+}
+
+// Communication configuration for a device
+public class CommunicationProfile
+{
+    public string Name { get; set; }
+    public CommunicationCommand Get { get; set; }     // GET request
+    public CommunicationCommand Set { get; set; }     // SET request
+    public CommunicationCommand Answer { get; set; }  // ANSWER response header
+}
+
+// Individual command with CAN ID and data bytes
+public class CommunicationCommand
+{
+    public uint CanId { get; set; }      // CAN Identifier
+    public byte[] Bytes { get; set; }    // Data bytes [Byte0, Byte1, Byte2]
+}
+
+// Device categories
+public enum DeviceType
+{
+    HeatGenerator,
+    HeatingCircuit,
+    HeatingCircuitModule
 }
 ```
 
-2. **Encoder/Decoder automatically work** (no code changes needed)
+### Device Lookup
 
-### Adding a New Type
+```csharp
+// Get all devices by type
+IReadOnlyList<CanDevice> heatGenerators = CanParameterRegistry.HeatGenerators;  // HG1-HG8
+IReadOnlyList<CanDevice> heatingCircuits = CanParameterRegistry.HeatingCircuits;  // HC1-HC16
+IReadOnlyList<CanDevice> heatingCircuitModules = CanParameterRegistry.HeatingCircuitModules;  // HCM1-HCM16
 
-1. Add to `ParameterType` enum
-2. Add decode case in `CanDecoder.Decode()`
-3. Add encode case in `CanEncoder.Encode()`
-4. Add helper method in `CanFrameHelper` if needed
+// Get specific device by name
+CanDevice? hg1 = CanParameterRegistry.GetHeatGenerator("HG1");
+CanDevice? hc5 = CanParameterRegistry.GetHeatingCircuit("HC5");
+CanDevice? hcm10 = CanParameterRegistry.GetHeatingCircuitModule("HCM10");
+
+// Get any device by name (searches all types)
+CanDevice? device = CanParameterRegistry.GetDevice("HG1");
+```
+
+### Communication Profile Example
+
+For **Heat Generator 1 (HG1)**:
+
+```csharp
+var hg1 = CanParameterRegistry.GetHeatGenerator("HG1");
+
+// GET request
+hg1.Profile.Get.CanId = 0x69D
+hg1.Profile.Get.Bytes = [0x31, 0x00, 0xFA]
+
+// SET request  
+hg1.Profile.Set.CanId = 0x69D
+hg1.Profile.Set.Bytes = [0x30, 0x00, 0xFA]
+
+// ANSWER response
+hg1.Profile.Answer.CanId = 0x180
+hg1.Profile.Answer.Bytes = [0xD2, 0x1D, 0xFA]
+```
+
+### Supported Devices
+
+**Heat Generators**: HG1-HG8 (8 devices)  
+**Heating Circuits**: HC1-HC16 (16 devices)  
+**Heating Circuit Modules**: HCM1-HCM16 (16 devices)
 
 ## Testing
 
@@ -406,20 +593,8 @@ public void RoundTrip_TimeRange()
 }
 ```
 
-## Troubleshooting
+## See Also
 
-### Values Don't Round-Trip Correctly
-- **Check**: Is the parameter registered in `CanParameterRegistry`?
-- **Check**: Are `Factor` and `BigEndian` correct?
-- **Check**: Is the value within valid range (Min/Max)?
-
-### Frame Validation Fails
-- **Check**: Frame length = 7 bytes
-- **Check**: Header bytes = D2 1D FA
-- **Check**: InfoNumber exists in registry
-
-### TimeRange Encoding Issues
-- **Format**: Must be `"HH:MM-HH:MM"` with leading zeros
-- **Range**: Valid times 00:00-23:45 in 15-minute increments
-- **Off marker**: 0x80 decoded as "00:00"
+- **`CAN_GET_ANSWER_CYCLE.md`** - Complete documentation on the GET request/ANSWER response cycle for reading parameters from the Rocon G1 controller
+- **`data.json`** - Data file containing device profiles and parameter definitions
 

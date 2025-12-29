@@ -4647,6 +4647,37 @@ public static class CanParameterRegistry
 
     #endregion
 
+    #region Subsystem Mapping
+
+    /// <summary>
+    /// Determines the subsystem type for a given parameter based on its InfoNumber.High byte.
+    /// 
+    /// Mapping rules:
+    /// - 0x00–0x0F: Heat Generator subsystem
+    /// - 0x14–0x1F: Heating Circuit subsystem  
+    /// - 0x17–0x1B: Heating Circuit Module subsystem (overlaps with HC, specific ranges apply)
+    /// </summary>
+    public static DeviceType? GetSubsystemForParameter(InfoNumber infoNumber)
+    {
+        var high = infoNumber.High;
+
+        // Heat Generator: 0x00–0x0F
+        if (high is >= 0x00 and <= 0x0F)
+            return DeviceType.HeatGenerator;
+
+        // Heating Circuit Module: 0x17–0x1B (subset of HC)
+        if (high is >= 0x17 and <= 0x1B)
+            return DeviceType.HeatingCircuitModule;
+
+        // Heating Circuit: 0x14–0x1F (broader range)
+        if (high is >= 0x14 and <= 0x1F)
+            return DeviceType.HeatingCircuit;
+
+        return null;
+    }
+
+    #endregion
+
     #region Communication Profiles
 
     private static readonly IReadOnlyList<CanDevice> _heatGenerators =
