@@ -1,4 +1,4 @@
-﻿using RoconMqtt.Can.Models;
+using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
@@ -12,7 +12,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x48),
                 new ParameterDefinition(
-                    Name: "cGERAETE_KENNUNG",
+                    OriginalName: "cGERAETE_KENNUNG",
                     InfoNumber: new InfoNumber(0x01, 0x48),
                     Type: ParameterType.Enum,
                     Factor: 1,
@@ -25,13 +25,14 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
+                    DefaultTimeRange: null,
+                    NameEnglish: "DeviceIdentifier"
                 )
             },
             {
                 new InfoNumber(0x00, 0x0C),
                 new ParameterDefinition(
-                    Name: "cAUSSENTEMP",
+                    OriginalName: "cAUSSENTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x0C),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -50,7 +51,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x0A, 0x0C),
                 new ParameterDefinition(
-                    Name: "cAUSSENTEMP_WAERMEPUMPE",
+                    OriginalName: "cAUSSENTEMP_WAERMEPUMPE",
                     InfoNumber: new InfoNumber(0x0A, 0x0C),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -69,7 +70,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x22),
                 new ParameterDefinition(
-                    Name: "cTAG",
+                    OriginalName: "cTAG",
                     InfoNumber: new InfoNumber(0x01, 0x22),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -88,7 +89,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x23),
                 new ParameterDefinition(
-                    Name: "cMONAT",
+                    OriginalName: "cMONAT",
                     InfoNumber: new InfoNumber(0x01, 0x23),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -107,7 +108,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x24),
                 new ParameterDefinition(
-                    Name: "cJAHR",
+                    OriginalName: "cJAHR",
                     InfoNumber: new InfoNumber(0x01, 0x24),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -126,7 +127,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x25),
                 new ParameterDefinition(
-                    Name: "cSTUNDE",
+                    OriginalName: "cSTUNDE",
                     InfoNumber: new InfoNumber(0x01, 0x25),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -145,7 +146,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x26),
                 new ParameterDefinition(
-                    Name: "cMINUTE",
+                    OriginalName: "cMINUTE",
                     InfoNumber: new InfoNumber(0x01, 0x26),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -164,7 +165,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x12),
                 new ParameterDefinition(
-                    Name: "cPROGRAMMSCHALTER",
+                    OriginalName: "cPROGRAMMSCHALTER",
                     InfoNumber: new InfoNumber(0x01, 0x12),
                     Type: ParameterType.Enum,
                     Factor: 1,
@@ -192,7 +193,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x0E),
                 new ParameterDefinition(
-                    Name: "cSPEICHERISTTEMP",
+                    OriginalName: "cSPEICHERISTTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x0E),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -211,7 +212,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x03),
                 new ParameterDefinition(
-                    Name: "cVERSTELLTE_SPEICHERSOLLTEMP",
+                    OriginalName: "cVERSTELLTE_SPEICHERSOLLTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x03),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -230,7 +231,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x13),
                 new ParameterDefinition(
-                    Name: "cEINSTELL_SPEICHERSOLLTEMP",
+                    OriginalName: "cEINSTELL_SPEICHERSOLLTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x13),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -249,7 +250,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x0A, 0x06),
                 new ParameterDefinition(
-                    Name: "cEINSTELL_SPEICHERSOLLTEMP2",
+                    OriginalName: "cEINSTELL_SPEICHERSOLLTEMP2",
                     InfoNumber: new InfoNumber(0x0A, 0x06),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -268,7 +269,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x3E),
                 new ParameterDefinition(
-                    Name: "cEINSTELL_SPEICHERSOLLTEMP3",
+                    OriginalName: "cEINSTELL_SPEICHERSOLLTEMP3",
                     InfoNumber: new InfoNumber(0x01, 0x3E),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -287,7 +288,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x00),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1",
+                    OriginalName: "cW_WASSERPROG_1",
                     InfoNumber: new InfoNumber(0x17, 0x00),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -306,7 +307,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x10),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO",
+                    OriginalName: "cW_WASSERPROG_1_MO",
                     InfoNumber: new InfoNumber(0x17, 0x10),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -325,7 +326,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x11),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_MO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x11),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -344,7 +345,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x12),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_MO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x12),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -363,7 +364,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x20),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_DI",
+                    OriginalName: "cW_WASSERPROG_1_DI",
                     InfoNumber: new InfoNumber(0x17, 0x20),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -382,7 +383,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x21),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_DI_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_DI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x21),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -401,7 +402,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x22),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_DI_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_DI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x22),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -420,7 +421,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x30),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MI",
+                    OriginalName: "cW_WASSERPROG_1_MI",
                     InfoNumber: new InfoNumber(0x17, 0x30),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -439,7 +440,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x31),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MI_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_MI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x31),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -458,7 +459,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x32),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MI_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_MI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x32),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -477,7 +478,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x40),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_DO",
+                    OriginalName: "cW_WASSERPROG_1_DO",
                     InfoNumber: new InfoNumber(0x17, 0x40),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -496,7 +497,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x41),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_DO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x41),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -515,7 +516,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x42),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_DO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x42),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -534,7 +535,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x50),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_FR",
+                    OriginalName: "cW_WASSERPROG_1_FR",
                     InfoNumber: new InfoNumber(0x17, 0x50),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -553,7 +554,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x51),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_FR_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x51),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -572,7 +573,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x52),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_FR_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x52),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -591,7 +592,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x60),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SA",
+                    OriginalName: "cW_WASSERPROG_1_SA",
                     InfoNumber: new InfoNumber(0x17, 0x60),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -610,7 +611,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x61),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SA_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_SA_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x61),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -629,7 +630,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x62),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SA_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_SA_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x62),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -648,7 +649,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x70),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SO",
+                    OriginalName: "cW_WASSERPROG_1_SO",
                     InfoNumber: new InfoNumber(0x17, 0x70),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -667,7 +668,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x71),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x71),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -686,7 +687,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x72),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x72),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -705,7 +706,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x80),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_FR",
+                    OriginalName: "cW_WASSERPROG_1_MO_FR",
                     InfoNumber: new InfoNumber(0x17, 0x80),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -724,7 +725,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x81),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_FR_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_MO_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x81),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -743,7 +744,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x82),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_FR_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_MO_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x82),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -762,7 +763,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x90),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SA_SO",
+                    OriginalName: "cW_WASSERPROG_1_SA_SO",
                     InfoNumber: new InfoNumber(0x17, 0x90),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -781,7 +782,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x91),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SA_SO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_SA_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0x91),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -800,7 +801,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0x92),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_SA_SO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_SA_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0x92),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -819,7 +820,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0xA0),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_SO",
+                    OriginalName: "cW_WASSERPROG_1_MO_SO",
                     InfoNumber: new InfoNumber(0x17, 0xA0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -838,7 +839,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0xA1),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_SO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_MO_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0xA1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -857,7 +858,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0xA2),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_SO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_MO_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0xA2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -876,7 +877,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0xB0),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_DO",
+                    OriginalName: "cW_WASSERPROG_1_MO_DO",
                     InfoNumber: new InfoNumber(0x17, 0xB0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -895,7 +896,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0xB1),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_DO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_1_MO_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x17, 0xB1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -914,7 +915,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x17, 0xB2),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_1_MO_DO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_1_MO_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x17, 0xB2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -933,7 +934,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x00),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2",
+                    OriginalName: "cW_WASSERPROG_2",
                     InfoNumber: new InfoNumber(0x18, 0x00),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -952,7 +953,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x10),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO",
+                    OriginalName: "cW_WASSERPROG_2_MO",
                     InfoNumber: new InfoNumber(0x18, 0x10),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -971,7 +972,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x11),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_MO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x11),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -990,7 +991,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x12),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_MO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x12),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1009,7 +1010,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x20),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_DI",
+                    OriginalName: "cW_WASSERPROG_2_DI",
                     InfoNumber: new InfoNumber(0x18, 0x20),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1028,7 +1029,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x21),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_DI_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_DI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x21),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1047,7 +1048,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x22),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_DI_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_DI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x22),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1066,7 +1067,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x30),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MI",
+                    OriginalName: "cW_WASSERPROG_2_MI",
                     InfoNumber: new InfoNumber(0x18, 0x30),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1085,7 +1086,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x31),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MI_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_MI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x31),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1104,7 +1105,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x32),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MI_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_MI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x32),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1123,7 +1124,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x40),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_DO",
+                    OriginalName: "cW_WASSERPROG_2_DO",
                     InfoNumber: new InfoNumber(0x18, 0x40),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1142,7 +1143,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x41),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_DO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x41),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1161,7 +1162,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x42),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_DO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x42),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1180,7 +1181,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x50),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_FR",
+                    OriginalName: "cW_WASSERPROG_2_FR",
                     InfoNumber: new InfoNumber(0x18, 0x50),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1199,7 +1200,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x51),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_FR_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x51),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1218,7 +1219,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x52),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_FR_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x52),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1237,7 +1238,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x60),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SA",
+                    OriginalName: "cW_WASSERPROG_2_SA",
                     InfoNumber: new InfoNumber(0x18, 0x60),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1256,7 +1257,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x61),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SA_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_SA_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x61),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1275,7 +1276,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x62),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SA_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_SA_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x62),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1294,7 +1295,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x70),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SO",
+                    OriginalName: "cW_WASSERPROG_2_SO",
                     InfoNumber: new InfoNumber(0x18, 0x70),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1313,7 +1314,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x71),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x71),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1332,7 +1333,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x72),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x72),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1351,7 +1352,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x80),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_FR",
+                    OriginalName: "cW_WASSERPROG_2_MO_FR",
                     InfoNumber: new InfoNumber(0x18, 0x80),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1370,7 +1371,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x81),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_FR_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_MO_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x81),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1389,7 +1390,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x82),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_FR_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_MO_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x82),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1408,7 +1409,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x90),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SA_SO",
+                    OriginalName: "cW_WASSERPROG_2_SA_SO",
                     InfoNumber: new InfoNumber(0x18, 0x90),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1427,7 +1428,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x91),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SA_SO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_SA_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0x91),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1446,7 +1447,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0x92),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_SA_SO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_SA_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0x92),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1465,7 +1466,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0xA0),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_SO",
+                    OriginalName: "cW_WASSERPROG_2_MO_SO",
                     InfoNumber: new InfoNumber(0x18, 0xA0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1484,7 +1485,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0xA1),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_SO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_MO_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0xA1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1503,7 +1504,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0xA2),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_SO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_MO_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0xA2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1522,7 +1523,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0xB0),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_DO",
+                    OriginalName: "cW_WASSERPROG_2_MO_DO",
                     InfoNumber: new InfoNumber(0x18, 0xB0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1541,7 +1542,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0xB1),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_DO_SCHALT_2",
+                    OriginalName: "cW_WASSERPROG_2_MO_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x18, 0xB1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1560,7 +1561,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x18, 0xB2),
                 new ParameterDefinition(
-                    Name: "cW_WASSERPROG_2_MO_DO_SCHALT_3",
+                    OriginalName: "cW_WASSERPROG_2_MO_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x18, 0xB2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1579,7 +1580,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x44),
                 new ParameterDefinition(
-                    Name: "cEINMAL_WW_AKTIV",
+                    OriginalName: "cEINMAL_WW_AKTIV",
                     InfoNumber: new InfoNumber(0x01, 0x44),
                     Type: ParameterType.Bool,
                     Factor: 1,
@@ -1598,7 +1599,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x5E),
                 new ParameterDefinition(
-                    Name: "cWW_AKTIV",
+                    OriginalName: "cWW_AKTIV",
                     InfoNumber: new InfoNumber(0x00, 0x5E),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -1617,7 +1618,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x11),
                 new ParameterDefinition(
-                    Name: "cRAUMISTTEMP",
+                    OriginalName: "cRAUMISTTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x11),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -1628,7 +1629,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: true,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null
                 )
@@ -1636,7 +1637,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x12),
                 new ParameterDefinition(
-                    Name: "cVERSTELLTE_RAUMSOLLTEMP",
+                    OriginalName: "cVERSTELLTE_RAUMSOLLTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x12),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -1647,7 +1648,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: false,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null
                 )
@@ -1655,7 +1656,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x05),
                 new ParameterDefinition(
-                    Name: "cRAUMSOLLTEMP_I",
+                    OriginalName: "cRAUMSOLLTEMP_I",
                     InfoNumber: new InfoNumber(0x00, 0x05),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -1674,7 +1675,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x06),
                 new ParameterDefinition(
-                    Name: "cRAUMSOLLTEMP_II",
+                    OriginalName: "cRAUMSOLLTEMP_II",
                     InfoNumber: new InfoNumber(0x00, 0x06),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -1693,7 +1694,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x07),
                 new ParameterDefinition(
-                    Name: "cRAUMSOLLTEMP_III",
+                    OriginalName: "cRAUMSOLLTEMP_III",
                     InfoNumber: new InfoNumber(0x00, 0x07),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -1712,7 +1713,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x08),
                 new ParameterDefinition(
-                    Name: "eNACHTRAUMSOLLTEMP",
+                    OriginalName: "eNACHTRAUMSOLLTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x08),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -1731,7 +1732,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x00),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1",
+                    OriginalName: "cHEIZPROG_1",
                     InfoNumber: new InfoNumber(0x14, 0x00),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1750,7 +1751,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x10),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO",
+                    OriginalName: "cHEIZPROG_1_MO",
                     InfoNumber: new InfoNumber(0x14, 0x10),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1769,7 +1770,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x11),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_MO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x11),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1788,7 +1789,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x12),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_MO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x12),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1807,7 +1808,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x20),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_DI",
+                    OriginalName: "cHEIZPROG_1_DI",
                     InfoNumber: new InfoNumber(0x14, 0x20),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1826,7 +1827,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x21),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_DI_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_DI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x21),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1845,7 +1846,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x22),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_DI_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_DI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x22),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1864,7 +1865,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x30),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MI",
+                    OriginalName: "cHEIZPROG_1_MI",
                     InfoNumber: new InfoNumber(0x14, 0x30),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1883,7 +1884,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x31),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MI_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_MI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x31),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1902,7 +1903,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x32),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MI_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_MI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x32),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1921,7 +1922,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x40),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_DO",
+                    OriginalName: "cHEIZPROG_1_DO",
                     InfoNumber: new InfoNumber(0x14, 0x40),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1940,7 +1941,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x41),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_DO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x41),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1959,7 +1960,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x42),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_DO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x42),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1978,7 +1979,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x50),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_FR",
+                    OriginalName: "cHEIZPROG_1_FR",
                     InfoNumber: new InfoNumber(0x14, 0x50),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -1997,7 +1998,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x51),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_FR_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x51),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2016,7 +2017,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x52),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_FR_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x52),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2035,7 +2036,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x60),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SA",
+                    OriginalName: "cHEIZPROG_1_SA",
                     InfoNumber: new InfoNumber(0x14, 0x60),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2054,7 +2055,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x61),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SA_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_SA_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x61),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2073,7 +2074,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x62),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SA_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_SA_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x62),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2092,7 +2093,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x70),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SO",
+                    OriginalName: "cHEIZPROG_1_SO",
                     InfoNumber: new InfoNumber(0x14, 0x70),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2111,7 +2112,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x71),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x71),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2130,7 +2131,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x72),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x72),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2149,7 +2150,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x80),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_FR",
+                    OriginalName: "cHEIZPROG_1_MO_FR",
                     InfoNumber: new InfoNumber(0x14, 0x80),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2168,7 +2169,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x81),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_FR_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_MO_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x81),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2187,7 +2188,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x82),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_FR_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_MO_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x82),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2206,7 +2207,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x90),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SA_SO",
+                    OriginalName: "cHEIZPROG_1_SA_SO",
                     InfoNumber: new InfoNumber(0x14, 0x90),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2225,7 +2226,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x91),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SA_SO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_SA_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0x91),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2244,7 +2245,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0x92),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_SA_SO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_SA_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0x92),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2263,7 +2264,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0xA0),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_SO",
+                    OriginalName: "cHEIZPROG_1_MO_SO",
                     InfoNumber: new InfoNumber(0x14, 0xA0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2282,7 +2283,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0xA1),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_SO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_MO_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0xA1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2301,7 +2302,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0xA2),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_SO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_MO_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0xA2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2320,7 +2321,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0xB0),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_DO",
+                    OriginalName: "cHEIZPROG_1_MO_DO",
                     InfoNumber: new InfoNumber(0x14, 0xB0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2339,7 +2340,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0xB1),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_DO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_1_MO_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x14, 0xB1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2358,7 +2359,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x14, 0xB2),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_1_MO_DO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_1_MO_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x14, 0xB2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2377,7 +2378,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x00),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2",
+                    OriginalName: "cHEIZPROG_2",
                     InfoNumber: new InfoNumber(0x15, 0x00),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2396,7 +2397,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x10),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO",
+                    OriginalName: "cHEIZPROG_2_MO",
                     InfoNumber: new InfoNumber(0x15, 0x10),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2415,7 +2416,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x11),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_MO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x11),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2434,7 +2435,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x12),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_MO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x12),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2453,7 +2454,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x20),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_DI",
+                    OriginalName: "cHEIZPROG_2_DI",
                     InfoNumber: new InfoNumber(0x15, 0x20),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2472,7 +2473,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x21),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_DI_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_DI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x21),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2491,7 +2492,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x22),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_DI_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_DI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x22),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2510,7 +2511,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x30),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MI",
+                    OriginalName: "cHEIZPROG_2_MI",
                     InfoNumber: new InfoNumber(0x15, 0x30),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2529,7 +2530,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x31),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MI_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_MI_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x31),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2548,7 +2549,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x32),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MI_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_MI_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x32),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2567,7 +2568,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x40),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_DO",
+                    OriginalName: "cHEIZPROG_2_DO",
                     InfoNumber: new InfoNumber(0x15, 0x40),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2586,7 +2587,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x41),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_DO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x41),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2605,7 +2606,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x42),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_DO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x42),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2624,7 +2625,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x50),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_FR",
+                    OriginalName: "cHEIZPROG_2_FR",
                     InfoNumber: new InfoNumber(0x15, 0x50),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2643,7 +2644,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x51),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_FR_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x51),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2662,7 +2663,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x52),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_FR_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x52),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2681,7 +2682,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x60),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SA",
+                    OriginalName: "cHEIZPROG_2_SA",
                     InfoNumber: new InfoNumber(0x15, 0x60),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2700,7 +2701,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x61),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SA_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_SA_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x61),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2719,7 +2720,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x62),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SA_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_SA_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x62),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2738,7 +2739,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x70),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SO",
+                    OriginalName: "cHEIZPROG_2_SO",
                     InfoNumber: new InfoNumber(0x15, 0x70),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2757,7 +2758,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x71),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x71),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2776,7 +2777,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x72),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x72),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2795,7 +2796,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x80),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_FR",
+                    OriginalName: "cHEIZPROG_2_MO_FR",
                     InfoNumber: new InfoNumber(0x15, 0x80),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2814,7 +2815,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x81),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_FR_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_MO_FR_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x81),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2833,7 +2834,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x82),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_FR_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_MO_FR_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x82),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2852,7 +2853,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x90),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SA_SO",
+                    OriginalName: "cHEIZPROG_2_SA_SO",
                     InfoNumber: new InfoNumber(0x15, 0x90),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2871,7 +2872,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x91),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SA_SO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_SA_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0x91),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2890,7 +2891,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0x92),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_SA_SO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_SA_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0x92),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2909,7 +2910,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0xA0),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_SO",
+                    OriginalName: "cHEIZPROG_2_MO_SO",
                     InfoNumber: new InfoNumber(0x15, 0xA0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2928,7 +2929,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0xA1),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_SO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_MO_SO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0xA1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2947,7 +2948,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0xA2),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_SO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_MO_SO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0xA2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2966,7 +2967,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0xB0),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_DO",
+                    OriginalName: "cHEIZPROG_2_MO_DO",
                     InfoNumber: new InfoNumber(0x15, 0xB0),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -2985,7 +2986,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0xB1),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_DO_SCHALT_2",
+                    OriginalName: "cHEIZPROG_2_MO_DO_SCHALT_2",
                     InfoNumber: new InfoNumber(0x15, 0xB1),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -3004,7 +3005,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x15, 0xB2),
                 new ParameterDefinition(
-                    Name: "cHEIZPROG_2_MO_DO_SCHALT_3",
+                    OriginalName: "cHEIZPROG_2_MO_DO_SCHALT_3",
                     InfoNumber: new InfoNumber(0x15, 0xB2),
                     Type: ParameterType.TimeRange,
                     Factor: 1,
@@ -3023,7 +3024,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x99),
                 new ParameterDefinition(
-                    Name: "cSOFTWARE_NUMMER",
+                    OriginalName: "cSOFTWARE_NUMMER",
                     InfoNumber: new InfoNumber(0x01, 0x99),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3042,7 +3043,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x9A),
                 new ParameterDefinition(
-                    Name: "cSOFTWARE_VERSION",
+                    OriginalName: "cSOFTWARE_VERSION",
                     InfoNumber: new InfoNumber(0x01, 0x9A),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3061,7 +3062,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x02, 0x4B),
                 new ParameterDefinition(
-                    Name: "cSOFTWARE_UNTERINDEX",
+                    OriginalName: "cSOFTWARE_UNTERINDEX",
                     InfoNumber: new InfoNumber(0x02, 0x4B),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3080,7 +3081,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x58),
                 new ParameterDefinition(
-                    Name: "cMODUS_PARTY_DAUER",
+                    OriginalName: "cMODUS_PARTY_DAUER",
                     InfoNumber: new InfoNumber(0x13, 0x58),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3099,7 +3100,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x1B),
                 new ParameterDefinition(
-                    Name: "cMODUS_URLAUB_ANFANG_TAG",
+                    OriginalName: "cMODUS_URLAUB_ANFANG_TAG",
                     InfoNumber: new InfoNumber(0x01, 0x1B),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3118,7 +3119,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x1C),
                 new ParameterDefinition(
-                    Name: "cMODUS_URLAUB_ANFANG_MONAT",
+                    OriginalName: "cMODUS_URLAUB_ANFANG_MONAT",
                     InfoNumber: new InfoNumber(0x01, 0x1C),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3137,7 +3138,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x1D),
                 new ParameterDefinition(
-                    Name: "cMODUS_URLAUB_ANFANG_JAHR",
+                    OriginalName: "cMODUS_URLAUB_ANFANG_JAHR",
                     InfoNumber: new InfoNumber(0x01, 0x1D),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3156,7 +3157,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x1E),
                 new ParameterDefinition(
-                    Name: "cMODUS_URLAUB_ENDE_TAG",
+                    OriginalName: "cMODUS_URLAUB_ENDE_TAG",
                     InfoNumber: new InfoNumber(0x01, 0x1E),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3175,7 +3176,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x1F),
                 new ParameterDefinition(
-                    Name: "cMODUS_URLAUB_ENDE_MONAT",
+                    OriginalName: "cMODUS_URLAUB_ENDE_MONAT",
                     InfoNumber: new InfoNumber(0x01, 0x1F),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3194,7 +3195,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x20),
                 new ParameterDefinition(
-                    Name: "cMODUS_URLAUB_ENDE_JAHR",
+                    OriginalName: "cMODUS_URLAUB_ENDE_JAHR",
                     InfoNumber: new InfoNumber(0x01, 0x20),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3213,7 +3214,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x0D),
                 new ParameterDefinition(
-                    Name: "cKESSELISTTEMP",
+                    OriginalName: "cKESSELISTTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x0D),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3232,7 +3233,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x02),
                 new ParameterDefinition(
-                    Name: "cKESSELSOLLTEMP",
+                    OriginalName: "cKESSELSOLLTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x02),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3251,7 +3252,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x16),
                 new ParameterDefinition(
-                    Name: "cRUECKLAUFTEMP",
+                    OriginalName: "cRUECKLAUFTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x16),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3270,7 +3271,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0xDA),
                 new ParameterDefinition(
-                    Name: "cVOLUMENSTROM",
+                    OriginalName: "cVOLUMENSTROM",
                     InfoNumber: new InfoNumber(0x01, 0xDA),
                     Type: ParameterType.Float,
                     Factor: 1,
@@ -3289,7 +3290,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xF7),
                 new ParameterDefinition(
-                    Name: "cPWM_SIGNAL",
+                    OriginalName: "cPWM_SIGNAL",
                     InfoNumber: new InfoNumber(0xC0, 0xF7),
                     Type: ParameterType.Enum,
                     Factor: 1,
@@ -3308,7 +3309,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x9B),
                 new ParameterDefinition(
-                    Name: "cMISCHERSTELLUNG_1_3UV1",
+                    OriginalName: "cMISCHERSTELLUNG_1_3UV1",
                     InfoNumber: new InfoNumber(0x06, 0x9B),
                     Type: ParameterType.Enum,
                     Factor: 1,
@@ -3327,7 +3328,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xFB),
                 new ParameterDefinition(
-                    Name: "cMISCHERSTELLUNG_2_3UVB",
+                    OriginalName: "cMISCHERSTELLUNG_2_3UVB",
                     InfoNumber: new InfoNumber(0xC0, 0xFB),
                     Type: ParameterType.Enum,
                     Factor: 1,
@@ -3346,7 +3347,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC1, 0x02),
                 new ParameterDefinition(
-                    Name: "cT_TVBH1",
+                    OriginalName: "cT_TVBH1",
                     InfoNumber: new InfoNumber(0xC1, 0x02),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3365,7 +3366,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xFE),
                 new ParameterDefinition(
-                    Name: "cT_TVBHMIX",
+                    OriginalName: "cT_TVBHMIX",
                     InfoNumber: new InfoNumber(0xC0, 0xFE),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3384,7 +3385,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC1, 0xBF),
                 new ParameterDefinition(
-                    Name: "cT_TVBH",
+                    OriginalName: "cT_TVBH",
                     InfoNumber: new InfoNumber(0xC1, 0xBF),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3403,7 +3404,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xF6),
                 new ParameterDefinition(
-                    Name: "cDEFROST_AKTIV",
+                    OriginalName: "cDEFROST_AKTIV",
                     InfoNumber: new InfoNumber(0xC0, 0xF6),
                     Type: ParameterType.Enum,
                     Factor: 1,
@@ -3422,7 +3423,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0xA4),
                 new ParameterDefinition(
-                    Name: "cPUMPENLAUFZEIT",
+                    OriginalName: "cPUMPENLAUFZEIT",
                     InfoNumber: new InfoNumber(0x06, 0xA4),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3441,7 +3442,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0xA5),
                 new ParameterDefinition(
-                    Name: "cKOMPRESSORLAUFZEIT",
+                    OriginalName: "cKOMPRESSORLAUFZEIT",
                     InfoNumber: new InfoNumber(0x06, 0xA5),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3460,7 +3461,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x61),
                 new ParameterDefinition(
-                    Name: "cVMIN_A1",
+                    OriginalName: "cVMIN_A1",
                     InfoNumber: new InfoNumber(0x06, 0x61),
                     Type: ParameterType.Float,
                     Factor: 1,
@@ -3479,7 +3480,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x88),
                 new ParameterDefinition(
-                    Name: "cVMIN_WP",
+                    OriginalName: "cVMIN_WP",
                     InfoNumber: new InfoNumber(0x06, 0x88),
                     Type: ParameterType.Float,
                     Factor: 1,
@@ -3498,7 +3499,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0x9D),
                 new ParameterDefinition(
-                    Name: "cVMIN_GCU",
+                    OriginalName: "cVMIN_GCU",
                     InfoNumber: new InfoNumber(0xC0, 0x9D),
                     Type: ParameterType.Float,
                     Factor: 1,
@@ -3517,7 +3518,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x88),
                 new ParameterDefinition(
-                    Name: "cFEHLER_AKTUELL",
+                    OriginalName: "cFEHLER_AKTUELL",
                     InfoNumber: new InfoNumber(0x13, 0x88),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3536,7 +3537,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x0A, 0x1F),
                 new ParameterDefinition(
-                    Name: "eZEITMASTER",
+                    OriginalName: "eZEITMASTER",
                     InfoNumber: new InfoNumber(0x0A, 0x1F),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3555,7 +3556,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xB3),
                 new ParameterDefinition(
-                    Name: "eSCHALTSCHWELLE_TDHW",
+                    OriginalName: "eSCHALTSCHWELLE_TDHW",
                     InfoNumber: new InfoNumber(0xC0, 0xB3),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3574,7 +3575,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xB1),
                 new ParameterDefinition(
-                    Name: "eSONDERFKT_SCHALTKONTAKT",
+                    OriginalName: "eSONDERFKT_SCHALTKONTAKT",
                     InfoNumber: new InfoNumber(0xC0, 0xB1),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3593,7 +3594,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xC0, 0xB2),
                 new ParameterDefinition(
-                    Name: "eWARTEZEIT_SONDERFKT",
+                    OriginalName: "eWARTEZEIT_SONDERFKT",
                     InfoNumber: new InfoNumber(0xC0, 0xB2),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3612,7 +3613,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x07, 0x26),
                 new ParameterDefinition(
-                    Name: "eWASSER_MAX_DRUCKVERLUST",
+                    OriginalName: "eWASSER_MAX_DRUCKVERLUST",
                     InfoNumber: new InfoNumber(0x07, 0x26),
                     Type: ParameterType.Float,
                     Factor: 1000,
@@ -3631,7 +3632,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x07, 0x27),
                 new ParameterDefinition(
-                    Name: "eWASSER_MAXIMALDRUCK",
+                    OriginalName: "eWASSER_MAXIMALDRUCK",
                     InfoNumber: new InfoNumber(0x07, 0x27),
                     Type: ParameterType.Float,
                     Factor: 1000,
@@ -3650,7 +3651,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x07, 0x28),
                 new ParameterDefinition(
-                    Name: "eWASSER_MINIMALDRUCK",
+                    OriginalName: "eWASSER_MINIMALDRUCK",
                     InfoNumber: new InfoNumber(0x07, 0x28),
                     Type: ParameterType.Float,
                     Factor: 1000,
@@ -3669,7 +3670,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x07, 0x25),
                 new ParameterDefinition(
-                    Name: "eWASSER_SOLLDRUCK",
+                    OriginalName: "eWASSER_SOLLDRUCK",
                     InfoNumber: new InfoNumber(0x07, 0x25),
                     Type: ParameterType.Float,
                     Factor: 1000,
@@ -3688,7 +3689,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x96),
                 new ParameterDefinition(
-                    Name: "eWP_FLUESTERBETRIEB",
+                    OriginalName: "eWP_FLUESTERBETRIEB",
                     InfoNumber: new InfoNumber(0x06, 0x96),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3707,7 +3708,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x69),
                 new ParameterDefinition(
-                    Name: "eWP_LEISTUNG_HEIZSTAB_S1",
+                    OriginalName: "eWP_LEISTUNG_HEIZSTAB_S1",
                     InfoNumber: new InfoNumber(0x06, 0x69),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3726,7 +3727,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x6A),
                 new ParameterDefinition(
-                    Name: "eWP_LEISTUNG_HEIZSTAB_S2",
+                    OriginalName: "eWP_LEISTUNG_HEIZSTAB_S2",
                     InfoNumber: new InfoNumber(0x06, 0x6A),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3745,7 +3746,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x6B),
                 new ParameterDefinition(
-                    Name: "eWP_LEISTUNG_HZU_BIV",
+                    OriginalName: "eWP_LEISTUNG_HZU_BIV",
                     InfoNumber: new InfoNumber(0x06, 0x6B),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3764,7 +3765,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x6E),
                 new ParameterDefinition(
-                    Name: "eWP_MAX_TEMP_HEIZUNG",
+                    OriginalName: "eWP_MAX_TEMP_HEIZUNG",
                     InfoNumber: new InfoNumber(0x06, 0x6E),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3783,7 +3784,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x82),
                 new ParameterDefinition(
-                    Name: "eWP_MOD_HYST_DURCHFLUSS",
+                    OriginalName: "eWP_MOD_HYST_DURCHFLUSS",
                     InfoNumber: new InfoNumber(0x06, 0x82),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3802,7 +3803,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0xA0),
                 new ParameterDefinition(
-                    Name: "eWP_SOLLWERT_ANPASSUNG_HEIZEN",
+                    OriginalName: "eWP_SOLLWERT_ANPASSUNG_HEIZEN",
                     InfoNumber: new InfoNumber(0x06, 0xA0),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3821,7 +3822,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0xA1),
                 new ParameterDefinition(
-                    Name: "eWP_SOLLWERT_ANPASSUNG_KUEHLEN",
+                    OriginalName: "eWP_SOLLWERT_ANPASSUNG_KUEHLEN",
                     InfoNumber: new InfoNumber(0x06, 0xA1),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3840,7 +3841,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x83),
                 new ParameterDefinition(
-                    Name: "eWP_SPREIZUNG_HZ_BETRIEB",
+                    OriginalName: "eWP_SPREIZUNG_HZ_BETRIEB",
                     InfoNumber: new InfoNumber(0x06, 0x83),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3859,7 +3860,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x84),
                 new ParameterDefinition(
-                    Name: "eWP_SPREIZUNG_WW_BETRIEB",
+                    OriginalName: "eWP_SPREIZUNG_WW_BETRIEB",
                     InfoNumber: new InfoNumber(0x06, 0x84),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3878,7 +3879,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x8C),
                 new ParameterDefinition(
-                    Name: "eWP_START_MAX_TEMP",
+                    OriginalName: "eWP_START_MAX_TEMP",
                     InfoNumber: new InfoNumber(0x06, 0x8C),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3897,7 +3898,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x85),
                 new ParameterDefinition(
-                    Name: "eWP_VERZ_ZEIT_PUMPE",
+                    OriginalName: "eWP_VERZ_ZEIT_PUMPE",
                     InfoNumber: new InfoNumber(0x06, 0x85),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3916,7 +3917,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x2E),
                 new ParameterDefinition(
-                    Name: "eABSENKOPTIMIERUNG",
+                    OriginalName: "eABSENKOPTIMIERUNG",
                     InfoNumber: new InfoNumber(0x01, 0x2E),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3935,7 +3936,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x15),
                 new ParameterDefinition(
-                    Name: "eADAPTION",
+                    OriginalName: "eADAPTION",
                     InfoNumber: new InfoNumber(0x01, 0x15),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3954,7 +3955,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x03),
                 new ParameterDefinition(
-                    Name: "eAUFHEIZOPTIMIERUNG",
+                    OriginalName: "eAUFHEIZOPTIMIERUNG",
                     InfoNumber: new InfoNumber(0x01, 0x03),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -3973,7 +3974,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x0A, 0x00),
                 new ParameterDefinition(
-                    Name: "eFROSTSCHUTZTEMP",
+                    OriginalName: "eFROSTSCHUTZTEMP",
                     InfoNumber: new InfoNumber(0x0A, 0x00),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -3992,7 +3993,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x17),
                 new ParameterDefinition(
-                    Name: "eHEIZGRENZE_NACHT",
+                    OriginalName: "eHEIZGRENZE_NACHT",
                     InfoNumber: new InfoNumber(0x01, 0x17),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4011,7 +4012,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x16),
                 new ParameterDefinition(
-                    Name: "eHEIZGRENZE_TAG",
+                    OriginalName: "eHEIZGRENZE_TAG",
                     InfoNumber: new InfoNumber(0x01, 0x16),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4030,7 +4031,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x41),
                 new ParameterDefinition(
-                    Name: "eHZK_FUNKTION",
+                    OriginalName: "eHZK_FUNKTION",
                     InfoNumber: new InfoNumber(0x01, 0x41),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -4049,7 +4050,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x0E),
                 new ParameterDefinition(
-                    Name: "eHZKKURVE",
+                    OriginalName: "eHZKKURVE",
                     InfoNumber: new InfoNumber(0x01, 0x0E),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4068,7 +4069,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x59),
                 new ParameterDefinition(
-                    Name: "eKUEHLSOLLWERT_KORR_HZK_0",
+                    OriginalName: "eKUEHLSOLLWERT_KORR_HZK_0",
                     InfoNumber: new InfoNumber(0x13, 0x59),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4087,7 +4088,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x10),
                 new ParameterDefinition(
-                    Name: "eMAX_AUFHEIZVORVERLEGUNG",
+                    OriginalName: "eMAX_AUFHEIZVORVERLEGUNG",
                     InfoNumber: new InfoNumber(0x01, 0x10),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -4106,7 +4107,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x5C),
                 new ParameterDefinition(
-                    Name: "eMAX_KUEHLEN_AUSSENTEMP_HZK0",
+                    OriginalName: "eMAX_KUEHLEN_AUSSENTEMP_HZK0",
                     InfoNumber: new InfoNumber(0x13, 0x5C),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4125,7 +4126,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x28),
                 new ParameterDefinition(
-                    Name: "eMAX_VORLAUFTEMP",
+                    OriginalName: "eMAX_VORLAUFTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x28),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4144,7 +4145,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x2B),
                 new ParameterDefinition(
-                    Name: "eMIN_VORLAUFTEMP",
+                    OriginalName: "eMIN_VORLAUFTEMP",
                     InfoNumber: new InfoNumber(0x01, 0x2B),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4163,7 +4164,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x0F),
                 new ParameterDefinition(
-                    Name: "eRAUMEINFLUSS",
+                    OriginalName: "eRAUMEINFLUSS",
                     InfoNumber: new InfoNumber(0x01, 0x0F),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4174,7 +4175,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: false,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null
                 )
@@ -4182,7 +4183,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0xB5),
                 new ParameterDefinition(
-                    Name: "eSTART_KUEHLEN_AUSSENTEMP_HZK0",
+                    OriginalName: "eSTART_KUEHLEN_AUSSENTEMP_HZK0",
                     InfoNumber: new InfoNumber(0x13, 0xB5),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4201,7 +4202,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x5E),
                 new ParameterDefinition(
-                    Name: "eVL_SOLL_MAX_KUEHLEN_HZK0",
+                    OriginalName: "eVL_SOLL_MAX_KUEHLEN_HZK0",
                     InfoNumber: new InfoNumber(0x13, 0x5E),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4220,7 +4221,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x5D),
                 new ParameterDefinition(
-                    Name: "eVL_SOLL_START_KUEHLEN_HZK_0",
+                    OriginalName: "eVL_SOLL_START_KUEHLEN_HZK_0",
                     InfoNumber: new InfoNumber(0x13, 0x5D),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4239,7 +4240,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x2A),
                 new ParameterDefinition(
-                    Name: "eVORLAUFSOLLTEMP_NACHT",
+                    OriginalName: "eVORLAUFSOLLTEMP_NACHT",
                     InfoNumber: new InfoNumber(0x01, 0x2A),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4258,7 +4259,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x29),
                 new ParameterDefinition(
-                    Name: "eVORLAUFSOLLTEMP_TAG",
+                    OriginalName: "eVORLAUFSOLLTEMP_TAG",
                     InfoNumber: new InfoNumber(0x01, 0x29),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4277,7 +4278,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x9A),
                 new ParameterDefinition(
-                    Name: "eWP_AUSSENGERAET",
+                    OriginalName: "eWP_AUSSENGERAET",
                     InfoNumber: new InfoNumber(0x06, 0x9A),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4296,7 +4297,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x70),
                 new ParameterDefinition(
-                    Name: "eWP_HT_NT_FKT_ANSCHLUSS",
+                    OriginalName: "eWP_HT_NT_FKT_ANSCHLUSS",
                     InfoNumber: new InfoNumber(0x06, 0x70),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4315,7 +4316,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x6F),
                 new ParameterDefinition(
-                    Name: "eWP_HT_NT_FUNKTION",
+                    OriginalName: "eWP_HT_NT_FUNKTION",
                     InfoNumber: new InfoNumber(0x06, 0x6F),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4334,7 +4335,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x99),
                 new ParameterDefinition(
-                    Name: "eWP_INNENGERAET",
+                    OriginalName: "eWP_INNENGERAET",
                     InfoNumber: new InfoNumber(0x06, 0x99),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4353,7 +4354,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x79),
                 new ParameterDefinition(
-                    Name: "eWP_INTERLINKFUNKTION",
+                    OriginalName: "eWP_INTERLINKFUNKTION",
                     InfoNumber: new InfoNumber(0x06, 0x79),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4372,7 +4373,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x94),
                 new ParameterDefinition(
-                    Name: "eWP_MODUS_SMART_GRID",
+                    OriginalName: "eWP_MODUS_SMART_GRID",
                     InfoNumber: new InfoNumber(0x06, 0x94),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4391,7 +4392,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x7E),
                 new ParameterDefinition(
-                    Name: "eWP_PWM_LEISTUNG_MAX",
+                    OriginalName: "eWP_PWM_LEISTUNG_MAX",
                     InfoNumber: new InfoNumber(0x06, 0x7E),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4410,7 +4411,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x7F),
                 new ParameterDefinition(
-                    Name: "eWP_PWM_LEISTUNG_MIN",
+                    OriginalName: "eWP_PWM_LEISTUNG_MIN",
                     InfoNumber: new InfoNumber(0x06, 0x7F),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4429,7 +4430,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x78),
                 new ParameterDefinition(
-                    Name: "eWP_RAUMTHERMOSTAT",
+                    OriginalName: "eWP_RAUMTHERMOSTAT",
                     InfoNumber: new InfoNumber(0x06, 0x78),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4448,7 +4449,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x93),
                 new ParameterDefinition(
-                    Name: "eWP_SMART_GRID",
+                    OriginalName: "eWP_SMART_GRID",
                     InfoNumber: new InfoNumber(0x06, 0x93),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4467,7 +4468,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0xFD, 0x4F),
                 new ParameterDefinition(
-                    Name: "eANTILEG_START_ZEIT",
+                    OriginalName: "eANTILEG_START_ZEIT",
                     InfoNumber: new InfoNumber(0xFD, 0x4F),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4486,7 +4487,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x05, 0x87),
                 new ParameterDefinition(
-                    Name: "eANTILEG_TEMP",
+                    OriginalName: "eANTILEG_TEMP",
                     InfoNumber: new InfoNumber(0x05, 0x87),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4505,7 +4506,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x82),
                 new ParameterDefinition(
-                    Name: "eZIRKPUMPE_BEI_WWFREIGABE",
+                    OriginalName: "eZIRKPUMPE_BEI_WWFREIGABE",
                     InfoNumber: new InfoNumber(0x01, 0x82),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -4524,7 +4525,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x01, 0x3D),
                 new ParameterDefinition(
-                    Name: "eABWESEND_RAUMSOLLTEMP",
+                    OriginalName: "eABWESEND_RAUMSOLLTEMP",
                     InfoNumber: new InfoNumber(0x01, 0x3D),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4543,7 +4544,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x91),
                 new ParameterDefinition(
-                    Name: "eWP_HYSTERESE_DHW",
+                    OriginalName: "eWP_HYSTERESE_DHW",
                     InfoNumber: new InfoNumber(0x06, 0x91),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4562,7 +4563,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x06, 0x92),
                 new ParameterDefinition(
-                    Name: "eWP_WARTEZEIT_BOH",
+                    OriginalName: "eWP_WARTEZEIT_BOH",
                     InfoNumber: new InfoNumber(0x06, 0x92),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4581,7 +4582,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x13, 0x55),
                 new ParameterDefinition(
-                    Name: "eFEIERTAGENDE_JAHR",
+                    OriginalName: "eFEIERTAGENDE_JAHR",
                     InfoNumber: new InfoNumber(0x13, 0x55),
                     Type: ParameterType.Int,
                     Factor: 1,
@@ -4600,7 +4601,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x04),
                 new ParameterDefinition(
-                    Name: "eVORLAUFSOLLTEMP",
+                    OriginalName: "eVORLAUFSOLLTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x04),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4611,7 +4612,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: true,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null
                 )
@@ -4619,7 +4620,7 @@ public static class CanParameterRegistry
             {
                 new InfoNumber(0x00, 0x0F),
                 new ParameterDefinition(
-                    Name: "eVORLAUFISTTEMP",
+                    OriginalName: "eVORLAUFISTTEMP",
                     InfoNumber: new InfoNumber(0x00, 0x0F),
                     Type: ParameterType.Float,
                     Factor: 10,
@@ -4630,7 +4631,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: true,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null
                 )
@@ -4798,3 +4799,4 @@ public static class CanParameterRegistry
 
     #endregion
 }
+
