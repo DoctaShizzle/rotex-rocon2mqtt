@@ -1,6 +1,4 @@
-﻿namespace RoconMqtt.Can;
-
-public record CanFrame(uint Id, byte[] Data);
+﻿namespace RoconMqtt.Can.Models;
 
 public record ModuleAddress(
     string Name,

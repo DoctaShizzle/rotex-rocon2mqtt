@@ -1,11 +1,13 @@
-﻿using System.Text;
+﻿using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
 public static class CanParameterRegistry
 {
+    #region Parameters
+
     private static readonly Dictionary<InfoNumber, ParameterDefinition> _parameters =
-        new Dictionary<InfoNumber, ParameterDefinition>
+        new()
         {
             {
                 new InfoNumber(0x01, 0x48),
@@ -4642,4 +4644,126 @@ public static class CanParameterRegistry
     {
         _parameters[info] = definition;
     }
+
+    #endregion
+
+    #region Communication Profiles
+
+    private static readonly IReadOnlyList<CanDevice> _heatGenerators =
+        [
+            CreateDevice("HG1", DeviceType.HeatGenerator, "0x69D", "0x31", "0x00", "0xFA", "0x69D", "0x30", "0x00", "0xFA", "0x180", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG2", DeviceType.HeatGenerator, "0x69D", "0x31", "0x01", "0xFA", "0x69D", "0x30", "0x01", "0xFA", "0x181", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG3", DeviceType.HeatGenerator, "0x69D", "0x31", "0x02", "0xFA", "0x69D", "0x30", "0x02", "0xFA", "0x182", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG4", DeviceType.HeatGenerator, "0x69D", "0x31", "0x03", "0xFA", "0x69D", "0x30", "0x03", "0xFA", "0x183", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG5", DeviceType.HeatGenerator, "0x69D", "0x31", "0x04", "0xFA", "0x69D", "0x30", "0x04", "0xFA", "0x184", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG6", DeviceType.HeatGenerator, "0x69D", "0x31", "0x05", "0xFA", "0x69D", "0x30", "0x05", "0xFA", "0x185", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG7", DeviceType.HeatGenerator, "0x69D", "0x31", "0x06", "0xFA", "0x69D", "0x30", "0x06", "0xFA", "0x186", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HG8", DeviceType.HeatGenerator, "0x69D", "0x31", "0x07", "0xFA", "0x69D", "0x30", "0x07", "0xFA", "0x187", "0xD2", "0x1D", "0xFA"),
+        ];
+
+    private static readonly IReadOnlyList<CanDevice> _heatingCircuits =
+        [
+            CreateDevice("HC1", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x00", "0xFA", "0x69D", "0x60", "0x00", "0xFA", "0x300", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC2", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x01", "0xFA", "0x69D", "0x60", "0x01", "0xFA", "0x301", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC3", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x02", "0xFA", "0x69D", "0x60", "0x02", "0xFA", "0x302", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC4", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x03", "0xFA", "0x69D", "0x60", "0x03", "0xFA", "0x303", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC5", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x04", "0xFA", "0x69D", "0x60", "0x04", "0xFA", "0x304", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC6", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x05", "0xFA", "0x69D", "0x60", "0x05", "0xFA", "0x305", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC7", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x06", "0xFA", "0x69D", "0x60", "0x06", "0xFA", "0x306", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC8", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x07", "0xFA", "0x69D", "0x60", "0x07", "0xFA", "0x307", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC9", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x08", "0xFA", "0x69D", "0x60", "0x08", "0xFA", "0x308", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC10", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x09", "0xFA", "0x69D", "0x60", "0x09", "0xFA", "0x309", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC11", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x0A", "0xFA", "0x69D", "0x60", "0x0A", "0xFA", "0x30A", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC12", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x0B", "0xFA", "0x69D", "0x60", "0x0B", "0xFA", "0x30B", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC13", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x0C", "0xFA", "0x69D", "0x60", "0x0C", "0xFA", "0x30C", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC14", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x0D", "0xFA", "0x69D", "0x60", "0x0D", "0xFA", "0x30D", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC15", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x0E", "0xFA", "0x69D", "0x60", "0x0E", "0xFA", "0x30E", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HC16", DeviceType.HeatingCircuit, "0x69D", "0x61", "0x0F", "0xFA", "0x69D", "0x60", "0x0F", "0xFA", "0x30F", "0xD2", "0x1D", "0xFA"),
+        ];
+
+    private static readonly IReadOnlyList<CanDevice> _heatingCircuitModules =
+        [
+            CreateDevice("HCM1", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x00", "0xFA", "0x69D", "0xC0", "0x00", "0xFA", "0x600", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM2", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x01", "0xFA", "0x69D", "0xC0", "0x01", "0xFA", "0x601", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM3", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x02", "0xFA", "0x69D", "0xC0", "0x02", "0xFA", "0x602", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM4", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x03", "0xFA", "0x69D", "0xC0", "0x03", "0xFA", "0x603", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM5", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x04", "0xFA", "0x69D", "0xC0", "0x04", "0xFA", "0x604", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM6", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x05", "0xFA", "0x69D", "0xC0", "0x05", "0xFA", "0x605", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM7", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x06", "0xFA", "0x69D", "0xC0", "0x06", "0xFA", "0x606", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM8", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x07", "0xFA", "0x69D", "0xC0", "0x07", "0xFA", "0x607", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM9", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x08", "0xFA", "0x69D", "0xC0", "0x08", "0xFA", "0x608", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM10", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x09", "0xFA", "0x69D", "0xC0", "0x09", "0xFA", "0x609", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM11", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x0A", "0xFA", "0x69D", "0xC0", "0x0A", "0xFA", "0x60A", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM12", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x0B", "0xFA", "0x69D", "0xC0", "0x0B", "0xFA", "0x60B", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM13", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x0C", "0xFA", "0x69D", "0xC0", "0x0C", "0xFA", "0x60C", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM14", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x0D", "0xFA", "0x69D", "0xC0", "0x0D", "0xFA", "0x60D", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM15", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x0E", "0xFA", "0x69D", "0xC0", "0x0E", "0xFA", "0x60E", "0xD2", "0x1D", "0xFA"),
+            CreateDevice("HCM16", DeviceType.HeatingCircuitModule, "0x69D", "0xC1", "0x0F", "0xFA", "0x69D", "0xC0", "0x0F", "0xFA", "0x60F", "0xD2", "0x1D", "0xFA"),
+        ];
+
+    /// <summary>
+    /// Gets all heat generators with their communication profiles
+    /// </summary>
+    public static IReadOnlyList<CanDevice> HeatGenerators => _heatGenerators;
+
+    /// <summary>
+    /// Gets all heating circuits with their communication profiles
+    /// </summary>
+    public static IReadOnlyList<CanDevice> HeatingCircuits => _heatingCircuits;
+
+    /// <summary>
+    /// Gets all heating circuit modules with their communication profiles
+    /// </summary>
+    public static IReadOnlyList<CanDevice> HeatingCircuitModules => _heatingCircuitModules;
+
+    /// <summary>
+    /// Gets a heat generator by name
+    /// </summary>
+    public static CanDevice? GetHeatGenerator(string name) =>
+        _heatGenerators.FirstOrDefault(d => d.Name == name);
+
+    /// <summary>
+    /// Gets a heating circuit by name
+    /// </summary>
+    public static CanDevice? GetHeatingCircuit(string name) =>
+        _heatingCircuits.FirstOrDefault(d => d.Name == name);
+
+    /// <summary>
+    /// Gets a heating circuit module by name
+    /// </summary>
+    public static CanDevice? GetHeatingCircuitModule(string name) =>
+        _heatingCircuitModules.FirstOrDefault(d => d.Name == name);
+
+    /// <summary>
+    /// Gets a device by name, searching all device types
+    /// </summary>
+    public static CanDevice? GetDevice(string name)
+    {
+        return GetHeatGenerator(name)
+            ?? GetHeatingCircuit(name)
+            ?? GetHeatingCircuitModule(name);
+    }
+
+    private static CanDevice CreateDevice(
+        string name,
+        DeviceType type,
+        string getCanId, string getByte0, string getByte1, string getByte2,
+        string setCanId, string setByte0, string setByte1, string setByte2,
+        string answerCanId, string answerByte0, string answerByte1, string answerByte2)
+    {
+        return new CanDevice
+        {
+            Name = name,
+            Type = type,
+            Profile = new CommunicationProfile
+            {
+                Name = name,
+                Get = CommunicationCommand.Parse([getCanId, getByte0, getByte1, getByte2]),
+                Set = CommunicationCommand.Parse([setCanId, setByte0, setByte1, setByte2]),
+                Answer = CommunicationCommand.Parse([answerCanId, answerByte0, answerByte1, answerByte2])
+            }
+        };
+    }
+
+    #endregion
 }

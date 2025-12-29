@@ -1,3 +1,5 @@
+using RoconMqtt.Can.Models;
+
 namespace RoconMqtt.Can;
 
 public interface ICanEncoder

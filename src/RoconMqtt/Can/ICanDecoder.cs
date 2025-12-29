@@ -1,4 +1,6 @@
-﻿namespace RoconMqtt.Can;
+﻿using RoconMqtt.Can.Models;
+
+namespace RoconMqtt.Can;
 
 public interface ICanDecoder
 {

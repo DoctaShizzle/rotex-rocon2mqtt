@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using RoconMqtt.Can;
+using RoconMqtt.Can.Models;
 using Xunit;
 
 namespace RoconMqtt.Tests;

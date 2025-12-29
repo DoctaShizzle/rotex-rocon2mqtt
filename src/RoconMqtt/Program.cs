@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using RoconMqtt.Can;
+using RoconMqtt.Can.Options;
 using RoconMqtt.Mqtt;
 using RoconMqtt.Mqtt.Options;
 using Serilog;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using SocketCANSharp;
+using RoconMqtt.Can.Models;
 using SocketCANSharp.Network;
 using System.Runtime.CompilerServices;
 

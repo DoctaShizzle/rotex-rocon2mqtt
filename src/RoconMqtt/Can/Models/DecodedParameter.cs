@@ -1,4 +1,4 @@
-﻿namespace RoconMqtt.Can;
+﻿namespace RoconMqtt.Can.Models;
 
 public record DecodedParameter(
     string Name,

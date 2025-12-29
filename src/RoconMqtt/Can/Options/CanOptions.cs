@@ -1,4 +1,4 @@
-﻿namespace RoconMqtt.Can;
+﻿namespace RoconMqtt.Can.Options;
 
 public class CanOptions
 {

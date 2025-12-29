@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
