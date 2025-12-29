@@ -481,7 +481,65 @@ Because 0x17–0x1B is a subset of the HC range, **HCM must be checked first**:
 
 The subsystem determination logic (`GetSubsystemForParameter()`) is correct, necessary, and independent of the JSON instance list.
 
+## GET/ANSWER Communication Cycle
+
+The system implements a polling mechanism to regularly query parameter values from the controller:
+
+1. **Configuration** - Specify devices and parameters in `appsettings.json`:
+   ```json
+   "Mqtt": {
+     "Devices": ["HG1", "HC1"],
+     "Parameters": ["cAUSSENTEMP", "cTAG"],
+     "PollingIntervalMs": 5000,
+     "ResponseTimeoutMs": 1000
+   }
+   ```
+
+2. **Polling Loop** - `RoconMqttPublisher` iterates through all device/parameter combinations:
+   - Sends GET request via `RoconService.SendRequestAsync(deviceName, paramName, CommandType.Get, null, token)`
+   - Waits for ANSWER response (with timeout)
+   - Publishes decoded parameter to MQTT topic
+   - Repeats for next parameter after timeout or successful response
+
+3. **Response Handling** - Background listener matches ANSWER frames to pending GET requests:
+   - Matches response by parameter name
+   - Completes pending request with decoded value
+   - Publishes to MQTT
+   - Unsolicited responses are also published
+
+### Communication Flow
+
+```mermaid
+sequenceDiagram
+    participant Publisher as RoconMqttPublisher
+    participant Service as RoconService
+    participant CAN as CAN Bus
+    participant Controller as Rocon G1
+    participant MQTT as MQTT Broker
+
+    loop Every PollingIntervalMs
+        loop For each Device+Parameter
+            Publisher->>Service: SendRequestAsync(device, param, GET)
+            Service->>CAN: GET frame (device.Profile.Get)
+            CAN->>Controller: GET request
+            Controller->>CAN: ANSWER frame
+            CAN->>Service: Receive ANSWER
+            Service->>Publisher: DecodedParameter
+            Publisher->>MQTT: Publish telemetry
+        end
+    end
+```
+
 ## API Reference
+
+### RoconService
+
+**Methods:**
+- `SendRequestAsync(string deviceName, string parameterName, CommandType commandType, object? value, CancellationToken token)` - Send GET or SET request for a specific device and parameter. CommandType determines request type:
+  - `CommandType.Get` - Read parameter value (value parameter ignored)
+  - `CommandType.Set` - Write parameter value (value parameter required)
+  - `CommandType.Answer` - Not allowed (throws exception - ANSWER frames are responses from controller)
+- `ListenForResponses(Func<DecodedParameter, Task> responseAction, CancellationToken token)` - Start listening for ANSWER frames and invoke callback for each decoded parameter
 
 ### CanParameterRegistry
 
@@ -510,6 +568,11 @@ The subsystem determination logic (`GetSubsystemForParameter()`) is correct, nec
 
 ### Data Models
 
+**CommandType** - CAN communication command type (enum)
+- `Get` - GET command - request to read parameter value from controller
+- `Set` - SET command - request to write parameter value to controller
+- `Answer` - ANSWER command - response from controller containing parameter value
+
 **CanDevice** - Device instance with communication profile
 - `Name` - Device identifier (e.g., "HG1")
 - `Type` - DeviceType enum (HeatGenerator, HeatingCircuit, HeatingCircuitModule)
@@ -524,7 +587,6 @@ The subsystem determination logic (`GetSubsystemForParameter()`) is correct, nec
 **CommunicationCommand** - Single CAN command
 - `CanId` - CAN identifier (uint)
 - `Bytes` - Command bytes (byte[])
-- `CommandType` - Type of command: Get (read request), Set (write request), or Answer (controller response)
 
 **ParameterDefinition** - Parameter metadata
 - `Name` - Parameter name
@@ -540,7 +602,45 @@ The subsystem determination logic (`GetSubsystemForParameter()`) is correct, nec
 - `Value` - Decoded value (object)
 - `Definition` - Source ParameterDefinition
 
+## Configuration
+
+### MQTT Options (appsettings.json)
+
+**Connection Settings:**
+- `Host` - MQTT broker hostname/IP
+- `Port` - MQTT broker port (default: 1883)
+- `ClientId` - Unique client identifier
+- `Username` - Optional MQTT username
+- `Password` - Optional MQTT password
+- `Topic` - MQTT topic for publishing telemetry
+
+**Polling Configuration:**
+- `Devices` - List of device names to query (e.g., ["HG1", "HC1", "HCM1"])
+- `Parameters` - List of parameter names to query (e.g., ["cAUSSENTEMP", "cTAG"])
+- `PollingIntervalMs` - Milliseconds between polling cycles (default: 5000)
+- `ResponseTimeoutMs` - Milliseconds to wait for ANSWER after GET (default: 1000)
+
+**Example:**
+```json
+{
+  "Mqtt": {
+    "Host": "192.168.0.254",
+    "Port": 1883,
+    "ClientId": "rocon-publisher",
+    "Topic": "rocon/telemetry",
+    "Devices": ["HG1"],
+    "Parameters": ["cAUSSENTEMP", "cTAG", "cMONAT"],
+    "PollingIntervalMs": 5000,
+    "ResponseTimeoutMs": 1000
+  }
+}
+```
+
 ## Related Files
+
+- `RoconMqttPublisher.cs` - Background service implementing GET/ANSWER polling cycle
+- `RoconService.cs` - CAN communication service with GET/SET request methods
+- `IRoconService.cs` - Service interface for CAN communication
 
 - `CanParameterRegistry.cs` - Central parameter and device registry (~4800 parameters)
 - `CanDecoder.cs` - Decodes CAN frames to parameter values
