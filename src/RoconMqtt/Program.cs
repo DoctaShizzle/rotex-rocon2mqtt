@@ -28,13 +28,22 @@ public static class Program
         {
             //test
 
-            /*
-            var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x0A, 0x06, 0x01, 0xE0 };
+            // Find the parameter definition by name
+            var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cAUSSENTEMP");
+
+            // Encode the value
+
+            var canId = 0x69D;
+
+            var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(paramDef!.InfoNumber, 0);
+
+
+
+
+            var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x00, 0x0E, 0x01, 0x5A };
 
             var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input);
-            var output = new CanEncoder().Encode(decoded.Definition.InfoNumber, decoded.Value);
-
-            */
+            var output = new CanEncoder(new NullLogger<CanEncoder>()).Encode(decoded.Definition.InfoNumber, decoded.Value);
 
             Host.CreateDefaultBuilder(args)
                 .UseSerilog()
