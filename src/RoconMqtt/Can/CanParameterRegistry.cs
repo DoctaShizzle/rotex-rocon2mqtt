@@ -45,8 +45,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "DeviceIdentifier"
                 )
             },
@@ -66,8 +65,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "OutdoorTemperature"
                 )
             },
@@ -87,8 +85,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "OutdoorTemperatureHeatPump"
                 )
             },
@@ -108,8 +105,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "Month"
                 )
             },
@@ -129,8 +125,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "Day"
                 )
             },
@@ -150,8 +145,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "Hour"
                 )
             },
@@ -171,8 +165,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "Minute"
                 )
             },
@@ -201,8 +194,7 @@ public static class CanParameterRegistry
                         { 12, "12" },
                         { 17, "17" },
                     },
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "ProgramSwitch"
                 )
             },
@@ -222,8 +214,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "Year"
                 )
             },
@@ -243,8 +234,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "AdjustedStorageTargetTemperature"
                 )
             },
@@ -264,8 +254,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "StorageTargetTemperatureSetting"
                 )
             },
@@ -285,8 +274,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "StorageTargetTemperatureSetting2"
                 )
             },
@@ -306,8 +294,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "StorageActualTemperature"
                 )
             },
@@ -327,8 +314,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1"
                 )
             },
@@ -348,8 +334,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Monday"
                 )
             },
@@ -369,8 +354,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1MondaySwitch2"
                 )
             },
@@ -390,8 +374,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1MondaySwitch3"
                 )
             },
@@ -411,8 +394,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Tuesday"
                 )
             },
@@ -432,8 +414,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1TuesdaySwitch2"
                 )
             },
@@ -453,8 +434,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1TuesdaySwitch3"
                 )
             },
@@ -474,8 +454,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Wednesday"
                 )
             },
@@ -495,8 +474,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1WednesdaySwitch2"
                 )
             },
@@ -516,8 +494,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1WednesdaySwitch3"
                 )
             },
@@ -537,8 +514,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Thursday"
                 )
             },
@@ -558,8 +534,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1ThursdaySwitch2"
                 )
             },
@@ -579,8 +554,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1ThursdaySwitch3"
                 )
             },
@@ -600,8 +574,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Friday"
                 )
             },
@@ -621,8 +594,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1FridaySwitch2"
                 )
             },
@@ -642,8 +614,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1FridaySwitch3"
                 )
             },
@@ -663,8 +634,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Saturday"
                 )
             },
@@ -684,8 +654,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1SaturdaySwitch2"
                 )
             },
@@ -705,8 +674,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1SaturdaySwitch3"
                 )
             },
@@ -726,8 +694,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-23:45"
-                ,
+                    DefaultTimeRange: "00:00-23:45",
                     NameEnglish: "WaterProgram1Sunday"
                 )
             },
@@ -747,8 +714,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1SundaySwitch2"
                 )
             },
@@ -768,8 +734,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram1SundaySwitch3"
                 )
             },
@@ -789,8 +754,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1MondayToFriday"
                 )
             },
@@ -810,8 +774,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1MondayToFridaySwitch2"
                 )
             },
@@ -831,8 +794,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1MondayToFridaySwitch3"
                 )
             },
@@ -852,8 +814,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1Weekend"
                 )
             },
@@ -873,8 +834,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1WeekendSwitch2"
                 )
             },
@@ -894,8 +854,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1WeekendSwitch3"
                 )
             },
@@ -915,8 +874,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1AllWeek"
                 )
             },
@@ -936,8 +894,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1AllWeekSwitch2"
                 )
             },
@@ -957,8 +914,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1AllWeekSwitch3"
                 )
             },
@@ -978,8 +934,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1MondayToThursday"
                 )
             },
@@ -999,8 +954,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1MondayToThursdaySwitch2"
                 )
             },
@@ -1020,8 +974,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram1MondayToThursdaySwitch3"
                 )
             },
@@ -1041,8 +994,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2"
                 )
             },
@@ -1062,8 +1014,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "05:00-21:00"
-                ,
+                    DefaultTimeRange: "05:00-21:00",
                     NameEnglish: "WaterProgram2Monday"
                 )
             },
@@ -1083,8 +1034,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2MondaySwitch2"
                 )
             },
@@ -1104,8 +1054,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2MondaySwitch3"
                 )
             },
@@ -1125,8 +1074,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "05:00-21:00"
-                ,
+                    DefaultTimeRange: "05:00-21:00",
                     NameEnglish: "WaterProgram2Tuesday"
                 )
             },
@@ -1146,8 +1094,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2TuesdaySwitch2"
                 )
             },
@@ -1167,8 +1114,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2TuesdaySwitch3"
                 )
             },
@@ -1188,8 +1134,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "05:00-21:00"
-                ,
+                    DefaultTimeRange: "05:00-21:00",
                     NameEnglish: "WaterProgram2Wednesday"
                 )
             },
@@ -1209,8 +1154,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2WednesdaySwitch2"
                 )
             },
@@ -1230,8 +1174,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2WednesdaySwitch3"
                 )
             },
@@ -1251,8 +1194,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "05:00-21:00"
-                ,
+                    DefaultTimeRange: "05:00-21:00",
                     NameEnglish: "WaterProgram2Thursday"
                 )
             },
@@ -1272,8 +1214,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2ThursdaySwitch2"
                 )
             },
@@ -1293,8 +1234,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2ThursdaySwitch3"
                 )
             },
@@ -1314,8 +1254,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2Friday"
                 )
             },
@@ -1335,8 +1274,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2FridaySwitch2"
                 )
             },
@@ -1356,8 +1294,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2FridaySwitch3"
                 )
             },
@@ -1377,8 +1314,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-22:00"
-                ,
+                    DefaultTimeRange: "06:00-22:00",
                     NameEnglish: "WaterProgram2Saturday"
                 )
             },
@@ -1398,8 +1334,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2SaturdaySwitch2"
                 )
             },
@@ -1419,8 +1354,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2SaturdaySwitch3"
                 )
             },
@@ -1440,8 +1374,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-22:00"
-                ,
+                    DefaultTimeRange: "06:00-22:00",
                     NameEnglish: "WaterProgram2Sunday"
                 )
             },
@@ -1461,8 +1394,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "StorageTargetTemperatureSetting3"
                 )
             },
@@ -1482,8 +1414,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "WaterProgram2SundaySwitch3"
                 )
             },
@@ -1503,8 +1434,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2MondayToFriday"
                 )
             },
@@ -1524,8 +1454,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2MondayToFridaySwitch2"
                 )
             },
@@ -1545,8 +1474,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2MondayToFridaySwitch3"
                 )
             },
@@ -1566,8 +1494,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2Weekend"
                 )
             },
@@ -1587,8 +1514,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2WeekendSwitch2"
                 )
             },
@@ -1608,8 +1534,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2WeekendSwitch3"
                 )
             },
@@ -1629,8 +1554,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2AllWeek"
                 )
             },
@@ -1650,8 +1574,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2AllWeekSwitch2"
                 )
             },
@@ -1671,8 +1594,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2AllWeekSwitch3"
                 )
             },
@@ -1692,8 +1614,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2MondayToThursday"
                 )
             },
@@ -1713,8 +1634,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2MondayToThursdaySwitch2"
                 )
             },
@@ -1734,8 +1654,7 @@ public static class CanParameterRegistry
                     WaterCircuit: true,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2MondayToThursdaySwitch3"
                 )
             },
@@ -1755,8 +1674,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "OneTimeHotWaterActive"
                 )
             },
@@ -1776,8 +1694,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HotWaterActive"
                 )
             },
@@ -1797,8 +1714,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "RoomActualTemperature"
                 )
             },
@@ -1818,8 +1734,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "AdjustedRoomTargetTemperature"
                 )
             },
@@ -1839,8 +1754,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "RoomTargetTemperature1"
                 )
             },
@@ -1860,8 +1774,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "RoomTargetTemperature2"
                 )
             },
@@ -1881,8 +1794,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "RoomTargetTemperature3"
                 )
             },
@@ -1902,8 +1814,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "NightRoomTargetTemperature"
                 )
             },
@@ -1923,8 +1834,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1"
                 )
             },
@@ -1944,8 +1854,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-22:00"
-                ,
+                    DefaultTimeRange: "06:00-22:00",
                     NameEnglish: "HeatingProgram1Monday"
                 )
             },
@@ -1965,8 +1874,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1MondaySwitch2"
                 )
             },
@@ -1986,8 +1894,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1MondaySwitch3"
                 )
             },
@@ -2007,8 +1914,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-22:00"
-                ,
+                    DefaultTimeRange: "06:00-22:00",
                     NameEnglish: "HeatingProgram1Tuesday"
                 )
             },
@@ -2028,8 +1934,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1TuesdaySwitch2"
                 )
             },
@@ -2049,8 +1954,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1TuesdaySwitch3"
                 )
             },
@@ -2070,8 +1974,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-22:00"
-                ,
+                    DefaultTimeRange: "06:00-22:00",
                     NameEnglish: "HeatingProgram1Wednesday"
                 )
             },
@@ -2091,8 +1994,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1WednesdaySwitch2"
                 )
             },
@@ -2112,8 +2014,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1WednesdaySwitch3"
                 )
             },
@@ -2133,8 +2034,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1Thursday"
                 )
             },
@@ -2154,8 +2054,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1ThursdaySwitch2"
                 )
             },
@@ -2175,8 +2074,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1ThursdaySwitch3"
                 )
             },
@@ -2196,8 +2094,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1Friday"
                 )
             },
@@ -2217,8 +2114,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1FridaySwitch2"
                 )
             },
@@ -2238,8 +2134,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1FridaySwitch3"
                 )
             },
@@ -2259,8 +2154,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "07:00-23:00"
-                ,
+                    DefaultTimeRange: "07:00-23:00",
                     NameEnglish: "HeatingProgram1Saturday"
                 )
             },
@@ -2280,8 +2174,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1SaturdaySwitch2"
                 )
             },
@@ -2301,8 +2194,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1SaturdaySwitch3"
                 )
             },
@@ -2322,8 +2214,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "07:00-23:00"
-                ,
+                    DefaultTimeRange: "07:00-23:00",
                     NameEnglish: "HeatingProgram1Sunday"
                 )
             },
@@ -2343,8 +2234,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1SundaySwitch2"
                 )
             },
@@ -2364,8 +2254,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram1SundaySwitch3"
                 )
             },
@@ -2385,8 +2274,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1MondayToFriday"
                 )
             },
@@ -2406,8 +2294,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1MondayToFridaySwitch2"
                 )
             },
@@ -2427,8 +2314,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1MondayToFridaySwitch3"
                 )
             },
@@ -2448,8 +2334,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1Weekend"
                 )
             },
@@ -2469,8 +2354,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1WeekendSwitch2"
                 )
             },
@@ -2490,8 +2374,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1WeekendSwitch3"
                 )
             },
@@ -2511,8 +2394,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1AllWeek"
                 )
             },
@@ -2532,8 +2414,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1AllWeekSwitch2"
                 )
             },
@@ -2553,8 +2434,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1AllWeekSwitch3"
                 )
             },
@@ -2574,8 +2454,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1MondayToThursday"
                 )
             },
@@ -2595,8 +2474,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1MondayToThursdaySwitch2"
                 )
             },
@@ -2616,8 +2494,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram1MondayToThursdaySwitch3"
                 )
             },
@@ -2637,8 +2514,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterProgram2SundaySwitch2"
                 )
             },
@@ -2658,8 +2534,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-08:00"
-                ,
+                    DefaultTimeRange: "06:00-08:00",
                     NameEnglish: "HeatingProgram2Monday"
                 )
             },
@@ -2679,8 +2554,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2MondaySwitch2"
                 )
             },
@@ -2700,8 +2574,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2MondaySwitch3"
                 )
             },
@@ -2721,8 +2594,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-08:00"
-                ,
+                    DefaultTimeRange: "06:00-08:00",
                     NameEnglish: "HeatingProgram2Tuesday"
                 )
             },
@@ -2742,8 +2614,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2TuesdaySwitch2"
                 )
             },
@@ -2763,8 +2634,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2TuesdaySwitch3"
                 )
             },
@@ -2784,8 +2654,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-08:00"
-                ,
+                    DefaultTimeRange: "06:00-08:00",
                     NameEnglish: "HeatingProgram2Wednesday"
                 )
             },
@@ -2805,8 +2674,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2WednesdaySwitch2"
                 )
             },
@@ -2826,8 +2694,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2WednesdaySwitch3"
                 )
             },
@@ -2847,8 +2714,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "06:00-08:00"
-                ,
+                    DefaultTimeRange: "06:00-08:00",
                     NameEnglish: "HeatingProgram2Thursday"
                 )
             },
@@ -2868,8 +2734,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2ThursdaySwitch2"
                 )
             },
@@ -2889,8 +2754,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2ThursdaySwitch3"
                 )
             },
@@ -2910,8 +2774,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2Friday"
                 )
             },
@@ -2931,8 +2794,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2FridaySwitch2"
                 )
             },
@@ -2952,8 +2814,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2FridaySwitch3"
                 )
             },
@@ -2973,8 +2834,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "07:00-23:00"
-                ,
+                    DefaultTimeRange: "07:00-23:00",
                     NameEnglish: "HeatingProgram2Saturday"
                 )
             },
@@ -2994,8 +2854,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2SaturdaySwitch2"
                 )
             },
@@ -3015,8 +2874,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "00:00-00:00"
-                ,
+                    DefaultTimeRange: "00:00-00:00",
                     NameEnglish: "HeatingProgram2SaturdaySwitch3"
                 )
             },
@@ -3036,8 +2894,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: "07:00-23:00"
-                ,
+                    DefaultTimeRange: "07:00-23:00",
                     NameEnglish: "HeatingProgram2Sunday"
                 )
             },
@@ -3057,8 +2914,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2SundaySwitch2"
                 )
             },
@@ -3078,8 +2934,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2SundaySwitch3"
                 )
             },
@@ -3099,8 +2954,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2MondayToFriday"
                 )
             },
@@ -3120,8 +2974,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2MondayToFridaySwitch2"
                 )
             },
@@ -3141,8 +2994,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2MondayToFridaySwitch3"
                 )
             },
@@ -3162,8 +3014,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2Weekend"
                 )
             },
@@ -3183,8 +3034,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2WeekendSwitch2"
                 )
             },
@@ -3204,8 +3054,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2WeekendSwitch3"
                 )
             },
@@ -3225,8 +3074,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2AllWeek"
                 )
             },
@@ -3246,8 +3094,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2AllWeekSwitch2"
                 )
             },
@@ -3267,8 +3114,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2AllWeekSwitch3"
                 )
             },
@@ -3288,8 +3134,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2MondayToThursday"
                 )
             },
@@ -3309,8 +3154,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2MondayToThursdaySwitch2"
                 )
             },
@@ -3330,8 +3174,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingProgram2MondayToThursdaySwitch3"
                 )
             },
@@ -3351,8 +3194,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SoftwareNumber"
                 )
             },
@@ -3372,8 +3214,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SoftwareVersion"
                 )
             },
@@ -3393,8 +3234,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SoftwareSubindex"
                 )
             },
@@ -3414,8 +3254,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "PartyModeDuration"
                 )
             },
@@ -3435,8 +3274,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VacationModeStartDay"
                 )
             },
@@ -3456,8 +3294,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VacationModeStartMonth"
                 )
             },
@@ -3477,8 +3314,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VacationModeStartYear"
                 )
             },
@@ -3498,8 +3334,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VacationModeEndDay"
                 )
             },
@@ -3519,8 +3354,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VacationModeEndMonth"
                 )
             },
@@ -3540,8 +3374,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VacationModeEndYear"
                 )
             },
@@ -3561,8 +3394,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "BoilerActualTemperature"
                 )
             },
@@ -3582,8 +3414,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "BoilerTargetTemperature"
                 )
             },
@@ -3603,8 +3434,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "ReturnTemperature"
                 )
             },
@@ -3624,8 +3454,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "VolumeFlow"
                 )
             },
@@ -3645,8 +3474,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "PWMSignal"
                 )
             },
@@ -3666,8 +3494,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MixerPosition1"
                 )
             },
@@ -3687,8 +3514,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MixerPosition2"
                 )
             },
@@ -3708,8 +3534,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "TemperatureTVBH1"
                 )
             },
@@ -3729,8 +3554,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "TemperatureTVBHMix"
                 )
             },
@@ -3750,8 +3574,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "TemperatureTVBH"
                 )
             },
@@ -3771,8 +3594,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "DefrostActive"
                 )
             },
@@ -3792,8 +3614,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "PumpRuntime"
                 )
             },
@@ -3813,8 +3634,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "CompressorRuntime"
                 )
             },
@@ -3834,8 +3654,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MinimumVolumeFlowA1"
                 )
             },
@@ -3855,8 +3674,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MinimumVolumeFlowHeatPump"
                 )
             },
@@ -3876,8 +3694,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MinimumVolumeFlowGCU"
                 )
             },
@@ -3897,8 +3714,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "CurrentError"
                 )
             },
@@ -3918,8 +3734,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "TimeMaster"
                 )
             },
@@ -3939,8 +3754,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SwitchingThresholdDHW"
                 )
             },
@@ -3960,8 +3774,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SpecialFunctionSwitchContact"
                 )
             },
@@ -3981,8 +3794,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SpecialFunctionWaitTime"
                 )
             },
@@ -4002,8 +3814,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterMaxPressureLoss"
                 )
             },
@@ -4023,8 +3834,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterMaximumPressure"
                 )
             },
@@ -4044,8 +3854,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterMinimumPressure"
                 )
             },
@@ -4065,8 +3874,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "WaterTargetPressure"
                 )
             },
@@ -4086,8 +3894,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpQuietMode"
                 )
             },
@@ -4107,8 +3914,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpHeatingElementPowerS1"
                 )
             },
@@ -4128,8 +3934,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpHeatingElementPowerS2"
                 )
             },
@@ -4149,8 +3954,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpAuxiliaryHeatingPowerBivalent"
                 )
             },
@@ -4170,8 +3974,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpMaxHeatingTemperature"
                 )
             },
@@ -4191,8 +3994,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpModulationHysteresisFlow"
                 )
             },
@@ -4212,8 +4014,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpSetpointAdjustmentHeating"
                 )
             },
@@ -4233,8 +4034,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpSetpointAdjustmentCooling"
                 )
             },
@@ -4254,8 +4054,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpSpreadHeatingOperation"
                 )
             },
@@ -4275,8 +4074,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpSpreadHotWaterOperation"
                 )
             },
@@ -4296,8 +4094,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpStartMaxTemperature"
                 )
             },
@@ -4317,8 +4114,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpPumpDelayTime"
                 )
             },
@@ -4338,8 +4134,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "LoweringOptimization"
                 )
             },
@@ -4359,8 +4154,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "Adaptation"
                 )
             },
@@ -4380,8 +4174,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingUpOptimization"
                 )
             },
@@ -4401,8 +4194,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "FrostProtectionTemperature"
                 )
             },
@@ -4422,8 +4214,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingLimitNight"
                 )
             },
@@ -4443,8 +4234,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingLimitDay"
                 )
             },
@@ -4464,8 +4254,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingCircuitFunction"
                 )
             },
@@ -4485,8 +4274,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatingCurve"
                 )
             },
@@ -4506,8 +4294,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "CoolingSetpointCorrectionHeatingCircuit0"
                 )
             },
@@ -4527,8 +4314,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MaxHeatingUpAdvance"
                 )
             },
@@ -4548,8 +4334,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MaxCoolingOutdoorTempHeatingCircuit0"
                 )
             },
@@ -4569,8 +4354,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MaxSupplyTemperature"
                 )
             },
@@ -4590,8 +4374,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "MinSupplyTemperature"
                 )
             },
@@ -4611,8 +4394,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "RoomInfluence"
                 )
             },
@@ -4632,8 +4414,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "StartCoolingOutdoorTempHeatingCircuit0"
                 )
             },
@@ -4653,8 +4434,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SupplyTargetMaxCoolingHeatingCircuit0"
                 )
             },
@@ -4674,8 +4454,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SupplyTargetStartCoolingHeatingCircuit0"
                 )
             },
@@ -4695,8 +4474,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SupplyTargetTemperatureNight"
                 )
             },
@@ -4716,8 +4494,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SupplyTargetTemperatureDay"
                 )
             },
@@ -4737,8 +4514,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpOutdoorUnit"
                 )
             },
@@ -4758,8 +4534,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpHighLowTariffFunctionConnection"
                 )
             },
@@ -4779,8 +4554,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpHighLowTariffFunction"
                 )
             },
@@ -4800,8 +4574,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpIndoorUnit"
                 )
             },
@@ -4821,8 +4594,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpInterlinkFunction"
                 )
             },
@@ -4842,8 +4614,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpSmartGridMode"
                 )
             },
@@ -4863,8 +4634,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpPWMPowerMax"
                 )
             },
@@ -4884,8 +4654,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpPWMPowerMin"
                 )
             },
@@ -4905,8 +4674,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpRoomThermostat"
                 )
             },
@@ -4926,8 +4694,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpSmartGrid"
                 )
             },
@@ -4947,8 +4714,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "AntiLegionellaStartTime"
                 )
             },
@@ -4968,8 +4734,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "AntiLegionellaTemperature"
                 )
             },
@@ -4989,8 +4754,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "CirculationPumpAtHotWaterRelease"
                 )
             },
@@ -5010,8 +4774,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "AwayRoomTargetTemperature"
                 )
             },
@@ -5031,8 +4794,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpHysteresisDHW"
                 )
             },
@@ -5052,8 +4814,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HeatPumpWaitTimeBOH"
                 )
             },
@@ -5073,8 +4834,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "HolidayEndYear"
                 )
             },
@@ -5094,8 +4854,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SupplyTargetTemperature"
                 )
             },
@@ -5115,8 +4874,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: false,
                     EnumValues: null,
-                    DefaultTimeRange: null
-                ,
+                    DefaultTimeRange: null,
                     NameEnglish: "SupplyActualTemperature"
                 )
             },
