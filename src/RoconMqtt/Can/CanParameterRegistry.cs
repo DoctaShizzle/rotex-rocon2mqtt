@@ -46,7 +46,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "DeviceIdentifier"
+                    NameEnglish: "OutdoorTemperature"
                 )
             },
             {
@@ -215,7 +215,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "Year"
+                    NameEnglish: "BufferTemperatureActual"
                 )
             },
             {
@@ -235,7 +235,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "AdjustedStorageTargetTemperature"
+                    NameEnglish: "BufferTemperatureSetpointAdjusted"
                 )
             },
             {
@@ -255,7 +255,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "StorageTargetTemperatureSetting"
+                    NameEnglish: "BufferTemperatureSetpoint"
                 )
             },
             {
@@ -1695,7 +1695,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "HotWaterActive"
+                    NameEnglish: "HotWaterProductionActive"
                 )
             },
             {
@@ -1715,7 +1715,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "RoomActualTemperature"
+                    NameEnglish: "RoomTemperatureActual"
                 )
             },
             {
@@ -1735,7 +1735,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "AdjustedRoomTargetTemperature"
+                    NameEnglish: "RoomTemperatureSetpointAdjusted"
                 )
             },
             {
@@ -1755,7 +1755,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "RoomTargetTemperature1"
+                    NameEnglish: "RoomTemperatureSetpoint"
                 )
             },
             {
@@ -3395,7 +3395,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "BoilerActualTemperature"
+                    NameEnglish: "HeaterTemperatureActual"
                 )
             },
             {
@@ -3415,7 +3415,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "BoilerTargetTemperature"
+                    NameEnglish: "HeaterTemperatureSetpoint"
                 )
             },
             {
@@ -3435,7 +3435,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "ReturnTemperature"
+                    NameEnglish: "TR"
                 )
             },
             {
@@ -3455,7 +3455,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "VolumeFlow"
+                    NameEnglish: "V"
                 )
             },
             {
@@ -3475,7 +3475,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "PWMSignal"
+                    NameEnglish: "n"
                 )
             },
             {
@@ -3495,7 +3495,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "MixerPosition1"
+                    NameEnglish: "ValveCH_DHW"
                 )
             },
             {
@@ -3515,7 +3515,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "MixerPosition2"
+                    NameEnglish: "ValveCH_Bypass"
                 )
             },
             {
@@ -3535,7 +3535,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "TemperatureTVBH1"
+                    NameEnglish: "TVBH1"
                 )
             },
             {
@@ -3555,7 +3555,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "TemperatureTVBHMix"
+                    NameEnglish: "TVBHMIX"
                 )
             },
             {
@@ -3575,7 +3575,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "TemperatureTVBH"
+                    NameEnglish: "TVBH"
                 )
             },
             {
@@ -3595,7 +3595,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "DefrostActive"
+                    NameEnglish: "Defrost   "
                 )
             },
             {
@@ -3615,7 +3615,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "PumpRuntime"
+                    NameEnglish: "PumpOperatingHours"
                 )
             },
             {
@@ -3635,7 +3635,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "CompressorRuntime"
+                    NameEnglish: "CompressorOperatingHours"
                 )
             },
             {
@@ -4275,7 +4275,7 @@ public static class CanParameterRegistry
                     BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "HeatingCurve"
+                    NameEnglish: "WeatherDependentCurveSetting"
                 )
             },
             {
@@ -4855,7 +4855,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "SupplyTargetTemperature"
+                    NameEnglish: "LeavingWaterTemperatureSetpoint"
                 )
             },
             {
@@ -4875,7 +4875,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "SupplyActualTemperature"
+                    NameEnglish: "LeavingWaterTemperatureActual"
                 )
             },
         };
@@ -5041,5 +5041,3 @@ public static class CanParameterRegistry
 
     #endregion
 }
-
-
