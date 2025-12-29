@@ -71,15 +71,13 @@ public static class Program
                 _ => CanParameterRegistry.HeatGenerators[0]
             };
 
-            */
-
             // Encode the value using Answer command format
             var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Get, paramDef.InfoNumber, 0);
 
             var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x01, 0x48, 0x00, 0x00 };
             var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input, testDevice.Profile.Answer);
             var output = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Answer, decoded.Definition.InfoNumber, decoded.Value);
-
+            */
             
 
             Host.CreateDefaultBuilder(args)
