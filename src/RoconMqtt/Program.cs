@@ -50,6 +50,7 @@ public static class Program
                 };
                 
                 o.RemoveEmptyRequestSchema = true;
+                o.EnableJWTBearerAuth = false;
             });
 
             var app = builder.Build();

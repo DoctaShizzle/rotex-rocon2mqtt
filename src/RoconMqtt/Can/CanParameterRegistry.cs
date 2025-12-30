@@ -66,7 +66,7 @@ public static class CanParameterRegistry
                     BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
-                    NameEnglish: "OutdoorTemperature"
+                    NameEnglish: "OutdoorTemperatureHeatPump"
                 )
             },
             {
@@ -85,8 +85,7 @@ public static class CanParameterRegistry
                     WaterCircuit: false,
                     BigEndian: true,
                     EnumValues: null,
-                    DefaultTimeRange: null,
-                    NameEnglish: "OutdoorTemperatureHeatPump"
+                    DefaultTimeRange: null
                 )
             },
             {

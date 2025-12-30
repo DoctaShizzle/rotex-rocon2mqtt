@@ -172,6 +172,21 @@ public sealed class ParameterMetadata
     /// Scaling factor (for numeric types)
     /// </summary>
     public double? Factor { get; set; }
+
+    /// <summary>
+    /// Big or Little endian
+    /// </summary>
+    public bool BigEndian { get; set; }
+
+    /// <summary>
+    /// InfoNumber high byte (e.g., 0x0A)
+    /// </summary>
+    public byte InfoNumberHigh { get; set; }
+
+    /// <summary>
+    /// InfoNumber low byte (e.g., 0x06)
+    /// </summary>
+    public byte InfoNumberLow { get; set; }
 }
 
 /// <summary>
