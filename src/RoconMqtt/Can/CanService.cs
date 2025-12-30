@@ -21,6 +21,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         await _canBus.SendFrameAsync(canId, data, token);
     }
 
+    /// <inheritdoc/>
     public async Task SendRequestAsync(string deviceName, string parameterName, CommandType commandType, object? value, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(deviceName);
@@ -63,26 +64,59 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         LogRequestSentSuccessfully(_logger, deviceName, parameterName, commandType);
     }
 
-    public async Task ListenForResponses(Func<DecodedParameter, Task> responseAction, CancellationToken token = default)
+    /// <inheritdoc/>
+    public async Task ListenForResponses(CommandType commandType, string deviceName, string parameterName, Func<DecodedParameter, Task> responseAction, CancellationToken token = default)
     {
         ArgumentNullException.ThrowIfNull(responseAction);
 
-        LogStartListeningForResponses(_logger, _canOptions.Value.ReceiveFromCanFrameId, _canOptions.Value.ReceiveToCanFrameId);
+        // Find the parameter definition by name
+        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
+        if (paramDef == null)
+        {
+            LogParameterNotFound(_logger, parameterName);
+            throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
+        }
+
+        // Get the specific device by name
+        var device = CanParameterRegistry.GetDevice(deviceName);
+        if (device == null)
+        {
+            LogDeviceNotFound(_logger, deviceName);
+            throw new ArgumentException($"Device '{deviceName}' not found in registry", nameof(deviceName));
+        }
+
+        // Select the appropriate command based on CommandType
+        var command = commandType switch
+        {
+            CommandType.Get => device.Profile.Get,
+            CommandType.Set => device.Profile.Set,
+            CommandType.Answer => device.Profile.Answer,
+            _ => throw new ArgumentException($"Unknown command type: {commandType}", nameof(commandType))
+        };
+
+        LogStartListeningForResponses(_logger, command.CanId, command.CanId);
 
         try
         {
-            await foreach (var frame in _canBus.ReadFramesAsync(token).Where(f => f.Id >= _canOptions.Value.ReceiveFromCanFrameId && f.Id <= _canOptions.Value.ReceiveToCanFrameId))
+            await foreach (var frame in _canBus.ReadFramesAsync(token).Where(f => f.Id == command.CanId))
             {
                 LogProcessingFrame(_logger, frame.Id);
                 
-                // Try to decode with each device's ANSWER command until one succeeds
-                // Since all ANSWER frames share the same header (0xD2 0x1D 0xFA), we can use any device's Answer command
-                var decoded = _canDecoder.Decode(frame.Data, CanParameterRegistry.HeatGenerators[0].Profile.Answer);
+                // Decode using the specified command
+                var decoded = _canDecoder.Decode(frame.Data, command);
                 
                 if (decoded != null)
                 {
-                    LogSuccessfullyDecodedParameter(_logger, decoded.Name);
-                    await responseAction(decoded);
+                    // Filter by parameter name
+                    if (decoded.Name == parameterName)
+                    {
+                        LogSuccessfullyDecodedParameter(_logger, decoded.Name);
+                        await responseAction(decoded);
+                    }
+                    else
+                    {
+                        LogParameterMismatch(_logger, decoded.Name, parameterName);
+                    }
                 }
                 else
                 {
@@ -93,6 +127,66 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         catch (OperationCanceledException)
         {
             LogResponseListeningCancelled(_logger);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task<DecodedParameter> SendRequestAndWaitForResponseAsync(string deviceName, string parameterName, CommandType commandType, object? value, int timeoutMs, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(deviceName);
+        ArgumentNullException.ThrowIfNull(parameterName);
+
+        if (commandType == CommandType.Answer)
+        {
+            throw new ArgumentException("Cannot send ANSWER commands - they are responses from the controller", nameof(commandType));
+        }
+
+        var tcs = new TaskCompletionSource<DecodedParameter>();
+
+        using var listenCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var listenTask = Task.Run(async () =>
+        {
+            try
+            {
+                await ListenForResponses(CommandType.Answer, deviceName, parameterName, async decodedParameter =>
+                {
+                    tcs.TrySetResult(decodedParameter);
+                    await listenCts.CancelAsync();
+                    await Task.CompletedTask;
+                }, listenCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected
+            }
+        }, listenCts.Token);
+
+        try
+        {
+            await SendRequestAsync(deviceName, parameterName, commandType, value, token);
+
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutCts.CancelAfter(timeoutMs);
+
+            var result = await tcs.Task.WaitAsync(timeoutCts.Token);
+            return result;
+        }
+        catch (OperationCanceledException) when (!token.IsCancellationRequested)
+        {
+            LogRequestTimeout(_logger, deviceName, parameterName, commandType, timeoutMs);
+            throw new TimeoutException($"Timeout waiting for response from {deviceName} for {parameterName} after {timeoutMs}ms");
+        }
+        finally
+        {
+            await listenCts.CancelAsync();
+            try
+            {
+                await listenTask;
+            }
+            catch
+            {
+                // Ignore
+            }
         }
     }
 
@@ -128,4 +222,10 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
 
     [LoggerMessage(EventId = 3012, Level = LogLevel.Error, Message = "Device '{DeviceName}' not found in registry")]
     private static partial void LogDeviceNotFound(ILogger logger, string deviceName);
+
+    [LoggerMessage(EventId = 3013, Level = LogLevel.Debug, Message = "Parameter mismatch: received {ReceivedParameter} but expected {ExpectedParameter}")]
+    private static partial void LogParameterMismatch(ILogger logger, string receivedParameter, string expectedParameter);
+
+    [LoggerMessage(EventId = 3014, Level = LogLevel.Warning, Message = "Timeout waiting for {CommandType} response from device {DeviceName} for parameter {ParameterName} after {TimeoutMs}ms")]
+    private static partial void LogRequestTimeout(ILogger logger, string deviceName, string parameterName, CommandType commandType, int timeoutMs);
 }

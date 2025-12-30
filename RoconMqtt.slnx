@@ -3,7 +3,7 @@
   <Folder Name="/Solution Items/docu/">
     <File Path="docu/CAN.md" />
     <File Path="docu/DEPLOYMENT.md" />
-    <File Path="docu/TESTING_CAN.md" />
+    <File Path="docu/RESILIENCE.md" />
   </Folder>
   <Project Path="src/RoconMqtt/RoconMqtt.csproj" />
   <Project Path="tests/RoconMqtt.Tests/RoconMqtt.Tests.csproj" />

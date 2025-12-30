@@ -7,6 +7,7 @@ using RoconMqtt.Can.Extensions.DependencyInjection;
 using RoconMqtt.Can.Options;
 using RoconMqtt.Mqtt;
 using RoconMqtt.Mqtt.Options;
+using RoconMqtt.Mqtt.Resilience;
 using Serilog;
 
 namespace RoconMqtt;
@@ -15,13 +16,6 @@ public static class Program
 {
     private static async Task Main(string[] args)
     {
-        // Check if user wants to run the CAN test
-        if (args.Length > 0 && args[0].Equals("test-can", StringComparison.OrdinalIgnoreCase))
-        {
-            await TestCanCommunication.RunAsync(args);
-            return;
-        }
-
         var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production";
         
         Log.Logger = new LoggerConfiguration()
@@ -90,6 +84,8 @@ public static class Program
 
                     //TODO: put in extensions/builders
                     services.Configure<MqttOptions>(ctx.Configuration.GetSection("Mqtt"));
+                    services.Configure<ResilienceOptions>(ctx.Configuration.GetSection("Resilience"));
+                    services.AddSingleton<ResiliencePipelineFactory>();
                     services.AddSingleton<IMqttService, MqttService>();
                     services.AddSingleton<RoconMqttPublisher>();
                     services.AddHostedService<RoconMqttPublisher>();

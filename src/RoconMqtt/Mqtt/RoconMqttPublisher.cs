@@ -1,38 +1,39 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Polly.CircuitBreaker;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
 using RoconMqtt.Mqtt.Options;
-using System.Collections.Concurrent;
+using RoconMqtt.Mqtt.Resilience;
 using System.Text.Json;
 
 namespace RoconMqtt.Mqtt;
 
-public class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ILogger<RoconMqttPublisher> logger) : BackgroundService
+public partial class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ResiliencePipelineFactory resilienceFactory, ILogger<RoconMqttPublisher> logger) : BackgroundService
 {
     private readonly MqttOptions _options = options.Value;
     private readonly ICanService _roconService = roconService ?? throw new ArgumentNullException(nameof(roconService));
     private readonly IMqttService _mqtt = mqtt;
     private readonly ILogger<RoconMqttPublisher> _logger = logger;
-    private readonly ConcurrentDictionary<string, TaskCompletionSource<DecodedParameter>> _pendingRequests = new();
+    private readonly ResiliencePipelineFactory _resilienceFactory = resilienceFactory ?? throw new ArgumentNullException(nameof(resilienceFactory));
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("RoconMqttPublisher started");
+        LogPublisherStarted(_logger);
 
         // Validate configuration
         if (_options.Devices.Count == 0)
         {
-            _logger.LogWarning("No devices configured in Mqtt:Devices. Publisher will not query any devices.");
+            LogNoDevicesConfigured(_logger);
         }
         if (_options.Parameters.Count == 0)
         {
-            _logger.LogWarning("No parameters configured in Mqtt:Parameters. Publisher will not query any parameters.");
+            LogNoParametersConfigured(_logger);
         }
-        
-        // Start listening for responses in background
-        _ = Task.Run(() => ListenForResponses(stoppingToken), stoppingToken);
+
+        // Create resilience pipeline
+        var resiliencePipeline = _resilienceFactory.CreateQueryPipeline();
 
         // Main polling loop
         while (!stoppingToken.IsCancellationRequested)
@@ -49,17 +50,22 @@ public class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOp
 
                         try
                         {
-                            await SendGetAndWaitForAnswer(deviceName, parameterName, stoppingToken);
+                            await resiliencePipeline.ExecuteAsync(async ct =>
+                            {
+                                await SendGetAndWaitForAnswer(deviceName, parameterName, ct);
+                            }, stoppingToken);
+                        }
+                        catch (BrokenCircuitException)
+                        {
+                            LogCircuitBreakerOpenForQuery(_logger, deviceName, parameterName);
                         }
                         catch (TimeoutException)
                         {
-                            _logger.LogWarning("Timeout waiting for ANSWER from device {Device} for parameter {Parameter}", 
-                                deviceName, parameterName);
+                            LogTimeoutWaitingForAnswer(_logger, deviceName, parameterName);
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex, "Error querying device {Device} for parameter {Parameter}", 
-                                deviceName, parameterName);
+                            LogErrorQueryingDevice(_logger, ex, deviceName, parameterName);
                         }
                     }
                 }
@@ -69,83 +75,62 @@ public class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOp
             }
             catch (OperationCanceledException)
             {
-                _logger.LogInformation("RoconMqttPublisher cancellation requested");
+                LogCancellationRequested(_logger);
                 break;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error in polling loop");
+                LogErrorInPollingLoop(_logger, ex);
             }
         }
 
-        _logger.LogInformation("RoconMqttPublisher stopped");
+        LogPublisherStopped(_logger);
     }
 
     private async Task SendGetAndWaitForAnswer(string deviceName, string parameterName, CancellationToken token)
     {
-        var requestKey = $"{deviceName}:{parameterName}";
-        var tcs = new TaskCompletionSource<DecodedParameter>();
+        // Use CanService to coordinate request and response
+        var result = await _roconService.SendRequestAndWaitForResponseAsync(
+            deviceName, 
+            parameterName, 
+            CommandType.Get, 
+            null, 
+            _options.ResponseTimeoutMs, 
+            token);
 
-        // Register pending request
-        _pendingRequests[requestKey] = tcs;
-
-        try
-        {
-            // Send GET request
-            await _roconService.SendRequestAsync(deviceName, parameterName, CommandType.Get, null, token);
-
-            // Wait for ANSWER with timeout
-            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            timeoutCts.CancelAfter(_options.ResponseTimeoutMs);
-
-            var result = await tcs.Task.WaitAsync(timeoutCts.Token);
-
-            // Publish to MQTT
-            var json = JsonSerializer.Serialize(result);
-            _logger.LogDebug("Publishing to MQTT topic {Topic}: {Message}", _options.Topic, json);
-            await _mqtt.PublishAsync(_options.Topic, json, token);
-        }
-        catch (OperationCanceledException) when (!token.IsCancellationRequested)
-        {
-            // Timeout occurred
-            throw new TimeoutException($"Timeout waiting for response from {deviceName} for {parameterName}");
-        }
-        finally
-        {
-            // Clean up pending request
-            _pendingRequests.TryRemove(requestKey, out _);
-        }
+        // Publish to MQTT
+        var json = JsonSerializer.Serialize(result);
+        LogPublishingToMqtt(_logger, _options.Topic, json);
+        await _mqtt.PublishAsync(_options.Topic, json, token);
     }
 
-    private Task ListenForResponses(CancellationToken token)
-    {
-        return _roconService.ListenForResponses(async decodedParameter =>
-        {
-            try
-            {
-                // Check if this is a response to a pending request
-                // Try to match based on parameter name
-                var matchingRequest = _pendingRequests.FirstOrDefault(kvp => 
-                    kvp.Key.EndsWith($":{decodedParameter.Name}"));
+    [LoggerMessage(EventId = 4001, Level = LogLevel.Information, Message = "RoconMqttPublisher started")]
+    private static partial void LogPublisherStarted(ILogger logger);
 
-                if (matchingRequest.Key != null)
-                {
-                    // Complete the pending request
-                    matchingRequest.Value.TrySetResult(decodedParameter);
-                }
-                else
-                {
-                    // Unsolicited response - still publish it
-                    var json = JsonSerializer.Serialize(decodedParameter);
-                    _logger.LogDebug("Publishing unsolicited response to MQTT topic {Topic}: {Message}", 
-                        _options.Topic, json);
-                    await _mqtt.PublishAsync(_options.Topic, json, token);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error handling response for parameter {Parameter}", decodedParameter.Name);
-            }
-        }, token);
-    }
+    [LoggerMessage(EventId = 4002, Level = LogLevel.Warning, Message = "No devices configured in Mqtt:Devices. Publisher will not query any devices.")]
+    private static partial void LogNoDevicesConfigured(ILogger logger);
+
+    [LoggerMessage(EventId = 4003, Level = LogLevel.Warning, Message = "No parameters configured in Mqtt:Parameters. Publisher will not query any parameters.")]
+    private static partial void LogNoParametersConfigured(ILogger logger);
+
+    [LoggerMessage(EventId = 4004, Level = LogLevel.Warning, Message = "Timeout waiting for ANSWER from device {DeviceName} for parameter {ParameterName}")]
+    private static partial void LogTimeoutWaitingForAnswer(ILogger logger, string deviceName, string parameterName);
+
+    [LoggerMessage(EventId = 4005, Level = LogLevel.Error, Message = "Error querying device {DeviceName} for parameter {ParameterName}")]
+    private static partial void LogErrorQueryingDevice(ILogger logger, Exception exception, string deviceName, string parameterName);
+
+    [LoggerMessage(EventId = 4006, Level = LogLevel.Information, Message = "RoconMqttPublisher cancellation requested")]
+    private static partial void LogCancellationRequested(ILogger logger);
+
+    [LoggerMessage(EventId = 4007, Level = LogLevel.Error, Message = "Error in polling loop")]
+    private static partial void LogErrorInPollingLoop(ILogger logger, Exception exception);
+
+    [LoggerMessage(EventId = 4008, Level = LogLevel.Information, Message = "RoconMqttPublisher stopped")]
+    private static partial void LogPublisherStopped(ILogger logger);
+
+    [LoggerMessage(EventId = 4009, Level = LogLevel.Debug, Message = "Publishing to MQTT topic {Topic}: {Message}")]
+    private static partial void LogPublishingToMqtt(ILogger logger, string topic, string message);
+
+    [LoggerMessage(EventId = 4010, Level = LogLevel.Warning, Message = "Circuit breaker open for device {DeviceName} parameter {ParameterName}, skipping query")]
+    private static partial void LogCircuitBreakerOpenForQuery(ILogger logger, string deviceName, string parameterName);
 }
