@@ -101,7 +101,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                 .Build();
 
             LogPublishingToTopic(_logger, topic, payload.Length);
-            await _client.PublishAsync(message);
+            await _client.PublishAsync(message, cancellationToken);
             LogSuccessfullyPublishedToTopic(_logger, topic);
         }
         catch (Exception ex)
