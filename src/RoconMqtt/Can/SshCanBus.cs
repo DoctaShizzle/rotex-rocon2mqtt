@@ -88,7 +88,7 @@ public partial class SshCanBus : ICanBus, IDisposable
         }
     }
 
-    public async IAsyncEnumerable<CanFrame> ReadFramesAsync([EnumeratorCancellation] CancellationToken token)
+    public async IAsyncEnumerable<CanFrame> ReadFramesAsync([EnumeratorCancellation] CancellationToken token, uint? canId = null)
     {
         await EnsureConnectedAsync(token);
 
@@ -100,8 +100,12 @@ public partial class SshCanBus : ICanBus, IDisposable
         // Start candump in a shell stream for continuous output
         _candumpStream = _sshClient.CreateShellStream("candump", 1024, 800, 1024, 600, 4096);
         
-        // Execute candump command
-        var candumpCommand = $"candump {_canInterface}\n";
+        // Execute candump command with optional CAN ID filter
+        // Format: candump can0 or candump can0,180:7FF (filters by CAN ID 180 with mask 7FF)
+        var candumpCommand = canId.HasValue 
+            ? $"candump {_canInterface},{canId.Value:X}:7FF\n"
+            : $"candump {_canInterface}\n";
+        
         await _candumpStream.WriteAsync(Encoding.UTF8.GetBytes(candumpCommand), token);
         await _candumpStream.FlushAsync(token);
 

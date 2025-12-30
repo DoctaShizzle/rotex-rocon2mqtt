@@ -11,8 +11,9 @@ public interface ICanBus
     /// Asynchronously reads CAN frames from the bus.
     /// </summary>
     /// <param name="token">A cancellation token to stop reading frames.</param>
+    /// <param name="canId">Optional CAN ID to filter frames. If null, all frames are returned.</param>
     /// <returns>An async enumerable of CAN frames received from the bus.</returns>
-    IAsyncEnumerable<CanFrame> ReadFramesAsync(CancellationToken token);
+    IAsyncEnumerable<CanFrame> ReadFramesAsync(CancellationToken token, uint? canId = null);
     
     /// <summary>
     /// Asynchronously sends a CAN frame to the bus.

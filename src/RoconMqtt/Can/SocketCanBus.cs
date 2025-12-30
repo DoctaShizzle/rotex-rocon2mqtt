@@ -2,8 +2,10 @@
 using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Models;
 using RoconMqtt.Can.Options;
+using SocketCANSharp;
 using SocketCANSharp.Network;
 using System.Runtime.CompilerServices;
+using CanFrameModel = RoconMqtt.Can.Models.CanFrame;
 
 namespace RoconMqtt.Can;
 
@@ -39,9 +41,38 @@ public partial class SocketCanBus : ICanBus
         }
     }
 
-    public async IAsyncEnumerable<CanFrame> ReadFramesAsync([EnumeratorCancellation] CancellationToken token)
+    public async IAsyncEnumerable<CanFrameModel> ReadFramesAsync([EnumeratorCancellation] CancellationToken token, uint? canId = null)
     {
         LogStartReadingCanFrames(_logger);
+
+        // Apply hardware-level CAN filter if specified
+        if (canId.HasValue)
+        {
+            try
+            {
+                var filter = new CanFilter(canId.Value, 0x7FF);
+                _socket.CanFilters = [filter];
+                LogCanFilterApplied(_logger, canId.Value);
+            }
+            catch (Exception ex)
+            {
+                LogCanFilterFailed(_logger, ex, canId.Value);
+                // Fall back to software filtering if hardware filtering fails
+            }
+        }
+        else
+        {
+            // Clear any existing filters to receive all frames
+            try
+            {
+                _socket.CanFilters = [];
+                LogCanFiltersCleared(_logger);
+            }
+            catch (Exception ex)
+            {
+                LogCanFilterClearFailed(_logger, ex);
+            }
+        }
         
         while (!token.IsCancellationRequested)
         {
@@ -61,8 +92,15 @@ public partial class SocketCanBus : ICanBus
                 throw;
             }
 
+            // Additional software filter as fallback (in case hardware filter not supported)
+            if (canId.HasValue && frame.CanId != canId.Value)
+            {
+                await Task.Yield();
+                continue;
+            }
+
             LogReceivedCanFrame(_logger, frame.CanId, frame.Data.Length);
-            yield return new CanFrame(frame.CanId, frame.Data);
+            yield return new CanFrameModel(frame.CanId, frame.Data);
             await Task.Yield();
         }
     }
@@ -110,4 +148,16 @@ public partial class SocketCanBus : ICanBus
 
     [LoggerMessage(EventId = 2009, Level = LogLevel.Error, Message = "Failed to send CAN frame with ID 0x{CanId:X8}")]
     private static partial void LogFailedToSendCanFrame(ILogger logger, Exception exception, uint canId);
+
+    [LoggerMessage(EventId = 2010, Level = LogLevel.Debug, Message = "Applied CAN hardware filter for ID 0x{CanId:X}")]
+    private static partial void LogCanFilterApplied(ILogger logger, uint canId);
+
+    [LoggerMessage(EventId = 2011, Level = LogLevel.Warning, Message = "Failed to apply CAN hardware filter for ID 0x{CanId:X}, falling back to software filtering")]
+    private static partial void LogCanFilterFailed(ILogger logger, Exception exception, uint canId);
+
+    [LoggerMessage(EventId = 2012, Level = LogLevel.Debug, Message = "Cleared CAN hardware filters to receive all frames")]
+    private static partial void LogCanFiltersCleared(ILogger logger);
+
+    [LoggerMessage(EventId = 2013, Level = LogLevel.Warning, Message = "Failed to clear CAN hardware filters")]
+    private static partial void LogCanFilterClearFailed(ILogger logger, Exception exception);
 }

@@ -194,7 +194,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
 
         try
         {
-            await foreach (var frame in _canBus.ReadFramesAsync(token).Where(f => f.Id == command.CanId))
+            await foreach (var frame in _canBus.ReadFramesAsync(token, command.CanId))
             {
                 LogProcessingFrame(_logger, frame.Id);
                 
