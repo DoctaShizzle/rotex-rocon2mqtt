@@ -14,11 +14,14 @@ namespace RoconMqtt.Can;
 /// </summary>
 public partial class SshCanBus : ICanBus, IDisposable
 {
+    private const string ConnectionType = "write";
     private readonly ILogger<SshCanBus> _logger;
     private readonly SshOptions _options;
     private readonly string _canInterface;
-    private SshClient? _sshClient;
-    private readonly SemaphoreSlim _connectionLock = new(1, 1);
+    private SshClient? _readSshClient;
+    private SshClient? _writeSshClient;
+    private readonly SemaphoreSlim _readConnectionLock = new(1, 1);
+    private readonly SemaphoreSlim _writeConnectionLock = new(1, 1);
     private bool _disposed;
 
     // Regex to parse candump output: "can0  180   [7]  D2 1D FA 0A 06 01 E0"
@@ -33,25 +36,25 @@ public partial class SshCanBus : ICanBus, IDisposable
         _canInterface = options.Value.CanInterfaceName;
     }
 
-    private async Task EnsureConnectedAsync(CancellationToken token)
+    private async Task EnsureReadConnectionAsync(CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         
-        if (_sshClient?.IsConnected == true)
+        if (_readSshClient?.IsConnected == true)
             return;
 
-        await _connectionLock.WaitAsync(token);
+        await _readConnectionLock.WaitAsync(token);
         try
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
             
-            if (_sshClient?.IsConnected == true)
+            if (_readSshClient?.IsConnected == true)
                 return;
 
-            LogConnectingToSshHost(_logger, _options.Host, _options.Port, _options.Username);
+            LogConnectingToSshHost(_logger, _options.Host, _options.Port, _options.Username, "read");
 
-            _sshClient?.Dispose();
-            _sshClient = new SshClient(
+            _readSshClient?.Dispose();
+            _readSshClient = new SshClient(
                 _options.Host,
                 _options.Port,
                 _options.Username,
@@ -63,11 +66,11 @@ public partial class SshCanBus : ICanBus, IDisposable
                 }
             };
 
-            await Task.Run(() => _sshClient.Connect(), token);
-            LogSshConnected(_logger, _options.Host);
+            await Task.Run(() => _readSshClient.Connect(), token);
+            LogSshConnected(_logger, _options.Host, "read");
 
             // Test if candump exists
-            var testCommand = _sshClient.CreateCommand("which candump");
+            var testCommand = _readSshClient.CreateCommand("which candump");
             var result = await Task.Run(() => testCommand.Execute(), token);
             if (string.IsNullOrWhiteSpace(result))
             {
@@ -75,16 +78,71 @@ public partial class SshCanBus : ICanBus, IDisposable
                 throw new InvalidOperationException("candump command not found on remote system. Please install can-utils package.");
             }
 
-            LogSshCanBusInitialized(_logger, _options.Host, _canInterface);
+            LogSshCanBusInitialized(_logger, _options.Host, _canInterface, "read");
         }
         catch (Exception ex)
         {
-            LogSshConnectionFailed(_logger, ex, _options.Host);
+            LogSshConnectionFailed(_logger, ex, _options.Host, "read");
             throw;
         }
         finally
         {
-            _connectionLock.Release();
+            _readConnectionLock.Release();
+        }
+    }
+
+    private async Task EnsureWriteConnectionAsync(CancellationToken token)
+    {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
+        if (_writeSshClient?.IsConnected == true)
+            return;
+
+        await _writeConnectionLock.WaitAsync(token);
+        try
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            
+            if (_writeSshClient?.IsConnected == true)
+                return;
+
+            LogConnectingToSshHost(_logger, _options.Host, _options.Port, _options.Username, ConnectionType);
+
+            _writeSshClient?.Dispose();
+            _writeSshClient = new SshClient(
+                _options.Host,
+                _options.Port,
+                _options.Username,
+                _options.Password)
+            {
+                ConnectionInfo =
+                {
+                    Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs)
+                }
+            };
+
+            await Task.Run(() => _writeSshClient.Connect(), token);
+            LogSshConnected(_logger, _options.Host, ConnectionType);
+
+            // Test if cansend exists
+            var testCommand = _writeSshClient.CreateCommand("which cansend");
+            var result = await Task.Run(() => testCommand.Execute(), token);
+            if (string.IsNullOrWhiteSpace(result))
+            {
+                LogCansendNotFound(_logger);
+                throw new InvalidOperationException("cansend command not found on remote system. Please install can-utils package.");
+            }
+
+            LogSshCanBusInitialized(_logger, _options.Host, _canInterface, ConnectionType);
+        }
+        catch (Exception ex)
+        {
+            LogSshConnectionFailed(_logger, ex, _options.Host, ConnectionType);
+            throw;
+        }
+        finally
+        {
+            _writeConnectionLock.Release();
         }
     }
 
@@ -92,10 +150,10 @@ public partial class SshCanBus : ICanBus, IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         
-        await EnsureConnectedAsync(token);
+        await EnsureReadConnectionAsync(token);
 
-        if (_sshClient == null)
-            throw new InvalidOperationException("SSH client is not connected");
+        if (_readSshClient == null)
+            throw new InvalidOperationException("Read SSH client is not connected");
 
         LogStartingCandump(_logger, _canInterface);
 
@@ -105,7 +163,7 @@ public partial class SshCanBus : ICanBus, IDisposable
         try
         {
             // Start candump in a shell stream for continuous output
-            candumpStream = _sshClient.CreateShellStream("candump", 1024, 800, 1024, 600, 4096);
+            candumpStream = _readSshClient.CreateShellStream("candump", 1024, 800, 1024, 600, 4096);
         
             // Execute candump command with optional CAN ID filter
             // Format: candump can0 or candump can0,180:7FF (filters by CAN ID 180 with mask 7FF)
@@ -220,7 +278,7 @@ public partial class SshCanBus : ICanBus, IDisposable
                     // Wait a bit for the process to terminate
                     await Task.Delay(100, CancellationToken.None);
                     
-                    candumpStream.Dispose();
+                    await candumpStream.DisposeAsync();
                     LogCandumpStopped(_logger);
                 }
                 catch (Exception ex)
@@ -231,19 +289,16 @@ public partial class SshCanBus : ICanBus, IDisposable
         }
     }
 
-    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
+    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token
+)
     {
         ArgumentNullException.ThrowIfNull(data);
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        await EnsureConnectedAsync(token);
+        await EnsureWriteConnectionAsync(token);
 
-        if (_sshClient == null || !_sshClient.IsConnected)
-            throw new InvalidOperationException("SSH client is not connected");
-
-        // Give candump time to start and be ready to receive frames
-        // This prevents missing the response when using SSH shell stream
-        await Task.Delay(1000, token);
+        if (_writeSshClient == null || !_writeSshClient.IsConnected)
+            throw new InvalidOperationException("Write SSH client is not connected");
 
         try
         {
@@ -253,7 +308,7 @@ public partial class SshCanBus : ICanBus, IDisposable
 
             LogSendingCanFrame(_logger, canId, data.Length, cansendCommand);
 
-            var command = _sshClient.CreateCommand(cansendCommand);
+            var command = _writeSshClient.CreateCommand(cansendCommand);
             _ = await Task.Run(() => command.Execute(), token);
 
             var exitStatus = command.ExitStatus ?? -1;
@@ -311,27 +366,32 @@ public partial class SshCanBus : ICanBus, IDisposable
 
         LogDisposingSshCanBus(_logger);
 
-        // SSH client disposal will close all associated streams
-        _sshClient?.Dispose();
-        _connectionLock.Dispose();
+        // Dispose both SSH clients - this will close all associated streams
+        _readSshClient?.Dispose();
+        _writeSshClient?.Dispose();
+        _readConnectionLock.Dispose();
+        _writeConnectionLock.Dispose();
 
         GC.SuppressFinalize(this);
     }
 
-    [LoggerMessage(EventId = 2101, Level = LogLevel.Information, Message = "Connecting to SSH host {Host}:{Port} as user {Username}")]
-    private static partial void LogConnectingToSshHost(ILogger logger, string host, int port, string username);
+    [LoggerMessage(EventId = 2101, Level = LogLevel.Information, Message = "Connecting to SSH host {Host}:{Port} as user {Username} ({ConnectionType} connection)")]
+    private static partial void LogConnectingToSshHost(ILogger logger, string host, int port, string username, string connectionType);
 
-    [LoggerMessage(EventId = 2102, Level = LogLevel.Information, Message = "SSH connected to {Host}")]
-    private static partial void LogSshConnected(ILogger logger, string host);
+    [LoggerMessage(EventId = 2102, Level = LogLevel.Information, Message = "SSH connected to {Host} ({ConnectionType} connection)")]
+    private static partial void LogSshConnected(ILogger logger, string host, string connectionType);
 
-    [LoggerMessage(EventId = 2103, Level = LogLevel.Error, Message = "SSH connection failed to {Host}")]
-    private static partial void LogSshConnectionFailed(ILogger logger, Exception exception, string host);
+    [LoggerMessage(EventId = 2103, Level = LogLevel.Error, Message = "SSH connection failed to {Host} ({ConnectionType} connection)")]
+    private static partial void LogSshConnectionFailed(ILogger logger, Exception exception, string host, string connectionType);
 
-    [LoggerMessage(EventId = 2104, Level = LogLevel.Information, Message = "SSH CAN bus initialized on {Host} using interface {Interface}")]
-    private static partial void LogSshCanBusInitialized(ILogger logger, string host, string @interface);
+    [LoggerMessage(EventId = 2104, Level = LogLevel.Information, Message = "SSH CAN bus initialized on {Host} using interface {Interface} ({ConnectionType} connection)")]
+    private static partial void LogSshCanBusInitialized(ILogger logger, string host, string @interface, string connectionType);
 
     [LoggerMessage(EventId = 2105, Level = LogLevel.Error, Message = "candump command not found on remote system")]
     private static partial void LogCandumpNotFound(ILogger logger);
+
+    [LoggerMessage(EventId = 2128, Level = LogLevel.Error, Message = "cansend command not found on remote system")]
+    private static partial void LogCansendNotFound(ILogger logger);
 
     [LoggerMessage(EventId = 2106, Level = LogLevel.Information, Message = "Starting candump on interface {Interface}")]
     private static partial void LogStartingCandump(ILogger logger, string @interface);
