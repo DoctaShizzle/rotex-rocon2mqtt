@@ -57,16 +57,16 @@ public class MqttOptions
     public List<string> Parameters { get; set; } = [];
 
     /// <summary>
-    /// Interval in milliseconds between GET requests for each parameter.
-    /// Default is 5000ms (5 seconds).
+    /// Interval in seconds between GET requests for each parameter.
+    /// Default is 5 seconds.
     /// </summary>
-    [Range(100, int.MaxValue, ErrorMessage = "Polling interval must be at least 100ms")]
-    public int PollingIntervalMs { get; set; } = 5000;
+    [Range(1, int.MaxValue, ErrorMessage = "Polling interval must be at least 1 second")]
+    public int PollingIntervalSeconds { get; set; } = 5;
 
     /// <summary>
-    /// Timeout in milliseconds to wait for ANSWER after sending GET request.
-    /// Default is 1000ms (1 second).
+    /// Timeout in seconds to wait for ANSWER after sending GET request.
+    /// Default is 1 second.
     /// </summary>
-    [Range(100, int.MaxValue, ErrorMessage = "Response timeout must be at least 100ms")]
-    public int ResponseTimeoutMs { get; set; } = 1000;
+    [Range(1, int.MaxValue, ErrorMessage = "Response timeout must be at least 1 second")]
+    public int ResponseTimeoutSeconds { get; set; } = 1;
 }

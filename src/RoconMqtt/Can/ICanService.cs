@@ -57,4 +57,21 @@ public interface ICanService
     /// response from the device. The result is null if no response is received before the timeout or if the operation
     /// is canceled.</returns>
     Task<DecodedParameter> SendRequestAndWaitForResponseAsync(string deviceName, string parameterName, CommandType commandType, object? value, int timeoutMs, CancellationToken token);
+
+    /// <summary>
+    /// Sends a raw command request using InfoNumber and waits asynchronously for a decoded response or until the
+    /// operation times out or is canceled.
+    /// </summary>
+    /// <remarks>This is a lower-level method that works directly with InfoNumbers instead of parameter names.
+    /// Use this when you need direct control over the InfoNumber being queried.</remarks>
+    /// <param name="deviceName">The name of the target device to which the command is sent. Cannot be null or empty.</param>
+    /// <param name="infoNumber">The InfoNumber to query or set.</param>
+    /// <param name="commandType">The type of command to execute on the device, such as GET or SET.</param>
+    /// <param name="value">The value to be written if using SET command; otherwise, null or 0 for GET.</param>
+    /// <param name="timeoutMs">The maximum duration, in milliseconds, to wait for a response before the operation times out. Must be greater
+    /// than zero.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a DecodedParameter object with the
+    /// response from the device.</returns>
+    Task<DecodedParameter> SendRawRequestAndWaitForResponseAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, int timeoutMs, CancellationToken token);
 }

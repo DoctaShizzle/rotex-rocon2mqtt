@@ -490,8 +490,8 @@ The system implements a polling mechanism to regularly query parameter values fr
    "Mqtt": {
      "Devices": ["HG1", "HC1"],
      "Parameters": ["cAUSSENTEMP", "cTAG"],
-     "PollingIntervalMs": 5000,
-     "ResponseTimeoutMs": 1000
+     "PollingIntervalSeconds": 5,
+     "ResponseTimeoutSeconds": 1
    }
    ```
 
@@ -500,12 +500,6 @@ The system implements a polling mechanism to regularly query parameter values fr
    - Waits for ANSWER response (with timeout)
    - Publishes decoded parameter to MQTT topic
    - Repeats for next parameter after timeout or successful response
-
-3. **Response Handling** - Background listener matches ANSWER frames to pending GET requests:
-   - Matches response by parameter name
-   - Completes pending request with decoded value
-   - Publishes to MQTT
-   - Unsolicited responses are also published
 
 ### Communication Flow
 
@@ -517,7 +511,7 @@ sequenceDiagram
     participant Controller as Rocon G1
     participant MQTT as MQTT Broker
 
-    loop Every PollingIntervalMs
+    loop Every PollingIntervalSeconds
         loop For each Device+Parameter
             Publisher->>Service: SendRequestAsync(device, param, GET)
             Service->>CAN: GET frame (device.Profile.Get)
@@ -617,8 +611,8 @@ sequenceDiagram
 **Polling Configuration:**
 - `Devices` - List of device names to query (e.g., ["HG1", "HC1", "HCM1"])
 - `Parameters` - List of parameter names to query (e.g., ["cAUSSENTEMP", "cTAG"])
-- `PollingIntervalMs` - Milliseconds between polling cycles (default: 5000)
-- `ResponseTimeoutMs` - Milliseconds to wait for ANSWER after GET (default: 1000)
+- `PollingIntervalSeconds` - Seconds between polling cycles (default: 5)
+- `ResponseTimeoutSeconds` - Seconds to wait for ANSWER after GET (default: 1)
 
 **Example:**
 ```json
@@ -630,8 +624,8 @@ sequenceDiagram
     "Topic": "rocon/telemetry",
     "Devices": ["HG1"],
     "Parameters": ["cAUSSENTEMP", "cTAG", "cMONAT"],
-    "PollingIntervalMs": 5000,
-    "ResponseTimeoutMs": 1000
+    "PollingIntervalSeconds": 5,
+    "ResponseTimeoutSeconds": 1
   }
 }
 ```

@@ -1,13 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging.Abstractions;
-using RoconMqtt.Can;
+﻿using FastEndpoints;
+using FastEndpoints.Swagger;
 using RoconMqtt.Can.Extensions.DependencyInjection;
-using RoconMqtt.Can.Options;
-using RoconMqtt.Mqtt;
-using RoconMqtt.Mqtt.Options;
-using RoconMqtt.Mqtt.Resilience;
+using RoconMqtt.Mqtt.Extensions.DependencyInjection;
 using Serilog;
 
 namespace RoconMqtt;
@@ -29,79 +23,53 @@ public static class Program
 
         try
         {
-            /*
-
-            //test
-
-            Dictionary<DeviceType, List<string>> deviceParameters = new Dictionary<DeviceType, List<string>>();
-
-            foreach (var parameter in CanParameterRegistry.Parameters.Values)
-            {
-                var subsystem = CanParameterRegistry.GetSubsystemForParameter(parameter!.InfoNumber);
-                if (subsystem.HasValue)
-                {
-                    if (!deviceParameters.ContainsKey(subsystem.Value))
-                    {
-                        deviceParameters[subsystem.Value] = new List<string>();
-                    }
-                    deviceParameters[subsystem.Value].Add(parameter.Name);
-                }
-            }
-            */
-
-
-            /*
-
-            // Find the parameter definition by name
-            var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cGERAETE_KENNUNG");
-            //var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == "cAUSSENTEMP");
-
-            // Get appropriate communication profile based on parameter subsystem
-            var subsystem = CanParameterRegistry.GetSubsystemForParameter(paramDef!.InfoNumber);
-            var testDevice = subsystem switch
-            {
-                DeviceType.HeatGenerator => CanParameterRegistry.HeatGenerators[0],
-                DeviceType.HeatingCircuit => CanParameterRegistry.HeatingCircuits[0],
-                DeviceType.HeatingCircuitModule => CanParameterRegistry.HeatingCircuitModules[0],
-                _ => CanParameterRegistry.HeatGenerators[0]
-            };
-
-            // Encode the value using Answer command format
-            var outgoingFrameData = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Get, paramDef.InfoNumber, 0);
-
-            var input = new byte[] { 0xD2, 0x1D, 0xFA, 0x01, 0x48, 0x00, 0x00 };
-            var decoded = new CanDecoder(new NullLogger<CanDecoder>()).Decode(input, testDevice.Profile.Answer);
-            var output = new CanEncoder(new NullLogger<CanEncoder>()).Encode(testDevice.Profile.Answer, decoded.Definition.InfoNumber, decoded.Value);
-            */
+            var builder = WebApplication.CreateBuilder(args);
             
+            builder.Host.UseSerilog();
 
-            await Host.CreateDefaultBuilder(args)
-                .UseSerilog()
-                .ConfigureServices((ctx, services) =>
+            // Configure CAN service
+            builder.Services.AddCanService(builder.Configuration)
+                //.WithSocketCanBus();
+                .WithSshCanBus();
+                //.WithAutoCanBus();
+
+            // Configure MQTT services
+            builder.Services.AddMqttService(builder.Configuration);
+
+            // Configure FastEndpoints
+            builder.Services.AddFastEndpoints();
+
+            // Configure Swagger/OpenAPI
+            builder.Services.SwaggerDocument(o =>
+            {
+                o.DocumentSettings = s =>
                 {
-                    services.AddCanService(ctx.Configuration)
-                    //.WithSocketCanBus();
-                    .WithSshCanBus();
-                    //.WithAutoCanBus();
+                    s.Title = "Rocon MQTT API";
+                    s.Version = "v1";
+                    s.Description = "REST API for Rotex Rocon G1 heating controller communication over CAN bus";
+                };
+                
+                o.RemoveEmptyRequestSchema = true;
+            });
 
-                    //TODO: put in extensions/builders
-                    services.AddOptions<MqttOptions>()
-                        .Bind(ctx.Configuration.GetSection("Mqtt"))
-                        .ValidateDataAnnotations()
-                        .ValidateOnStart();
+            var app = builder.Build();
 
-                    services.AddOptions<ResilienceOptions>()
-                        .Bind(ctx.Configuration.GetSection("Resilience"))
-                        .ValidateDataAnnotations()
-                        .ValidateOnStart();
+            // Configure middleware
+            app.UseSerilogRequestLogging();
 
-                    services.AddSingleton<ResiliencePipelineFactory>();
-                    services.AddSingleton<IMqttService, MqttService>();
-                    services.AddSingleton<RoconMqttPublisher>();
-                    services.AddHostedService<RoconMqttPublisher>();
-                })
-                .Build()
-                .RunAsync();
+            app.UseFastEndpoints(c =>
+            {
+                c.Endpoints.RoutePrefix = "api";
+            });
+
+            // Enable Swagger UI
+            app.UseSwaggerGen();
+
+            // Redirect root to Swagger UI (after UseSwaggerGen so it's not included in OpenAPI)
+            app.MapGet("/", () => Results.Redirect("/swagger", permanent: false))
+                .ExcludeFromDescription();
+
+            await app.RunAsync();
         }
         catch (Exception ex)
         {

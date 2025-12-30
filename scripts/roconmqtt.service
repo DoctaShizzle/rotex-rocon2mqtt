@@ -1,0 +1,35 @@
+[Unit]
+Description=Rocon MQTT Publisher Service
+Documentation=https://github.com/DoctaShizzle/rotex-rocon2mqtt
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=rocon
+Group=rocon
+WorkingDirectory=/opt/roconmqtt
+ExecStart=/opt/roconmqtt/RoconMqtt
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=roconmqtt
+
+# Environment
+Environment="ASPNETCORE_ENVIRONMENT=Production"
+Environment="DOTNET_PRINT_TELEMETRY_MESSAGE=false"
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/roconmqtt/logs
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target

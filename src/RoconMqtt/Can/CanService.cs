@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Models;
 using RoconMqtt.Can.Options;
-using RoconMqtt.Mqtt;
 
 namespace RoconMqtt.Can;
 
@@ -37,6 +36,112 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
             throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
         }
 
+        await SendRequestByInfoNumberAsync(deviceName, paramDef.InfoNumber, commandType, value, token);
+        LogRequestSentSuccessfully(_logger, deviceName, parameterName, commandType);
+    }
+
+    /// <inheritdoc/>
+    public async Task ListenForResponses(CommandType commandType, string deviceName, string parameterName, Func<DecodedParameter, Task> responseAction, CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(responseAction);
+
+        // Find the parameter definition by name
+        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
+        if (paramDef == null)
+        {
+            LogParameterNotFound(_logger, parameterName);
+            throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
+        }
+
+        await ListenForResponsesByInfoNumberAsync(commandType, deviceName, paramDef.InfoNumber, responseAction, token);
+    }
+
+    /// <inheritdoc/>
+    public async Task<DecodedParameter> SendRequestAndWaitForResponseAsync(string deviceName, string parameterName, CommandType commandType, object? value, int timeoutMs, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(deviceName);
+        ArgumentNullException.ThrowIfNull(parameterName);
+
+        if (commandType == CommandType.Answer)
+        {
+            throw new ArgumentException("Cannot send ANSWER commands - they are responses from the controller", nameof(commandType));
+        }
+
+        // Find the parameter definition by name
+        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
+        if (paramDef == null)
+        {
+            LogParameterNotFound(_logger, parameterName);
+            throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
+        }
+
+        return await SendRawRequestAndWaitForResponseAsync(deviceName, paramDef.InfoNumber, commandType, value, timeoutMs, token);
+    }
+
+    /// <inheritdoc/>
+    public async Task<DecodedParameter> SendRawRequestAndWaitForResponseAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, int timeoutMs, CancellationToken token)
+    {
+        ArgumentNullException.ThrowIfNull(deviceName);
+
+        if (commandType == CommandType.Answer)
+        {
+            throw new ArgumentException("Cannot send ANSWER commands - they are responses from the controller", nameof(commandType));
+        }
+
+        var tcs = new TaskCompletionSource<DecodedParameter>();
+
+        using var listenCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var listenTask = Task.Run(async () =>
+        {
+            try
+            {
+                await ListenForResponsesByInfoNumberAsync(CommandType.Answer, deviceName, infoNumber, async decodedParameter =>
+                {
+                    tcs.TrySetResult(decodedParameter);
+                    await listenCts.CancelAsync();
+                    await Task.CompletedTask;
+                }, listenCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected
+            }
+        }, listenCts.Token);
+
+        try
+        {
+            await SendRequestByInfoNumberAsync(deviceName, infoNumber, commandType, value, token);
+
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(token);
+            timeoutCts.CancelAfter(timeoutMs);
+
+            var result = await tcs.Task.WaitAsync(timeoutCts.Token);
+            return result;
+        }
+        catch (OperationCanceledException) when (!token.IsCancellationRequested)
+        {
+            LogRequestTimeoutByInfoNumber(_logger, deviceName, infoNumber.High, infoNumber.Low, commandType, timeoutMs);
+            throw new TimeoutException($"Timeout waiting for response from {deviceName} for InfoNumber 0x{infoNumber.High:X2}{infoNumber.Low:X2} after {timeoutMs}ms");
+        }
+        finally
+        {
+            await listenCts.CancelAsync();
+            try
+            {
+                await listenTask;
+            }
+            catch
+            {
+                // Ignore
+            }
+        }
+    }
+
+    /// <summary>
+    /// Centralized method to send a request by InfoNumber
+    /// </summary>
+    private async Task SendRequestByInfoNumberAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, CancellationToken token)
+    {
         // Get the specific device by name
         var device = CanParameterRegistry.GetDevice(deviceName);
         if (device == null)
@@ -56,27 +161,18 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
 
         // For GET requests, value is ignored (use 0). For SET, use the provided value
         var encodedValue = commandType == CommandType.Get ? 0 : (value ?? 0);
-        var frameData = _canEncoder.Encode(command, paramDef.InfoNumber, encodedValue);
+        var frameData = _canEncoder.Encode(command, infoNumber, encodedValue);
 
         // Send the frame using the command's CAN ID
-        LogEncodedFrameData(_logger, deviceName, parameterName, commandType, command.CanId);
+        LogEncodedFrameDataByInfoNumber(_logger, deviceName, infoNumber.High, infoNumber.Low, commandType, command.CanId);
         await _canBus.SendFrameAsync(command.CanId, frameData, token);
-        LogRequestSentSuccessfully(_logger, deviceName, parameterName, commandType);
     }
 
-    /// <inheritdoc/>
-    public async Task ListenForResponses(CommandType commandType, string deviceName, string parameterName, Func<DecodedParameter, Task> responseAction, CancellationToken token = default)
+    /// <summary>
+    /// Centralized method to listen for responses by InfoNumber
+    /// </summary>
+    private async Task ListenForResponsesByInfoNumberAsync(CommandType commandType, string deviceName, InfoNumber infoNumber, Func<DecodedParameter, Task> responseAction, CancellationToken token)
     {
-        ArgumentNullException.ThrowIfNull(responseAction);
-
-        // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
-        if (paramDef == null)
-        {
-            LogParameterNotFound(_logger, parameterName);
-            throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
-        }
-
         // Get the specific device by name
         var device = CanParameterRegistry.GetDevice(deviceName);
         if (device == null)
@@ -107,15 +203,16 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
                 
                 if (decoded != null)
                 {
-                    // Filter by parameter name
-                    if (decoded.Name == parameterName)
+                    // Filter by InfoNumber
+                    if (decoded.Definition.InfoNumber.High == infoNumber.High && 
+                        decoded.Definition.InfoNumber.Low == infoNumber.Low)
                     {
                         LogSuccessfullyDecodedParameter(_logger, decoded.Name);
                         await responseAction(decoded);
                     }
                     else
                     {
-                        LogParameterMismatch(_logger, decoded.Name, parameterName);
+                        LogInfoNumberMismatch(_logger, decoded.Definition.InfoNumber.High, decoded.Definition.InfoNumber.Low, infoNumber.High, infoNumber.Low);
                     }
                 }
                 else
@@ -130,66 +227,6 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         }
     }
 
-    /// <inheritdoc/>
-    public async Task<DecodedParameter> SendRequestAndWaitForResponseAsync(string deviceName, string parameterName, CommandType commandType, object? value, int timeoutMs, CancellationToken token)
-    {
-        ArgumentNullException.ThrowIfNull(deviceName);
-        ArgumentNullException.ThrowIfNull(parameterName);
-
-        if (commandType == CommandType.Answer)
-        {
-            throw new ArgumentException("Cannot send ANSWER commands - they are responses from the controller", nameof(commandType));
-        }
-
-        var tcs = new TaskCompletionSource<DecodedParameter>();
-
-        using var listenCts = CancellationTokenSource.CreateLinkedTokenSource(token);
-        var listenTask = Task.Run(async () =>
-        {
-            try
-            {
-                await ListenForResponses(CommandType.Answer, deviceName, parameterName, async decodedParameter =>
-                {
-                    tcs.TrySetResult(decodedParameter);
-                    await listenCts.CancelAsync();
-                    await Task.CompletedTask;
-                }, listenCts.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                // Expected
-            }
-        }, listenCts.Token);
-
-        try
-        {
-            await SendRequestAsync(deviceName, parameterName, commandType, value, token);
-
-            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(token);
-            timeoutCts.CancelAfter(timeoutMs);
-
-            var result = await tcs.Task.WaitAsync(timeoutCts.Token);
-            return result;
-        }
-        catch (OperationCanceledException) when (!token.IsCancellationRequested)
-        {
-            LogRequestTimeout(_logger, deviceName, parameterName, commandType, timeoutMs);
-            throw new TimeoutException($"Timeout waiting for response from {deviceName} for {parameterName} after {timeoutMs}ms");
-        }
-        finally
-        {
-            await listenCts.CancelAsync();
-            try
-            {
-                await listenTask;
-            }
-            catch
-            {
-                // Ignore
-            }
-        }
-    }
-
     [LoggerMessage(EventId = 3001, Level = LogLevel.Debug, Message = "Sending raw CAN frame with ID 0x{CanId:X8}, DataLength={DataLength}")]
     private static partial void LogSendingRawCanFrame(ILogger logger, uint canId, int dataLength);
 
@@ -199,8 +236,8 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     [LoggerMessage(EventId = 3003, Level = LogLevel.Error, Message = "Parameter '{ParameterName}' not found in registry")]
     private static partial void LogParameterNotFound(ILogger logger, string parameterName);
 
-    [LoggerMessage(EventId = 3004, Level = LogLevel.Debug, Message = "Encoded {CommandType} frame for device {DeviceName}, parameter {ParameterName}, sending with CAN ID 0x{CanId:X8}")]
-    private static partial void LogEncodedFrameData(ILogger logger, string deviceName, string parameterName, CommandType commandType, uint canId);
+    [LoggerMessage(EventId = 3004, Level = LogLevel.Debug, Message = "Encoded {CommandType} frame for device {DeviceName}, InfoNumber 0x{InfoHigh:X2}{InfoLow:X2}, sending with CAN ID 0x{CanId:X8}")]
+    private static partial void LogEncodedFrameDataByInfoNumber(ILogger logger, string deviceName, byte infoHigh, byte infoLow, CommandType commandType, uint canId);
 
     [LoggerMessage(EventId = 3005, Level = LogLevel.Information, Message = "{CommandType} request sent successfully for device {DeviceName}, parameter {ParameterName}")]
     private static partial void LogRequestSentSuccessfully(ILogger logger, string deviceName, string parameterName, CommandType commandType);
@@ -223,9 +260,9 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     [LoggerMessage(EventId = 3012, Level = LogLevel.Error, Message = "Device '{DeviceName}' not found in registry")]
     private static partial void LogDeviceNotFound(ILogger logger, string deviceName);
 
-    [LoggerMessage(EventId = 3013, Level = LogLevel.Debug, Message = "Parameter mismatch: received {ReceivedParameter} but expected {ExpectedParameter}")]
-    private static partial void LogParameterMismatch(ILogger logger, string receivedParameter, string expectedParameter);
+    [LoggerMessage(EventId = 3015, Level = LogLevel.Debug, Message = "InfoNumber mismatch: received 0x{ReceivedHigh:X2}{ReceivedLow:X2} but expected 0x{ExpectedHigh:X2}{ExpectedLow:X2}")]
+    private static partial void LogInfoNumberMismatch(ILogger logger, byte receivedHigh, byte receivedLow, byte expectedHigh, byte expectedLow);
 
-    [LoggerMessage(EventId = 3014, Level = LogLevel.Warning, Message = "Timeout waiting for {CommandType} response from device {DeviceName} for parameter {ParameterName} after {TimeoutMs}ms")]
-    private static partial void LogRequestTimeout(ILogger logger, string deviceName, string parameterName, CommandType commandType, int timeoutMs);
+    [LoggerMessage(EventId = 3016, Level = LogLevel.Warning, Message = "Timeout waiting for {CommandType} response from device {DeviceName} for InfoNumber 0x{InfoHigh:X2}{InfoLow:X2} after {TimeoutMs}ms")]
+    private static partial void LogRequestTimeoutByInfoNumber(ILogger logger, string deviceName, byte infoHigh, byte infoLow, CommandType commandType, int timeoutMs);
 }

@@ -1,9 +1,16 @@
 <Solution>
   <Folder Name="/Solution Items/" />
   <Folder Name="/Solution Items/docu/">
+    <File Path="docu/API.md" />
     <File Path="docu/CAN.md" />
     <File Path="docu/DEPLOYMENT.md" />
     <File Path="docu/RESILIENCE.md" />
+    <File Path="docu/SSH_CAN_BUS.md" />
+  </Folder>
+  <Folder Name="/Solution Items/Scripts/">
+    <File Path="scripts/publish-raspi.ps1" />
+    <File Path="scripts/publish-raspi.sh" />
+    <File Path="scripts/roconmqtt.service" />
   </Folder>
   <Project Path="src/RoconMqtt/RoconMqtt.csproj" />
   <Project Path="tests/RoconMqtt.Tests/RoconMqtt.Tests.csproj" />

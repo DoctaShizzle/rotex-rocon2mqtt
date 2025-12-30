@@ -49,7 +49,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 if (!_options.Enabled)
                 {
                     LogPublisherDisabled(_logger);
-                    await Task.Delay(_options.PollingIntervalMs, stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(_options.PollingIntervalSeconds), stoppingToken);
                     continue;
                 }
 
@@ -84,7 +84,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 }
 
                 // Wait before next polling cycle
-                await Task.Delay(_options.PollingIntervalMs, stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(_options.PollingIntervalSeconds), stoppingToken);
             }
             catch (OperationCanceledException)
             {
@@ -108,7 +108,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             parameterName, 
             CommandType.Get, 
             null, 
-            _options.ResponseTimeoutMs, 
+            (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds, 
             token);
 
         // Publish to MQTT
