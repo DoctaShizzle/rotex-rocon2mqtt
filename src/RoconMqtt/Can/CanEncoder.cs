@@ -23,21 +23,29 @@ public partial class CanEncoder(ILogger<CanEncoder> logger) : ICanEncoder
         // InfoNumber
         frame[3] = info.High;
         frame[4] = info.Low;
-        
+
+        bool isBigEndian = false;
+        double factor = 1.0;
+
         // Look up parameter definition to determine encoding rules
-        var isBigEndian = hints?.BigEndian ?? false;
-        var factor = hints?.Factor ?? 1.0;
-        
-        if (CanParameterRegistry.Parameters.TryGetValue(info, out var def))
+        if(hints != null)
         {
-            // Use registry definition (overrides hints)
-            isBigEndian = def.BigEndian;
-            factor = def.Factor;
-            LogEncodingParameter(logger, def.Name, info);
-        }
-        else
+            isBigEndian = hints.BigEndian;
+            factor = hints.Factor;
+        } else
         {
-            LogParameterDefinitionNotFound(logger, info);
+
+            if (CanParameterRegistry.Parameters.TryGetValue(info, out var def))
+            {
+                // Use registry definition (overrides hints)
+                isBigEndian = def.BigEndian;
+                factor = def.Factor;
+                LogEncodingParameter(logger, def.Name, info);
+            }
+            else
+            {
+                LogParameterDefinitionNotFound(logger, info);
+            }
         }
         
         // Value encoding

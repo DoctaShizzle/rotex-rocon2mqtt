@@ -30,16 +30,9 @@ public partial class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
 
         var info = new InfoNumber(data[3], data[4]);
 
-        // Try to get parameter definition from registry
-        if (!CanParameterRegistry.Parameters.TryGetValue(info, out var def))
+        ParameterDefinition? def = null;
+        if(hints != null)
         {
-            // Use hints if parameter not in registry
-            if (hints == null)
-            {
-                LogUnknownParameterInfoNumber(logger, info);
-                return null;
-            }
-            
             // Create a temporary definition from hints
             def = new ParameterDefinition(
                 OriginalName: hints.ParameterName,
@@ -48,13 +41,25 @@ public partial class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
                 Factor: hints.Factor,
                 BigEndian: hints.BigEndian
             );
-            
+
             LogDecodingUnknownParameterWithHints(logger, hints.ParameterName);
+        } else
+        {
+            // Try to get parameter definition from registry
+            if (!CanParameterRegistry.Parameters.TryGetValue(info, out var def2))
+            {
+                LogUnknownParameterInfoNumber(logger, info);
+                return null;
+            }
+            else
+            {
+                def = def2;
+            }
         }
 
         try
         {
-            object value = def.Type switch
+            object value = def!.Type switch
             {
                 ParameterType.Int => DecodeInt(data, def),
                 ParameterType.Float => DecodeFloat(data, def),
@@ -69,7 +74,7 @@ public partial class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
         }
         catch (Exception ex)
         {
-            LogErrorDecodingParameter(logger, ex, def.Name);
+            LogErrorDecodingParameter(logger, ex, def!.Name);
             return null;
         }
     }
