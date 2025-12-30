@@ -29,7 +29,7 @@ public sealed class GetParameterEndpoint(ICanService canService) : Endpoint<GetP
             {
                 DeviceName = "HG1",
                 ParameterName = "OutdoorTemperature",
-                TimeoutMs = 5000
+                TimeoutMs = 30000
             };
         });
     }
