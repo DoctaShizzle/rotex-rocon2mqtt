@@ -29,7 +29,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         LogSendingRequest(_logger, deviceName, parameterName, commandType);
 
         // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
+        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
         if (paramDef == null)
         {
             LogParameterNotFound(_logger, parameterName);
@@ -46,7 +46,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         ArgumentNullException.ThrowIfNull(responseAction);
 
         // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
+        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
         if (paramDef == null)
         {
             LogParameterNotFound(_logger, parameterName);
@@ -68,7 +68,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         }
 
         // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName);
+        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
         if (paramDef == null)
         {
             LogParameterNotFound(_logger, parameterName);

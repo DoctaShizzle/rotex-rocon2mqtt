@@ -29,9 +29,9 @@ public sealed class GetParameterRequest
     public string ParameterName { get; set; } = string.Empty;
 
     /// <summary>
-    /// Timeout in milliseconds to wait for response (default: 1000)
+    /// Timeout in milliseconds to wait for response (default: 30000)
     /// </summary>
-    public int TimeoutMs { get; set; } = 1000;
+    public int TimeoutMs { get; set; } = 30000;
 }
 
 /// <summary>
@@ -55,9 +55,9 @@ public sealed class SetParameterRequest
     public object Value { get; set; } = null!;
 
     /// <summary>
-    /// Timeout in milliseconds to wait for response (default: 1000)
+    /// Timeout in milliseconds to wait for response (default: 30000)
     /// </summary>
-    public int TimeoutMs { get; set; } = 1000;
+    public int TimeoutMs { get; set; } = 30000;
 }
 
 /// <summary>
@@ -76,9 +76,9 @@ public sealed class GetParametersBulkRequest
     public List<string> ParameterNames { get; set; } = [];
 
     /// <summary>
-    /// Timeout in milliseconds to wait for each response (default: 1000)
+    /// Timeout in milliseconds to wait for each response (default: 30000)
     /// </summary>
-    public int TimeoutMs { get; set; } = 1000;
+    public int TimeoutMs { get; set; } = 30000;
 }
 
 /// <summary>
@@ -112,9 +112,9 @@ public sealed class RawParameterRequest
     public object? Value { get; set; }
 
     /// <summary>
-    /// Timeout in milliseconds to wait for response (default: 1000)
+    /// Timeout in milliseconds to wait for response (default: 30000)
     /// </summary>
-    public int TimeoutMs { get; set; } = 1000;
+    public int TimeoutMs { get; set; } = 30000;
 }
 
 /// <summary>

@@ -213,7 +213,7 @@ public partial class SshCanBus : ICanBus, IDisposable
 
         // Give candump time to start and be ready to receive frames
         // This prevents missing the response when using SSH shell stream
-        await Task.Delay(500, token);
+        await Task.Delay(1000, token);
 
         try
         {
@@ -311,19 +311,19 @@ public partial class SshCanBus : ICanBus, IDisposable
     [LoggerMessage(EventId = 2119, Level = LogLevel.Debug, Message = "Executing candump command: {Command}")]
     private static partial void LogCandumpCommandExecuting(ILogger logger, string command);
 
-    [LoggerMessage(EventId = 2120, Level = LogLevel.Trace, Message = "Raw shell output: {Output}")]
+    [LoggerMessage(EventId = 2120, Level = LogLevel.Debug, Message = "Raw shell output: {Output}")]
     private static partial void LogRawShellOutput(ILogger logger, string output);
 
     [LoggerMessage(EventId = 2121, Level = LogLevel.Debug, Message = "candump output stream ready, parsing CAN frames")]
     private static partial void LogCandumpOutputStarted(ILogger logger);
 
-    [LoggerMessage(EventId = 2122, Level = LogLevel.Trace, Message = "Raw candump data: {Data}")]
+    [LoggerMessage(EventId = 2122, Level = LogLevel.Debug, Message = "Raw candump data: {Data}")]
     private static partial void LogRawCandumpData(ILogger logger, string data);
 
-    [LoggerMessage(EventId = 2123, Level = LogLevel.Trace, Message = "Processing candump line: {Line}")]
+    [LoggerMessage(EventId = 2123, Level = LogLevel.Debug, Message = "Processing candump line: {Line}")]
     private static partial void LogProcessingCandumpLine(ILogger logger, string line);
 
-    [LoggerMessage(EventId = 2124, Level = LogLevel.Trace, Message = "Skipping command echo: {Line}")]
+    [LoggerMessage(EventId = 2124, Level = LogLevel.Debug, Message = "Skipping command echo: {Line}")]
     private static partial void LogSkippingCommandEcho(ILogger logger, string line);
 
     [LoggerMessage(EventId = 2118, Level = LogLevel.Warning, Message = "Timeout waiting for candump to start - proceeding anyway")]
