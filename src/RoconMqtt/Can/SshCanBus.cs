@@ -109,6 +109,42 @@ public partial class SshCanBus : ICanBus, IDisposable
 
         var buffer = new StringBuilder();
         var readBuffer = new byte[4096];
+        var candumpStarted = false;
+
+        // Skip initial shell output (login messages, command echo, etc.)
+        var startupTimeout = DateTime.UtcNow.AddSeconds(5);
+        while (!candumpStarted && DateTime.UtcNow < startupTimeout && !token.IsCancellationRequested)
+        {
+            if (_candumpStream.DataAvailable)
+            {
+                var bytesRead = await _candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
+                if (bytesRead > 0)
+                {
+                    var output = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
+                    buffer.Append(output);
+                    
+                    // Wait until we see the command echo or a small delay passes
+                    // This ensures we skip the initial shell prompt and command echo
+                    if (buffer.ToString().Contains($"candump {_canInterface}"))
+                    {
+                        candumpStarted = true;
+                        buffer.Clear();
+                        LogCandumpOutputStarted(_logger);
+                    }
+                }
+            }
+            else
+            {
+                await Task.Delay(10, token);
+            }
+        }
+
+        if (!candumpStarted)
+        {
+            LogCandumpStartupTimeout(_logger);
+        }
+
+        buffer.Clear();
 
         while (!token.IsCancellationRequested)
         {
@@ -248,6 +284,12 @@ public partial class SshCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2107, Level = LogLevel.Debug, Message = "candump started successfully")]
     private static partial void LogCandumpStarted(ILogger logger);
+
+    [LoggerMessage(EventId = 2117, Level = LogLevel.Debug, Message = "candump output stream ready, parsing CAN frames")]
+    private static partial void LogCandumpOutputStarted(ILogger logger);
+
+    [LoggerMessage(EventId = 2118, Level = LogLevel.Warning, Message = "Timeout waiting for candump to start - proceeding anyway")]
+    private static partial void LogCandumpStartupTimeout(ILogger logger);
 
     [LoggerMessage(EventId = 2108, Level = LogLevel.Debug, Message = "candump stopped")]
     private static partial void LogCandumpStopped(ILogger logger);

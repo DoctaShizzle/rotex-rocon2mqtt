@@ -28,31 +28,19 @@ public sealed class GetDevicesEndpoint : EndpointWithoutRequest<DevicesResponse>
         // Add all heat generators
         foreach (var device in CanParameterRegistry.HeatGenerators)
         {
-            devices.Add(new DeviceInfo
-            {
-                Name = device.Name,
-                Type = device.Type.ToString()
-            });
+            devices.Add(device.ToDeviceInfo());
         }
 
         // Add all heating circuits
         foreach (var device in CanParameterRegistry.HeatingCircuits)
         {
-            devices.Add(new DeviceInfo
-            {
-                Name = device.Name,
-                Type = device.Type.ToString()
-            });
+            devices.Add(device.ToDeviceInfo());
         }
 
         // Add all heating circuit modules
         foreach (var device in CanParameterRegistry.HeatingCircuitModules)
         {
-            devices.Add(new DeviceInfo
-            {
-                Name = device.Name,
-                Type = device.Type.ToString()
-            });
+            devices.Add(device.ToDeviceInfo());
         }
 
         var response = new DevicesResponse { Devices = devices };

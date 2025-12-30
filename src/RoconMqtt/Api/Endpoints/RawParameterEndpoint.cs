@@ -6,42 +6,6 @@ using RoconMqtt.Can.Models;
 namespace RoconMqtt.Api.Endpoints;
 
 /// <summary>
-/// Request to query/set a parameter using InfoNumber directly
-/// </summary>
-public sealed class RawParameterRequest
-{
-    /// <summary>
-    /// Device name (e.g., HG1, HC1, HCM1)
-    /// </summary>
-    public string DeviceName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// InfoNumber high byte (e.g., 0x0A)
-    /// </summary>
-    public byte InfoNumberHigh { get; set; }
-
-    /// <summary>
-    /// InfoNumber low byte (e.g., 0x06)
-    /// </summary>
-    public byte InfoNumberLow { get; set; }
-
-    /// <summary>
-    /// Command type: Get or Set
-    /// </summary>
-    public string CommandType { get; set; } = "Get";
-
-    /// <summary>
-    /// Value to set (only for SET commands, optional for GET)
-    /// </summary>
-    public object? Value { get; set; }
-
-    /// <summary>
-    /// Timeout in milliseconds to wait for response (default: 1000)
-    /// </summary>
-    public int TimeoutMs { get; set; } = 1000;
-}
-
-/// <summary>
 /// Endpoint to send raw CAN requests using InfoNumber
 /// </summary>
 public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawParameterRequest, ParameterResponse>
@@ -101,23 +65,7 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
                 req.TimeoutMs,
                 ct);
 
-            var response = new ParameterResponse
-            {
-                Name = result.Name,
-                Value = result.Value,
-                Metadata = new ParameterMetadata
-                {
-                    Type = result.Definition.Type.ToString(),
-                    Min = result.Definition.Min,
-                    Max = result.Definition.Max,
-                    Default = result.Definition.Default,
-                    Writeable = result.Definition.Writeable,
-                    Factor = result.Definition.Factor,
-                    BigEndian = result.Definition.BigEndian,
-                    InfoNumberHigh = result.Definition.InfoNumber.High,
-                    InfoNumberLow = result.Definition.InfoNumber.Low,
-                }
-            };
+            var response = result.ToParameterResponse();
 
             await Send.OkAsync(response, ct);
         }

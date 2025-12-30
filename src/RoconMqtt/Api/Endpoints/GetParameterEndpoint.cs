@@ -46,23 +46,7 @@ public sealed class GetParameterEndpoint(ICanService canService) : Endpoint<GetP
                 req.TimeoutMs,
                 ct);
 
-            var response = new ParameterResponse
-            {
-                Name = result.Name,
-                Value = result.Value,
-                Metadata = new ParameterMetadata
-                {
-                    Type = result.Definition.Type.ToString(),
-                    Min = result.Definition.Min,
-                    Max = result.Definition.Max,
-                    Default = result.Definition.Default,
-                    Writeable = result.Definition.Writeable,
-                    Factor = result.Definition.Factor,
-                    BigEndian = result.Definition.BigEndian,
-                    InfoNumberHigh = result.Definition.InfoNumber.High,
-                    InfoNumberLow = result.Definition.InfoNumber.Low,
-                }
-            };
+            var response = result.ToParameterResponse();
 
             await Send.OkAsync(response, ct);
         }
