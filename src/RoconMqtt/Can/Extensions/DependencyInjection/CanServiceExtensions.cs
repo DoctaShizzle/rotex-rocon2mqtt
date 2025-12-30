@@ -20,7 +20,11 @@ public static class CanServiceExtensions
             throw new InvalidOperationException($"Configuration section '{canSectionKey}' is missing.");
         }
 
-        services.Configure<CanOptions>(configuration.GetSection(canSectionKey));
+        services.AddOptions<CanOptions>()
+            .Bind(configuration.GetSection(canSectionKey))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
         services.AddSingleton<ICanService, CanService>();
         services.AddSingleton<ICanDecoder, CanDecoder>();
         services.AddSingleton<ICanEncoder, CanEncoder>();

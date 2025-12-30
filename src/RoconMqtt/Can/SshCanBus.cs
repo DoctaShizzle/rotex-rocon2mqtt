@@ -112,9 +112,6 @@ public partial class SshCanBus : ICanBus, IDisposable
 
         while (!token.IsCancellationRequested)
         {
-            CanFrame? frame = null;
-            Exception? error = null;
-            
             if (_candumpStream.DataAvailable)
             {
                 var bytesRead = await _candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
@@ -126,7 +123,7 @@ public partial class SshCanBus : ICanBus, IDisposable
                     var lines = buffer.ToString().Split('\n');
                     for (int i = 0; i < lines.Length - 1; i++)
                     {
-                        frame = ParseCandumpLine(lines[i]);
+                        var frame = ParseCandumpLine(lines[i]);
                         if (frame != null)
                         {
                             LogReceivedCanFrame(_logger, frame.Id, frame.Data.Length);

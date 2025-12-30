@@ -85,8 +85,16 @@ public static class Program
                     //.WithAutoCanBus();
 
                     //TODO: put in extensions/builders
-                    services.Configure<MqttOptions>(ctx.Configuration.GetSection("Mqtt"));
-                    services.Configure<ResilienceOptions>(ctx.Configuration.GetSection("Resilience"));
+                    services.AddOptions<MqttOptions>()
+                        .Bind(ctx.Configuration.GetSection("Mqtt"))
+                        .ValidateDataAnnotations()
+                        .ValidateOnStart();
+
+                    services.AddOptions<ResilienceOptions>()
+                        .Bind(ctx.Configuration.GetSection("Resilience"))
+                        .ValidateDataAnnotations()
+                        .ValidateOnStart();
+
                     services.AddSingleton<ResiliencePipelineFactory>();
                     services.AddSingleton<IMqttService, MqttService>();
                     services.AddSingleton<RoconMqttPublisher>();
