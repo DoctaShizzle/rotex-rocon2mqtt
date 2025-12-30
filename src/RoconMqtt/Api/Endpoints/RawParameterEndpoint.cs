@@ -30,7 +30,7 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
                 InfoNumberLow = 0x06,
                 CommandType = "Get",
                 Value = null,
-                TimeoutMs = 1000
+                TimeoutMs = 30000
             };
         });
     }
