@@ -24,19 +24,7 @@ public sealed class GetParametersEndpoint : EndpointWithoutRequest<ParametersRes
     public override async Task HandleAsync(CancellationToken ct)
     {
         var parameters = CanParameterRegistry.Parameters.Values
-            .Select(p => new ParameterInfo
-            {
-                Name = p.Name,
-                Metadata = new ParameterMetadata
-                {
-                    Type = p.Type.ToString(),
-                    Min = p.Min,
-                    Max = p.Max,
-                    Default = p.Default,
-                    Writeable = p.Writeable,
-                    Factor = p.Factor
-                }
-            })
+            .Select(p => p.ToParameterInfo())
             .ToList();
 
         var response = new ParametersResponse { Parameters = parameters };

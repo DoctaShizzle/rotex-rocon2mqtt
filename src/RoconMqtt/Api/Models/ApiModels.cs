@@ -3,6 +3,17 @@ using RoconMqtt.Can.Models;
 namespace RoconMqtt.Api.Models;
 
 /// <summary>
+/// Request to get parameter metadata
+/// </summary>
+public sealed class GetParameterMetadataRequest
+{
+    /// <summary>
+    /// Parameter name
+    /// </summary>
+    public string ParameterName { get; set; } = string.Empty;
+}
+
+/// <summary>
 /// Request to query a parameter value from a device
 /// </summary>
 public sealed class GetParameterRequest
@@ -42,6 +53,63 @@ public sealed class SetParameterRequest
     /// Value to set (type depends on parameter definition)
     /// </summary>
     public object Value { get; set; } = null!;
+
+    /// <summary>
+    /// Timeout in milliseconds to wait for response (default: 1000)
+    /// </summary>
+    public int TimeoutMs { get; set; } = 1000;
+}
+
+/// <summary>
+/// Request to query multiple parameter values from a device
+/// </summary>
+public sealed class GetParametersBulkRequest
+{
+    /// <summary>
+    /// Device name (e.g., HG1, HC1, HCM1)
+    /// </summary>
+    public string DeviceName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// List of parameter names to query
+    /// </summary>
+    public List<string> ParameterNames { get; set; } = [];
+
+    /// <summary>
+    /// Timeout in milliseconds to wait for each response (default: 1000)
+    /// </summary>
+    public int TimeoutMs { get; set; } = 1000;
+}
+
+/// <summary>
+/// Request to query/set a parameter using InfoNumber directly
+/// </summary>
+public sealed class RawParameterRequest
+{
+    /// <summary>
+    /// Device name (e.g., HG1, HC1, HCM1)
+    /// </summary>
+    public string DeviceName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// InfoNumber high byte (e.g., 0x0A)
+    /// </summary>
+    public byte InfoNumberHigh { get; set; }
+
+    /// <summary>
+    /// InfoNumber low byte (e.g., 0x06)
+    /// </summary>
+    public byte InfoNumberLow { get; set; }
+
+    /// <summary>
+    /// Command type: Get or Set
+    /// </summary>
+    public string CommandType { get; set; } = "Get";
+
+    /// <summary>
+    /// Value to set (only for SET commands, optional for GET)
+    /// </summary>
+    public object? Value { get; set; }
 
     /// <summary>
     /// Timeout in milliseconds to wait for response (default: 1000)
@@ -155,7 +223,44 @@ public sealed class ParameterInfo
     public string Name { get; set; } = string.Empty;
 
     /// <summary>
+    /// Parameter original name
+    /// </summary>
+    public string OriginalName { get; set; } = string.Empty;
+
+    /// <summary>
     /// Parameter metadata
     /// </summary>
     public ParameterMetadata Metadata { get; set; } = new();
+}
+
+/// <summary>
+/// Response containing multiple parameter values
+/// </summary>
+public sealed class ParametersBulkResponse
+{
+    /// <summary>
+    /// Successfully retrieved parameters
+    /// </summary>
+    public List<ParameterResponse> Results { get; set; } = [];
+
+    /// <summary>
+    /// Failed parameter queries with error messages
+    /// </summary>
+    public List<ParameterError> Errors { get; set; } = [];
+}
+
+/// <summary>
+/// Error information for a failed parameter query
+/// </summary>
+public sealed class ParameterError
+{
+    /// <summary>
+    /// Parameter name that failed
+    /// </summary>
+    public string ParameterName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Error message
+    /// </summary>
+    public string ErrorMessage { get; set; } = string.Empty;
 }

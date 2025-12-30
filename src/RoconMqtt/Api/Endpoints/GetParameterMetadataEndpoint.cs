@@ -5,17 +5,6 @@ using RoconMqtt.Can;
 namespace RoconMqtt.Api.Endpoints;
 
 /// <summary>
-/// Request to get parameter metadata
-/// </summary>
-public sealed class GetParameterMetadataRequest
-{
-    /// <summary>
-    /// Parameter name
-    /// </summary>
-    public string ParameterName { get; set; } = string.Empty;
-}
-
-/// <summary>
 /// Endpoint to get metadata for a specific parameter
 /// </summary>
 public sealed class GetParameterMetadataEndpoint : Endpoint<GetParameterMetadataRequest, ParameterInfo>
@@ -44,19 +33,7 @@ public sealed class GetParameterMetadataEndpoint : Endpoint<GetParameterMetadata
             return;
         }
 
-        var response = new ParameterInfo
-        {
-            Name = parameter.Name,
-            Metadata = new ParameterMetadata
-            {
-                Type = parameter.Type.ToString(),
-                Min = parameter.Min,
-                Max = parameter.Max,
-                Default = parameter.Default,
-                Writeable = parameter.Writeable,
-                Factor = parameter.Factor
-            }
-        };
+        var response = parameter.ToParameterInfo();
 
         await Send.OkAsync(response, ct);
     }

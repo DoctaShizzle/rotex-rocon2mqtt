@@ -8,59 +8,6 @@ using RoconMqtt.Mqtt.Options;
 namespace RoconMqtt.Api.Endpoints;
 
 /// <summary>
-/// Request to query multiple parameter values from a device
-/// </summary>
-public sealed class GetParametersBulkRequest
-{
-    /// <summary>
-    /// Device name (e.g., HG1, HC1, HCM1)
-    /// </summary>
-    public string DeviceName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// List of parameter names to query
-    /// </summary>
-    public List<string> ParameterNames { get; set; } = [];
-
-    /// <summary>
-    /// Timeout in milliseconds to wait for each response (default: 1000)
-    /// </summary>
-    public int TimeoutMs { get; set; } = 1000;
-}
-
-/// <summary>
-/// Response containing multiple parameter values
-/// </summary>
-public sealed class ParametersBulkResponse
-{
-    /// <summary>
-    /// Successfully retrieved parameters
-    /// </summary>
-    public List<ParameterResponse> Results { get; set; } = [];
-
-    /// <summary>
-    /// Failed parameter queries with error messages
-    /// </summary>
-    public List<ParameterError> Errors { get; set; } = [];
-}
-
-/// <summary>
-/// Error information for a failed parameter query
-/// </summary>
-public sealed class ParameterError
-{
-    /// <summary>
-    /// Parameter name that failed
-    /// </summary>
-    public string ParameterName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Error message
-    /// </summary>
-    public string ErrorMessage { get; set; } = string.Empty;
-}
-
-/// <summary>
 /// Endpoint to query multiple parameter values from a device
 /// </summary>
 public sealed class GetParametersBulkEndpoint(ICanService canService, IOptions<MqttOptions> mqttOptions) : Endpoint<GetParametersBulkRequest, ParametersBulkResponse>
@@ -120,20 +67,7 @@ public sealed class GetParametersBulkEndpoint(ICanService canService, IOptions<M
                     req.TimeoutMs,
                     ct);
 
-                response.Results.Add(new ParameterResponse
-                {
-                    Name = result.Name,
-                    Value = result.Value,
-                    Metadata = new ParameterMetadata
-                    {
-                        Type = result.Definition.Type.ToString(),
-                        Min = result.Definition.Min,
-                        Max = result.Definition.Max,
-                        Default = result.Definition.Default,
-                        Writeable = result.Definition.Writeable,
-                        Factor = result.Definition.Factor
-                    }
-                });
+                response.Results.Add(result.ToParameterResponse());
             }
             catch (ArgumentException ex)
             {
