@@ -18,9 +18,9 @@ public static class CanServiceExtensions
         return new CanServiceBuilder(services);
     }
 
-    public static CanServiceBuilder WithSocketCanReader(this CanServiceBuilder builder)
+    public static CanServiceBuilder WithSocketCanBus(this CanServiceBuilder builder)
     {
-        builder.Services.AddSingleton<ICanReader, SocketCanReader>();
+        builder.Services.AddSingleton<ICanBus, SocketCanBus>();
         return builder;
     }
 }

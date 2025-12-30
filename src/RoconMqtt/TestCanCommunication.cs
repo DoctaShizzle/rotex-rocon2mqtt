@@ -39,7 +39,7 @@ public class TestCanCommunication
         services.Configure<CanOptions>(configuration.GetSection("Can"));
         
         // CAN Services
-        services.AddSingleton<ICanReader, SocketCanReader>();
+        services.AddSingleton<ICanBus, SocketCanBus>();
         services.AddSingleton<ICanDecoder, CanDecoder>();
         services.AddSingleton<ICanEncoder, CanEncoder>();
         services.AddSingleton<ICanService, CanService>();

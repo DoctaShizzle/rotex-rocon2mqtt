@@ -6,9 +6,9 @@ using RoconMqtt.Mqtt;
 
 namespace RoconMqtt.Can;
 
-internal partial class CanService(ICanReader canReader, ICanDecoder canDecoder, ICanEncoder canEncoder, IOptions<CanOptions> canOptions, ILogger<CanService> logger) : ICanService
+internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEncoder canEncoder, IOptions<CanOptions> canOptions, ILogger<CanService> logger) : ICanService
 {
-    private readonly ICanReader _canReader = canReader ?? throw new ArgumentNullException(nameof(canReader));
+    private readonly ICanBus _canBus = canBus ?? throw new ArgumentNullException(nameof(canBus));
     private readonly ICanDecoder _canDecoder = canDecoder ?? throw new ArgumentNullException(nameof(canDecoder));
     private readonly ICanEncoder _canEncoder = canEncoder ?? throw new ArgumentNullException(nameof(canEncoder));
     private readonly IOptions<CanOptions> _canOptions = canOptions ?? throw new ArgumentNullException(nameof(canOptions));
@@ -18,7 +18,7 @@ internal partial class CanService(ICanReader canReader, ICanDecoder canDecoder, 
     {
         ArgumentNullException.ThrowIfNull(data);
         LogSendingRawCanFrame(_logger, canId, data.Length);
-        await _canReader.SendFrameAsync(canId, data, token);
+        await _canBus.SendFrameAsync(canId, data, token);
     }
 
     public async Task SendRequestAsync(string deviceName, string parameterName, CommandType commandType, object? value, CancellationToken token)
@@ -59,7 +59,7 @@ internal partial class CanService(ICanReader canReader, ICanDecoder canDecoder, 
 
         // Send the frame using the command's CAN ID
         LogEncodedFrameData(_logger, deviceName, parameterName, commandType, command.CanId);
-        await _canReader.SendFrameAsync(command.CanId, frameData, token);
+        await _canBus.SendFrameAsync(command.CanId, frameData, token);
         LogRequestSentSuccessfully(_logger, deviceName, parameterName, commandType);
     }
 
@@ -71,7 +71,7 @@ internal partial class CanService(ICanReader canReader, ICanDecoder canDecoder, 
 
         try
         {
-            await foreach (var frame in _canReader.ReadFramesAsync(token).Where(f => f.Id >= _canOptions.Value.ReceiveFromCanFrameId && f.Id <= _canOptions.Value.ReceiveToCanFrameId))
+            await foreach (var frame in _canBus.ReadFramesAsync(token).Where(f => f.Id >= _canOptions.Value.ReceiveFromCanFrameId && f.Id <= _canOptions.Value.ReceiveToCanFrameId))
             {
                 LogProcessingFrame(_logger, frame.Id);
                 

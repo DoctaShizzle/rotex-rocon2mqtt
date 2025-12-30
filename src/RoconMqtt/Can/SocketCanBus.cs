@@ -7,13 +7,16 @@ using System.Runtime.CompilerServices;
 
 namespace RoconMqtt.Can;
 
-public partial class SocketCanReader : ICanReader
+/// <summary>
+/// SocketCAN implementation of the CAN bus interface.
+/// </summary>
+public partial class SocketCanBus : ICanBus
 {
     private readonly RawCanSocket _socket = new();
-    private readonly ILogger<SocketCanReader> _logger;
+    private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
 
-    public SocketCanReader(ILogger<SocketCanReader> logger, IOptions<CanOptions> options)
+    public SocketCanBus(ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
     {
         _logger = logger;
         _options = options.Value;
@@ -81,10 +84,10 @@ public partial class SocketCanReader : ICanReader
         }
     }
 
-    [LoggerMessage(EventId = 2001, Level = LogLevel.Information, Message = "SocketCAN reader initialized on interface {InterfaceName}")]
+    [LoggerMessage(EventId = 2001, Level = LogLevel.Information, Message = "SocketCAN bus initialized on interface {InterfaceName}")]
     private static partial void LogSocketCanInitialized(ILogger logger, string interfaceName);
 
-    [LoggerMessage(EventId = 2002, Level = LogLevel.Error, Message = "Failed to initialize SocketCAN reader on interface {InterfaceName}")]
+    [LoggerMessage(EventId = 2002, Level = LogLevel.Error, Message = "Failed to initialize SocketCAN bus on interface {InterfaceName}")]
     private static partial void LogSocketCanInitializationFailed(ILogger logger, Exception exception, string interfaceName);
 
     [LoggerMessage(EventId = 2003, Level = LogLevel.Debug, Message = "Starting to read CAN frames")]

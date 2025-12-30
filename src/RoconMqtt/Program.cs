@@ -86,7 +86,7 @@ public static class Program
                 .ConfigureServices((ctx, services) =>
                 {
                     services.AddCanService(ctx.Configuration)
-                    .WithSocketCanReader();
+                    .WithSocketCanBus();
 
                     //TODO: put in extensions/builders
                     services.Configure<MqttOptions>(ctx.Configuration.GetSection("Mqtt"));
