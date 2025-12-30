@@ -18,7 +18,6 @@ public partial class SshCanBus : ICanBus, IDisposable
     private readonly SshOptions _options;
     private readonly string _canInterface;
     private SshClient? _sshClient;
-    private ShellStream? _candumpStream;
     private readonly SemaphoreSlim _connectionLock = new(1, 1);
     private bool _disposed;
 
@@ -96,110 +95,136 @@ public partial class SshCanBus : ICanBus, IDisposable
 
         LogStartingCandump(_logger, _canInterface);
 
-        // Start candump in a shell stream for continuous output
-        _candumpStream = _sshClient.CreateShellStream("candump", 1024, 800, 1024, 600, 4096);
+        // Use local variable instead of shared field to avoid concurrent access issues
+        ShellStream? candumpStream = null;
+
+        try
+        {
+            // Start candump in a shell stream for continuous output
+            candumpStream = _sshClient.CreateShellStream("candump", 1024, 800, 1024, 600, 4096);
         
-        // Execute candump command with optional CAN ID filter
-        // Format: candump can0 or candump can0,180:7FF (filters by CAN ID 180 with mask 7FF)
-        var candumpCommand = canId.HasValue 
-            ? $"candump {_canInterface},{canId.Value:X}:7FF\n"
-            : $"candump {_canInterface}\n";
-        
-        LogCandumpCommandExecuting(_logger, candumpCommand.TrimEnd());
-        await _candumpStream.WriteAsync(Encoding.UTF8.GetBytes(candumpCommand), token);
-        await _candumpStream.FlushAsync(token);
+            // Execute candump command with optional CAN ID filter
+            // Format: candump can0 or candump can0,180:7FF (filters by CAN ID 180 with mask 7FF)
+            var candumpCommand = canId.HasValue 
+                ? $"candump {_canInterface},{canId.Value:X}:7FF\n"
+                : $"candump {_canInterface}\n";
+            
+            LogCandumpCommandExecuting(_logger, candumpCommand.TrimEnd());
+            await candumpStream.WriteAsync(Encoding.UTF8.GetBytes(candumpCommand), token);
+            await candumpStream.FlushAsync(token);
 
-        LogCandumpStarted(_logger);
+            LogCandumpStarted(_logger);
 
-        var buffer = new StringBuilder();
-        var readBuffer = new byte[4096];
-        var candumpStarted = false;
+            var buffer = new StringBuilder();
+            var readBuffer = new byte[4096];
+            var candumpStarted = false;
 
-        // Skip initial shell output (login messages, command echo, etc.)
-        var startupTimeout = DateTime.UtcNow.AddSeconds(5);
-        while (!candumpStarted && DateTime.UtcNow < startupTimeout && !token.IsCancellationRequested)
-        {
-            if (_candumpStream.DataAvailable)
+            // Skip initial shell output (login messages, command echo, etc.)
+            var startupTimeout = DateTime.UtcNow.AddSeconds(5);
+            while (!candumpStarted && DateTime.UtcNow < startupTimeout && !token.IsCancellationRequested)
             {
-                var bytesRead = await _candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
-                if (bytesRead > 0)
+                if (candumpStream.DataAvailable)
                 {
-                    var output = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
-                    LogRawShellOutput(_logger, output);
-                    buffer.Append(output);
-                    
-                    // Wait until we see the command echo or a small delay passes
-                    // This ensures we skip the initial shell prompt and command echo
-                    if (buffer.ToString().Contains($"candump {_canInterface}"))
+                    var bytesRead = await candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
+                    if (bytesRead > 0)
                     {
-                        candumpStarted = true;
-                        buffer.Clear();
-                        LogCandumpOutputStarted(_logger);
-                    }
-                }
-            }
-            else
-            {
-                await Task.Delay(10, token);
-            }
-        }
-
-        if (!candumpStarted)
-        {
-            LogCandumpStartupTimeout(_logger);
-        }
-
-        buffer.Clear();
-
-        while (!token.IsCancellationRequested)
-        {
-            if (_candumpStream.DataAvailable)
-            {
-                var bytesRead = await _candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
-                if (bytesRead > 0)
-                {
-                    var rawData = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
-                    LogRawCandumpData(_logger, rawData);
-                    buffer.Append(rawData);
-                    
-                    // Process complete lines
-                    var lines = buffer.ToString().Replace("\r", "").Split('\n');
-                    for (int i = 0; i < lines.Length - 1; i++)
-                    {
-                        var line = lines[i];
+                        var output = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
+                        LogRawShellOutput(_logger, output);
+                        buffer.Append(output);
                         
-                        if (string.IsNullOrWhiteSpace(line))
-                            continue;
-                            
-                        if (line.Contains($"candump {_canInterface}"))
+                        // Wait until we see the command echo or a small delay passes
+                        // This ensures we skip the initial shell prompt and command echo
+                        if (buffer.ToString().Contains($"candump {_canInterface}"))
                         {
-                            LogSkippingCommandEcho(_logger, line);
-                            continue; // Skip command echo line
-                        }
-
-                        LogProcessingCandumpLine(_logger, line);
-                        var frame = ParseCandumpLine(line);
-                        if (frame != null)
-                        {
-                            LogReceivedCanFrame(_logger, frame.Id, frame.Data.Length);
-                            yield return frame;
+                            candumpStarted = true;
+                            buffer.Clear();
+                            LogCandumpOutputStarted(_logger);
                         }
                     }
-                    
-                    // Keep the last incomplete line in buffer
-                    buffer.Clear();
-                    buffer.Append(lines[^1]);
+                }
+                else
+                {
+                    await Task.Delay(10, token);
                 }
             }
-            else
+
+            if (!candumpStarted)
             {
-                await Task.Delay(10, token);
+                LogCandumpStartupTimeout(_logger);
+            }
+
+            buffer.Clear();
+
+            while (!token.IsCancellationRequested)
+            {
+                if (candumpStream.DataAvailable)
+                {
+                    var bytesRead = await candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
+                    if (bytesRead > 0)
+                    {
+                        var rawData = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
+                        LogRawCandumpData(_logger, rawData);
+                        buffer.Append(rawData);
+                        
+                        // Process complete lines
+                        var lines = buffer.ToString().Replace("\r", "").Split('\n');
+                        for (int i = 0; i < lines.Length - 1; i++)
+                        {
+                            var line = lines[i];
+                            
+                            if (string.IsNullOrWhiteSpace(line))
+                                continue;
+                                
+                            if (line.Contains($"candump {_canInterface}"))
+                            {
+                                LogSkippingCommandEcho(_logger, line);
+                                continue; // Skip command echo line
+                            }
+
+                            LogProcessingCandumpLine(_logger, line);
+                            var frame = ParseCandumpLine(line);
+                            if (frame != null)
+                            {
+                                LogReceivedCanFrame(_logger, frame.Id, frame.Data.Length);
+                                yield return frame;
+                            }
+                        }
+                        
+                        // Keep the last incomplete line in buffer
+                        buffer.Clear();
+                        buffer.Append(lines[^1]);
+                    }
+                }
+                else
+                {
+                    await Task.Delay(10, token);
+                }
             }
         }
-
-        LogCandumpStopped(_logger);
-        _candumpStream?.Dispose();
-        _candumpStream = null;
+        finally
+        {
+            // Properly terminate candump process with Ctrl+C before disposing
+            if (candumpStream != null)
+            {
+                try
+                {
+                    LogStoppingCandump(_logger);
+                    // Send Ctrl+C (ASCII 0x03) to terminate candump gracefully
+                    candumpStream.Write("\x03");
+                    await candumpStream.FlushAsync(CancellationToken.None);
+                    
+                    // Wait a bit for the process to terminate
+                    await Task.Delay(100, CancellationToken.None);
+                    
+                    candumpStream.Dispose();
+                    LogCandumpStopped(_logger);
+                }
+                catch (Exception ex)
+                {
+                    LogCandumpCleanupFailed(_logger, ex);
+                }
+            }
+        }
     }
 
     public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
@@ -279,7 +304,7 @@ public partial class SshCanBus : ICanBus, IDisposable
 
         LogDisposingSshCanBus(_logger);
 
-        _candumpStream?.Dispose();
+        // SSH client disposal will close all associated streams
         _sshClient?.Dispose();
         _connectionLock?.Dispose();
 
@@ -358,4 +383,10 @@ public partial class SshCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2125, Level = LogLevel.Debug, Message = "Disposing SSH CAN bus connection")]
     private static partial void LogDisposingSshCanBus(ILogger logger);
+
+    [LoggerMessage(EventId = 2126, Level = LogLevel.Debug, Message = "Stopping candump process")]
+    private static partial void LogStoppingCandump(ILogger logger);
+
+    [LoggerMessage(EventId = 2127, Level = LogLevel.Warning, Message = "Failed to cleanly stop candump process")]
+    private static partial void LogCandumpCleanupFailed(ILogger logger, Exception exception);
 }
