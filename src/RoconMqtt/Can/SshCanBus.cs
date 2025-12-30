@@ -105,6 +105,7 @@ public partial class SshCanBus : ICanBus, IDisposable
             ? $"candump {_canInterface},{canId.Value:X}:7FF\n"
             : $"candump {_canInterface}\n";
         
+        LogCandumpCommandExecuting(_logger, candumpCommand.TrimEnd());
         await _candumpStream.WriteAsync(Encoding.UTF8.GetBytes(candumpCommand), token);
         await _candumpStream.FlushAsync(token);
 
@@ -124,6 +125,7 @@ public partial class SshCanBus : ICanBus, IDisposable
                 if (bytesRead > 0)
                 {
                     var output = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
+                    LogRawShellOutput(_logger, output);
                     buffer.Append(output);
                     
                     // Wait until we see the command echo or a small delay passes
@@ -156,16 +158,27 @@ public partial class SshCanBus : ICanBus, IDisposable
                 var bytesRead = await _candumpStream.ReadAsync(readBuffer.AsMemory(0, readBuffer.Length), token);
                 if (bytesRead > 0)
                 {
-                    buffer.Append(Encoding.UTF8.GetString(readBuffer, 0, bytesRead));
+                    var rawData = Encoding.UTF8.GetString(readBuffer, 0, bytesRead);
+                    LogRawCandumpData(_logger, rawData);
+                    buffer.Append(rawData);
                     
                     // Process complete lines
                     var lines = buffer.ToString().Replace("\r", "").Split('\n');
                     for (int i = 0; i < lines.Length - 1; i++)
                     {
-                        if (lines[i].Contains($"candump {_canInterface}"))
+                        var line = lines[i];
+                        
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue;
+                            
+                        if (line.Contains($"candump {_canInterface}"))
+                        {
+                            LogSkippingCommandEcho(_logger, line);
                             continue; // Skip command echo line
+                        }
 
-                        var frame = ParseCandumpLine(lines[i]);
+                        LogProcessingCandumpLine(_logger, line);
+                        var frame = ParseCandumpLine(line);
                         if (frame != null)
                         {
                             LogReceivedCanFrame(_logger, frame.Id, frame.Data.Length);
@@ -198,6 +211,10 @@ public partial class SshCanBus : ICanBus, IDisposable
         if (_sshClient == null || !_sshClient.IsConnected)
             throw new InvalidOperationException("SSH client is not connected");
 
+        // Give candump time to start and be ready to receive frames
+        // This prevents missing the response when using SSH shell stream
+        await Task.Delay(500, token);
+
         try
         {
             // Format: cansend can0 180#D21DFA0A0601E0
@@ -207,7 +224,7 @@ public partial class SshCanBus : ICanBus, IDisposable
             LogSendingCanFrame(_logger, canId, data.Length, cansendCommand);
 
             var command = _sshClient.CreateCommand(cansendCommand);
-            var result = await Task.Run(() => command.Execute(), token);
+            _ = await Task.Run(() => command.Execute(), token);
 
             var exitStatus = command.ExitStatus ?? -1;
             if (exitStatus != 0)
@@ -291,8 +308,23 @@ public partial class SshCanBus : ICanBus, IDisposable
     [LoggerMessage(EventId = 2107, Level = LogLevel.Debug, Message = "candump started successfully")]
     private static partial void LogCandumpStarted(ILogger logger);
 
-    [LoggerMessage(EventId = 2117, Level = LogLevel.Debug, Message = "candump output stream ready, parsing CAN frames")]
+    [LoggerMessage(EventId = 2119, Level = LogLevel.Debug, Message = "Executing candump command: {Command}")]
+    private static partial void LogCandumpCommandExecuting(ILogger logger, string command);
+
+    [LoggerMessage(EventId = 2120, Level = LogLevel.Trace, Message = "Raw shell output: {Output}")]
+    private static partial void LogRawShellOutput(ILogger logger, string output);
+
+    [LoggerMessage(EventId = 2121, Level = LogLevel.Debug, Message = "candump output stream ready, parsing CAN frames")]
     private static partial void LogCandumpOutputStarted(ILogger logger);
+
+    [LoggerMessage(EventId = 2122, Level = LogLevel.Trace, Message = "Raw candump data: {Data}")]
+    private static partial void LogRawCandumpData(ILogger logger, string data);
+
+    [LoggerMessage(EventId = 2123, Level = LogLevel.Trace, Message = "Processing candump line: {Line}")]
+    private static partial void LogProcessingCandumpLine(ILogger logger, string line);
+
+    [LoggerMessage(EventId = 2124, Level = LogLevel.Trace, Message = "Skipping command echo: {Line}")]
+    private static partial void LogSkippingCommandEcho(ILogger logger, string line);
 
     [LoggerMessage(EventId = 2118, Level = LogLevel.Warning, Message = "Timeout waiting for candump to start - proceeding anyway")]
     private static partial void LogCandumpStartupTimeout(ILogger logger);
@@ -324,6 +356,6 @@ public partial class SshCanBus : ICanBus, IDisposable
     [LoggerMessage(EventId = 2116, Level = LogLevel.Error, Message = "cansend command failed with exit code {ExitCode}: {Error}")]
     private static partial void LogCansendFailed(ILogger logger, int exitCode, string error);
 
-    [LoggerMessage(EventId = 2117, Level = LogLevel.Debug, Message = "Disposing SSH CAN bus connection")]
+    [LoggerMessage(EventId = 2125, Level = LogLevel.Debug, Message = "Disposing SSH CAN bus connection")]
     private static partial void LogDisposingSshCanBus(ILogger logger);
 }
