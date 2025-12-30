@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Renci.SshNet;
 using RoconMqtt.Can.Models;
@@ -160,9 +159,12 @@ public partial class SshCanBus : ICanBus, IDisposable
                     buffer.Append(Encoding.UTF8.GetString(readBuffer, 0, bytesRead));
                     
                     // Process complete lines
-                    var lines = buffer.ToString().Split('\n');
+                    var lines = buffer.ToString().Replace("\r", "").Split('\n');
                     for (int i = 0; i < lines.Length - 1; i++)
                     {
+                        if (lines[i].Contains($"candump {_canInterface}"))
+                            continue; // Skip command echo line
+
                         var frame = ParseCandumpLine(lines[i]);
                         if (frame != null)
                         {

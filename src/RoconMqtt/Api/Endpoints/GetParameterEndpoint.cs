@@ -2,6 +2,7 @@ using FastEndpoints;
 using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
+using RoconMqtt.Mqtt.Options;
 
 namespace RoconMqtt.Api.Endpoints;
 
@@ -23,6 +24,13 @@ public sealed class GetParameterEndpoint(ICanService canService) : Endpoint<GetP
             s.Response<ParameterResponse>(200, "Successfully retrieved parameter value");
             s.Response(400, "Invalid request (device or parameter not found)");
             s.Response(408, "Timeout waiting for response from device");
+
+            s.ExampleRequest = new GetParameterRequest()
+            {
+                DeviceName = "HG1",
+                ParameterName = "OutdoorTemperature",
+                TimeoutMs = 30000
+            };
         });
     }
 
