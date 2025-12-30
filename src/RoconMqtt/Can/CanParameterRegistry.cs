@@ -142,7 +142,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: false,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
                     NameEnglish: "Hour"
@@ -162,7 +162,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: false,
                     WaterCircuit: false,
-                    BigEndian: true,
+                    BigEndian: false,
                     EnumValues: null,
                     DefaultTimeRange: null,
                     NameEnglish: "Minute"
@@ -3471,7 +3471,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: false,
                     WaterCircuit: false,
-                    BigEndian: false,
+                    BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
                     NameEnglish: "n"
@@ -3591,7 +3591,7 @@ public static class CanParameterRegistry
                     Default: null,
                     Display: false,
                     WaterCircuit: false,
-                    BigEndian: false,
+                    BigEndian: true,
                     EnumValues: null,
                     DefaultTimeRange: null,
                     NameEnglish: "Defrost   "

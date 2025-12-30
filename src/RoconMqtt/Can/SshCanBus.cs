@@ -289,9 +289,10 @@ public partial class SshCanBus : ICanBus, IDisposable
         }
     }
 
-    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token
-)
+    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
     {
+        await Task.Delay(1000, token);
+
         ArgumentNullException.ThrowIfNull(data);
         ObjectDisposedException.ThrowIf(_disposed, this);
 
