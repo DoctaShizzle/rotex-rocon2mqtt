@@ -14,6 +14,7 @@ namespace RoconMqtt.Can;
 /// </summary>
 public partial class SshCanBus : ICanBus, IDisposable
 {
+    private const string ConnectionType = "write";
     private readonly ILogger<SshCanBus> _logger;
     private readonly SshOptions _options;
     private readonly string _canInterface;
@@ -105,7 +106,7 @@ public partial class SshCanBus : ICanBus, IDisposable
             if (_writeSshClient?.IsConnected == true)
                 return;
 
-            LogConnectingToSshHost(_logger, _options.Host, _options.Port, _options.Username, "write");
+            LogConnectingToSshHost(_logger, _options.Host, _options.Port, _options.Username, ConnectionType);
 
             _writeSshClient?.Dispose();
             _writeSshClient = new SshClient(
@@ -121,7 +122,7 @@ public partial class SshCanBus : ICanBus, IDisposable
             };
 
             await Task.Run(() => _writeSshClient.Connect(), token);
-            LogSshConnected(_logger, _options.Host, "write");
+            LogSshConnected(_logger, _options.Host, ConnectionType);
 
             // Test if cansend exists
             var testCommand = _writeSshClient.CreateCommand("which cansend");
@@ -132,11 +133,11 @@ public partial class SshCanBus : ICanBus, IDisposable
                 throw new InvalidOperationException("cansend command not found on remote system. Please install can-utils package.");
             }
 
-            LogSshCanBusInitialized(_logger, _options.Host, _canInterface, "write");
+            LogSshCanBusInitialized(_logger, _options.Host, _canInterface, ConnectionType);
         }
         catch (Exception ex)
         {
-            LogSshConnectionFailed(_logger, ex, _options.Host, "write");
+            LogSshConnectionFailed(_logger, ex, _options.Host, ConnectionType);
             throw;
         }
         finally
@@ -277,7 +278,7 @@ public partial class SshCanBus : ICanBus, IDisposable
                     // Wait a bit for the process to terminate
                     await Task.Delay(100, CancellationToken.None);
                     
-                    candumpStream.Dispose();
+                    await candumpStream.DisposeAsync();
                     LogCandumpStopped(_logger);
                 }
                 catch (Exception ex)
@@ -288,7 +289,8 @@ public partial class SshCanBus : ICanBus, IDisposable
         }
     }
 
-    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
+    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token
+)
     {
         ArgumentNullException.ThrowIfNull(data);
         ObjectDisposedException.ThrowIf(_disposed, this);
