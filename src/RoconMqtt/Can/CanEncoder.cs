@@ -3,15 +3,8 @@ using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
-public partial class CanEncoder : ICanEncoder
+public partial class CanEncoder(ILogger<CanEncoder> logger) : ICanEncoder
 {
-    private readonly ILogger<CanEncoder> _logger;
-
-    public CanEncoder(ILogger<CanEncoder> logger)
-    {
-        _logger = logger;
-    }
-
     public byte[] Encode(CommunicationCommand command, InfoNumber info, object value)
     {
         // Validate command has header bytes
@@ -38,28 +31,28 @@ public partial class CanEncoder : ICanEncoder
         {
             isBigEndian = def.BigEndian;
             factor = def.Factor;
-            LogEncodingParameter(_logger, def.Name, info);
+            LogEncodingParameter(logger, def.Name, info);
         }
         else
         {
-            LogParameterDefinitionNotFound(_logger, info);
+            LogParameterDefinitionNotFound(logger, info);
         }
         
         // Value encoding
         if (value is int intValue)
         {
-            LogEncodingInt(_logger, intValue);
+            LogEncodingInt(logger, intValue);
             CanFrameHelper.EncodeInt16(frame, 5, intValue, isBigEndian);
         }
         else if (value is double doubleValue)
         {
             var intVal = (int)(doubleValue * factor);
-            LogEncodingDouble(_logger, doubleValue, factor, intVal);
+            LogEncodingDouble(logger, doubleValue, factor, intVal);
             CanFrameHelper.EncodeInt16(frame, 5, intVal, isBigEndian);
         }
         else if (value is bool boolValue)
         {
-            LogEncodingBool(_logger, boolValue);
+            LogEncodingBool(logger, boolValue);
             frame[5] = boolValue ? (byte)1 : (byte)0;
             frame[6] = 0;
         }
@@ -75,14 +68,14 @@ public partial class CanEncoder : ICanEncoder
             byte startQh = CanFrameHelper.MinutesToQuarterHour(startMinutes);
             byte endQh = CanFrameHelper.MinutesToQuarterHour(endMinutes);
             
-            LogEncodingTimeRange(_logger, timeRangeValue, startQh, endQh);
+            LogEncodingTimeRange(logger, timeRangeValue, startQh, endQh);
             
             frame[5] = startQh;
             frame[6] = endQh;
         }
         else
         {
-            LogUnsupportedValueType(_logger, value?.GetType().Name ?? "null");
+            LogUnsupportedValueType(logger, value?.GetType().Name ?? "null");
         }
         
         return frame;

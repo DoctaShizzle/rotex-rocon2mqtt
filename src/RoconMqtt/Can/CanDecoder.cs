@@ -3,28 +3,21 @@ using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
-public class CanDecoder : ICanDecoder
+public class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
 {
-    private readonly ILogger<CanDecoder> _logger;
-
-    public CanDecoder(ILogger<CanDecoder> logger)
-    {
-        _logger = logger;
-    }
-
     public DecodedParameter? Decode(byte[] data, CommunicationCommand command)
     {
         // Must be at least header + infoNumber + 2 bytes value
         if (data.Length < CanConstants.StandardFrameLength)
         {
-            _logger.LogDebug("Invalid CAN frame: too short (length={Length})", data.Length);
+            logger.LogDebug("Invalid CAN frame: too short (length={Length})", data.Length);
             return null;
         }
 
         // Validate command has expected header bytes
         if (command.Bytes.Length < 3)
         {
-            _logger.LogError("Communication command has invalid header (expected at least 3 bytes, got {Length})", 
+            logger.LogError("Communication command has invalid header (expected at least 3 bytes, got {Length})", 
                 command.Bytes.Length);
             return null;
         }
@@ -32,7 +25,7 @@ public class CanDecoder : ICanDecoder
         // Header check
         if (data[0] != command.Bytes[0] || data[1] != command.Bytes[1] || data[2] != command.Bytes[2])
         {
-            _logger.LogDebug("Invalid CAN frame: bad header ({High:X2} {Mid:X2} {Low:X2}), expected ({ExpHigh:X2} {ExpMid:X2} {ExpLow:X2})", 
+            logger.LogDebug("Invalid CAN frame: bad header ({High:X2} {Mid:X2} {Low:X2}), expected ({ExpHigh:X2} {ExpMid:X2} {ExpLow:X2})", 
                 data[0], data[1], data[2], command.Bytes[0], command.Bytes[1], command.Bytes[2]);
             return null;
         }
@@ -41,7 +34,7 @@ public class CanDecoder : ICanDecoder
 
         if (!CanParameterRegistry.Parameters.TryGetValue(info, out var def))
         {
-            _logger.LogDebug("Unknown parameter InfoNumber: {InfoNumber}", info);
+            logger.LogDebug("Unknown parameter InfoNumber: {InfoNumber}", info);
             return null;
         }
 
@@ -57,12 +50,12 @@ public class CanDecoder : ICanDecoder
                 _ => throw new NotSupportedException($"Type {def.Type} not supported")
             };
 
-            _logger.LogDebug("Decoded {ParameterName}: {Value}", def.Name, value);
+            logger.LogDebug("Decoded {ParameterName}: {Value}", def.Name, value);
             return new DecodedParameter(def.Name, value, def);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error decoding parameter {ParameterName}", def.Name);
+            logger.LogError(ex, "Error decoding parameter {ParameterName}", def.Name);
             return null;
         }
     }

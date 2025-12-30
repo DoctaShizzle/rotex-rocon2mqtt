@@ -22,9 +22,7 @@ public partial class SshCanBus : ICanBus, IDisposable
     private bool _disposed;
 
     // Regex to parse candump output: "can0  180   [7]  D2 1D FA 0A 06 01 E0"
-    private static readonly Regex CandumpRegex = new(
-        @"^\s*\w+\s+([0-9A-Fa-f]+)\s+\[(\d+)\]\s+([0-9A-Fa-f\s]+)",
-        RegexOptions.Compiled);
+    private static readonly Regex CandumpRegex = CanDumpRegex();
 
     public SshCanBus(ILogger<SshCanBus> logger, IOptions<CanOptions> options)
     {
@@ -37,12 +35,16 @@ public partial class SshCanBus : ICanBus, IDisposable
 
     private async Task EnsureConnectedAsync(CancellationToken token)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         if (_sshClient?.IsConnected == true)
             return;
 
         await _connectionLock.WaitAsync(token);
         try
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            
             if (_sshClient?.IsConnected == true)
                 return;
 
@@ -88,6 +90,8 @@ public partial class SshCanBus : ICanBus, IDisposable
 
     public async IAsyncEnumerable<CanFrame> ReadFramesAsync([EnumeratorCancellation] CancellationToken token, uint? canId = null)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         await EnsureConnectedAsync(token);
 
         if (_sshClient == null)
@@ -230,6 +234,7 @@ public partial class SshCanBus : ICanBus, IDisposable
     public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(data);
+        ObjectDisposedException.ThrowIf(_disposed, this);
 
         await EnsureConnectedAsync(token);
 
@@ -243,7 +248,7 @@ public partial class SshCanBus : ICanBus, IDisposable
         try
         {
             // Format: cansend can0 180#D21DFA0A0601E0
-            var dataHex = BitConverter.ToString(data).Replace("-", "");
+            var dataHex = Convert.ToHexString(data);
             var cansendCommand = $"cansend {_canInterface} {canId:X}#{dataHex}";
 
             LogSendingCanFrame(_logger, canId, data.Length, cansendCommand);
@@ -302,13 +307,14 @@ public partial class SshCanBus : ICanBus, IDisposable
         if (_disposed)
             return;
 
+        _disposed = true;
+
         LogDisposingSshCanBus(_logger);
 
         // SSH client disposal will close all associated streams
         _sshClient?.Dispose();
-        _connectionLock?.Dispose();
+        _connectionLock.Dispose();
 
-        _disposed = true;
         GC.SuppressFinalize(this);
     }
 
@@ -389,4 +395,7 @@ public partial class SshCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2127, Level = LogLevel.Warning, Message = "Failed to cleanly stop candump process")]
     private static partial void LogCandumpCleanupFailed(ILogger logger, Exception exception);
+
+    [GeneratedRegex(@"^\s*\w+\s+([0-9A-Fa-f]+)\s+\[(\d+)\]\s+([0-9A-Fa-f\s]+)", RegexOptions.Compiled)]
+    private static partial Regex CanDumpRegex();
 }

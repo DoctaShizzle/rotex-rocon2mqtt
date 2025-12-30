@@ -12,11 +12,12 @@ namespace RoconMqtt.Can;
 /// <summary>
 /// SocketCAN implementation of the CAN bus interface.
 /// </summary>
-public partial class SocketCanBus : ICanBus
+public partial class SocketCanBus : ICanBus, IDisposable
 {
     private readonly RawCanSocket _socket = new();
     private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
+    private bool _disposed;
 
     public SocketCanBus(ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
     {
@@ -43,6 +44,8 @@ public partial class SocketCanBus : ICanBus
 
     public async IAsyncEnumerable<CanFrameModel> ReadFramesAsync([EnumeratorCancellation] CancellationToken token, uint? canId = null)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         LogStartReadingCanFrames(_logger);
 
         // Apply hardware-level CAN filter if specified
@@ -107,6 +110,8 @@ public partial class SocketCanBus : ICanBus
 
     public Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         try
         {
             var frame = new SocketCANSharp.CanFrame(canId, data);
@@ -120,6 +125,17 @@ public partial class SocketCanBus : ICanBus
             LogFailedToSendCanFrame(_logger, ex, canId);
             throw;
         }
+    }
+
+    public void Dispose()
+    {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+
+        _socket.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [LoggerMessage(EventId = 2001, Level = LogLevel.Information, Message = "SocketCAN bus initialized on interface {InterfaceName}")]

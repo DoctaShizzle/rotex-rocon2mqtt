@@ -132,7 +132,7 @@ public class CanEncoderDecoderTests
         // Assert
         Assert.NotNull(decoded);
         Assert.Equal("BoolParam", decoded.Name);
-        Assert.Equal(true, (bool)decoded.Value);
+        Assert.True((bool)decoded.Value);
     }
 
     [Fact]
@@ -149,7 +149,7 @@ public class CanEncoderDecoderTests
         // Assert
         Assert.NotNull(decoded);
         Assert.Equal("BoolParamFalse", decoded.Name);
-        Assert.Equal(false, (bool)decoded.Value);
+        Assert.False((bool)decoded.Value);
     }
 
     [Fact]

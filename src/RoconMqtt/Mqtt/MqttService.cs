@@ -10,6 +10,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
     private readonly IMqttClient _client;
     private readonly MqttClientOptions _options;
     private readonly ILogger<MqttService> _logger;
+    private bool _disposed;
 
     public bool IsConnected => _client.IsConnected;
 
@@ -67,6 +68,8 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     public async Task ConnectAsync()
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         if (!_client.IsConnected)
         {
             try
@@ -85,6 +88,8 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     public async Task PublishAsync(string topic, string payload, CancellationToken cancellationToken = default)
     {
+        ObjectDisposedException.ThrowIf(_disposed, this);
+        
         if (!_client.IsConnected)
         {
             LogMqttClientNotConnected(_logger);
@@ -113,6 +118,11 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     public async ValueTask DisposeAsync()
     {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+
         try
         {
             if (_client.IsConnected)
@@ -120,11 +130,15 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                 LogDisconnectingFromMqttBroker(_logger);
                 await _client.DisconnectAsync();
             }
+            
+            _client.Dispose();
         }
         catch (Exception ex)
         {
             LogErrorDuringMqttDisconnection(_logger, ex);
         }
+        
+        GC.SuppressFinalize(this);
     }
 
     [LoggerMessage(EventId = 4001, Level = LogLevel.Debug, Message = "Configuring MQTT client for {Host}:{Port}")]
