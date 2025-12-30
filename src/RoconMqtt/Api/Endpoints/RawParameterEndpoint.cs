@@ -112,7 +112,10 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
                     Max = result.Definition.Max,
                     Default = result.Definition.Default,
                     Writeable = result.Definition.Writeable,
-                    Factor = result.Definition.Factor
+                    Factor = result.Definition.Factor,
+                    BigEndian = result.Definition.BigEndian,
+                    InfoNumberHigh = result.Definition.InfoNumber.High,
+                    InfoNumberLow = result.Definition.InfoNumber.Low,
                 }
             };
 

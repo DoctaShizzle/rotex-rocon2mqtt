@@ -34,7 +34,10 @@ public sealed class GetParametersEndpoint : EndpointWithoutRequest<ParametersRes
                     Max = p.Max,
                     Default = p.Default,
                     Writeable = p.Writeable,
-                    Factor = p.Factor
+                    Factor = p.Factor,
+                    BigEndian = p.BigEndian,
+                    InfoNumberHigh = p.InfoNumber.High,
+                    InfoNumberLow = p.InfoNumber.Low,
                 }
             })
             .ToList();

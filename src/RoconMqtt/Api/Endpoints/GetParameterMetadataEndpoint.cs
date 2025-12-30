@@ -54,7 +54,10 @@ public sealed class GetParameterMetadataEndpoint : Endpoint<GetParameterMetadata
                 Max = parameter.Max,
                 Default = parameter.Default,
                 Writeable = parameter.Writeable,
-                Factor = parameter.Factor
+                Factor = parameter.Factor,
+                BigEndian = parameter.BigEndian,
+                InfoNumberHigh = parameter.InfoNumber.High,
+                InfoNumberLow = parameter.InfoNumber.Low,
             }
         };
 
