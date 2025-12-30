@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using RoconMqtt.Can;
+using RoconMqtt.Can.Extensions.DependencyInjection;
 using RoconMqtt.Can.Options;
 using RoconMqtt.Mqtt;
 using RoconMqtt.Mqtt.Options;
@@ -80,22 +81,21 @@ public static class Program
             */
             
 
-            Host.CreateDefaultBuilder(args)
+            await Host.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .ConfigureServices((ctx, services) =>
                 {
-                    services.AddSingleton<ICanReader, SocketCanReader>();
-                    services.AddSingleton<ICanDecoder, CanDecoder>();
-                    services.AddSingleton<ICanEncoder, CanEncoder>();
-                    services.AddSingleton<IRoconService, RoconService>();
+                    services.AddCanService(ctx.Configuration)
+                    .WithSocketCanReader();
+
+                    //TODO: put in extensions/builders
                     services.Configure<MqttOptions>(ctx.Configuration.GetSection("Mqtt"));
-                    services.Configure<CanOptions>(ctx.Configuration.GetSection("Can"));
                     services.AddSingleton<IMqttService, MqttService>();
                     services.AddSingleton<RoconMqttPublisher>();
                     services.AddHostedService<RoconMqttPublisher>();
                 })
                 .Build()
-                .Run();
+                .RunAsync();
         }
         catch (Exception ex)
         {
@@ -103,7 +103,7 @@ public static class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
         }
     }
 }

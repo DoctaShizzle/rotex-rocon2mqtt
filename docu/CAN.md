@@ -9,7 +9,7 @@ The RoconMqtt system communicates with Rotex Rocon G1 heating controllers over C
 ```mermaid
 graph TB
     subgraph Application
-        RS[RoconService]
+        RS[CanService]
         MQTT[MqttPublisher]
     end
     
@@ -496,7 +496,7 @@ The system implements a polling mechanism to regularly query parameter values fr
    ```
 
 2. **Polling Loop** - `RoconMqttPublisher` iterates through all device/parameter combinations:
-   - Sends GET request via `RoconService.SendRequestAsync(deviceName, paramName, CommandType.Get, null, token)`
+   - Sends GET request via `CanService.SendRequestAsync(deviceName, paramName, CommandType.Get, null, token)`
    - Waits for ANSWER response (with timeout)
    - Publishes decoded parameter to MQTT topic
    - Repeats for next parameter after timeout or successful response
@@ -512,7 +512,7 @@ The system implements a polling mechanism to regularly query parameter values fr
 ```mermaid
 sequenceDiagram
     participant Publisher as RoconMqttPublisher
-    participant Service as RoconService
+    participant Service as CanService
     participant CAN as CAN Bus
     participant Controller as Rocon G1
     participant MQTT as MQTT Broker
@@ -532,7 +532,7 @@ sequenceDiagram
 
 ## API Reference
 
-### RoconService
+### CanService
 
 **Methods:**
 - `SendRequestAsync(string deviceName, string parameterName, CommandType commandType, object? value, CancellationToken token)` - Send GET or SET request for a specific device and parameter. CommandType determines request type:
@@ -639,8 +639,8 @@ sequenceDiagram
 ## Related Files
 
 - `RoconMqttPublisher.cs` - Background service implementing GET/ANSWER polling cycle
-- `RoconService.cs` - CAN communication service with GET/SET request methods
-- `IRoconService.cs` - Service interface for CAN communication
+- `CanService.cs` - CAN communication service with GET/SET request methods
+- `ICanService.cs` - Service interface for CAN communication
 
 - `CanParameterRegistry.cs` - Central parameter and device registry (~4800 parameters)
 - `CanDecoder.cs` - Decodes CAN frames to parameter values

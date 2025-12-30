@@ -6,13 +6,13 @@ using RoconMqtt.Mqtt;
 
 namespace RoconMqtt.Can;
 
-internal partial class RoconService(ICanReader canReader, ICanDecoder canDecoder, ICanEncoder canEncoder, IOptions<CanOptions> canOptions, ILogger<RoconService> logger) : IRoconService
+internal partial class CanService(ICanReader canReader, ICanDecoder canDecoder, ICanEncoder canEncoder, IOptions<CanOptions> canOptions, ILogger<CanService> logger) : ICanService
 {
     private readonly ICanReader _canReader = canReader ?? throw new ArgumentNullException(nameof(canReader));
     private readonly ICanDecoder _canDecoder = canDecoder ?? throw new ArgumentNullException(nameof(canDecoder));
     private readonly ICanEncoder _canEncoder = canEncoder ?? throw new ArgumentNullException(nameof(canEncoder));
     private readonly IOptions<CanOptions> _canOptions = canOptions ?? throw new ArgumentNullException(nameof(canOptions));
-    private readonly ILogger<RoconService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILogger<CanService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
     {

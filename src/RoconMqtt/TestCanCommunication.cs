@@ -42,7 +42,7 @@ public class TestCanCommunication
         services.AddSingleton<ICanReader, SocketCanReader>();
         services.AddSingleton<ICanDecoder, CanDecoder>();
         services.AddSingleton<ICanEncoder, CanEncoder>();
-        services.AddSingleton<IRoconService, RoconService>();
+        services.AddSingleton<ICanService, CanService>();
 
         var serviceProvider = services.BuildServiceProvider();
 
@@ -56,7 +56,7 @@ public class TestCanCommunication
         Console.WriteLine($"Response timeout: {responseTimeoutMs}ms\n");
 
         // Get services
-        var roconService = serviceProvider.GetRequiredService<IRoconService>();
+        var roconService = serviceProvider.GetRequiredService<ICanService>();
         var logger = serviceProvider.GetRequiredService<ILogger<TestCanCommunication>>();
 
         // Storage for responses

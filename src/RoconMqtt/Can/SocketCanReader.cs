@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Models;
+using RoconMqtt.Can.Options;
 using SocketCANSharp.Network;
 using System.Runtime.CompilerServices;
 
@@ -7,29 +9,34 @@ namespace RoconMqtt.Can;
 
 public partial class SocketCanReader : ICanReader
 {
-    private readonly string _interfaceName = "can0";
-    private readonly RawCanSocket _socket;
+    private readonly RawCanSocket _socket = new();
     private readonly ILogger<SocketCanReader> _logger;
+    private readonly CanOptions _options;
 
-    public SocketCanReader(ILogger<SocketCanReader> logger)
+    public SocketCanReader(ILogger<SocketCanReader> logger, IOptions<CanOptions> options)
     {
         _logger = logger;
+        _options = options.Value;
+
+        Init();
+    }
+
+    private void Init()
+    {
         try
         {
-            _socket = new RawCanSocket();
-            var iface = new CanNetworkInterface(0, _interfaceName, false);
+            var iface = new CanNetworkInterface(0, _options.CanInterfaceName, false);
             _socket.Bind(iface);
-            LogSocketCanInitialized(_logger, _interfaceName);
+            LogSocketCanInitialized(_logger, _options.CanInterfaceName);
         }
         catch (Exception ex)
         {
-            LogSocketCanInitializationFailed(_logger, ex, _interfaceName);
+            LogSocketCanInitializationFailed(_logger, ex, _options.CanInterfaceName);
             throw;
         }
     }
 
-    public async IAsyncEnumerable<CanFrame> ReadFramesAsync(
-        [EnumeratorCancellation] CancellationToken token)
+    public async IAsyncEnumerable<CanFrame> ReadFramesAsync([EnumeratorCancellation] CancellationToken token)
     {
         LogStartReadingCanFrames(_logger);
         

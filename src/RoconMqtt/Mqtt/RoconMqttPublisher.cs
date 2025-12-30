@@ -9,10 +9,10 @@ using System.Text.Json;
 
 namespace RoconMqtt.Mqtt;
 
-public class RoconMqttPublisher(IRoconService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ILogger<RoconMqttPublisher> logger) : BackgroundService
+public class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ILogger<RoconMqttPublisher> logger) : BackgroundService
 {
     private readonly MqttOptions _options = options.Value;
-    private readonly IRoconService _roconService = roconService ?? throw new ArgumentNullException(nameof(roconService));
+    private readonly ICanService _roconService = roconService ?? throw new ArgumentNullException(nameof(roconService));
     private readonly IMqttService _mqtt = mqtt;
     private readonly ILogger<RoconMqttPublisher> _logger = logger;
     private readonly ConcurrentDictionary<string, TaskCompletionSource<DecodedParameter>> _pendingRequests = new();
