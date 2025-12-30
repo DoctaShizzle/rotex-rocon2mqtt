@@ -18,6 +18,11 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     private readonly ILogger<RoconMqttPublisher> _logger = logger;
     private readonly ResiliencePipelineFactory _resilienceFactory = resilienceFactory ?? throw new ArgumentNullException(nameof(resilienceFactory));
 
+    /// <summary>
+    /// Gets or sets a value indicating whether the feature is enabled.
+    /// </summary>
+    public bool Enabled { get; set; } = options.Value.Enabled;
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         LogPublisherStarted(_logger);
@@ -40,6 +45,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         {
             try
             {
+                // Check if publisher is enabled
+                if (!_options.Enabled)
+                {
+                    LogPublisherDisabled(_logger);
+                    await Task.Delay(_options.PollingIntervalMs, stoppingToken);
+                    continue;
+                }
+
                 // Loop over all configured devices and parameters
                 foreach (var deviceName in _options.Devices)
                 {
@@ -133,4 +146,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4010, Level = LogLevel.Warning, Message = "Circuit breaker open for device {DeviceName} parameter {ParameterName}, skipping query")]
     private static partial void LogCircuitBreakerOpenForQuery(ILogger logger, string deviceName, string parameterName);
+
+    [LoggerMessage(EventId = 4011, Level = LogLevel.Debug, Message = "Publisher is disabled, skipping polling cycle")]
+    private static partial void LogPublisherDisabled(ILogger logger);
 }

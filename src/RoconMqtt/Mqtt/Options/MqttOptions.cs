@@ -3,6 +3,12 @@
 public class MqttOptions
 {
     /// <summary>
+    /// Enable or disable the MQTT publisher, on start of the application.
+    /// Default is true.
+    /// </summary>
+    public bool Enabled { get; set; } = true;
+
+    /// <summary>
     /// mqtt broker host
     /// </summary>
     public required string Host { get; set; }
