@@ -3,39 +3,53 @@ using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
-public class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
+public partial class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
 {
-    public DecodedParameter? Decode(byte[] data, CommunicationCommand command)
+    public DecodedParameter? Decode(byte[] data, CommunicationCommand command, DecodingHints? hints = null)
     {
         // Must be at least header + infoNumber + 2 bytes value
         if (data.Length < CanConstants.StandardFrameLength)
         {
-            logger.LogDebug("Invalid CAN frame: too short (length={Length})", data.Length);
+            LogInvalidCanFrameTooShort(logger, data.Length);
             return null;
         }
 
         // Validate command has expected header bytes
         if (command.Bytes.Length < 3)
         {
-            logger.LogError("Communication command has invalid header (expected at least 3 bytes, got {Length})", 
-                command.Bytes.Length);
+            LogCommunicationCommandInvalidHeader(logger, command.Bytes.Length);
             return null;
         }
         
         // Header check
         if (data[0] != command.Bytes[0] || data[1] != command.Bytes[1] || data[2] != command.Bytes[2])
         {
-            logger.LogDebug("Invalid CAN frame: bad header ({High:X2} {Mid:X2} {Low:X2}), expected ({ExpHigh:X2} {ExpMid:X2} {ExpLow:X2})", 
-                data[0], data[1], data[2], command.Bytes[0], command.Bytes[1], command.Bytes[2]);
+            LogInvalidCanFrameBadHeader(logger, data[0], data[1], data[2], command.Bytes[0], command.Bytes[1], command.Bytes[2]);
             return null;
         }
 
         var info = new InfoNumber(data[3], data[4]);
 
+        // Try to get parameter definition from registry
         if (!CanParameterRegistry.Parameters.TryGetValue(info, out var def))
         {
-            logger.LogDebug("Unknown parameter InfoNumber: {InfoNumber}", info);
-            return null;
+            // Use hints if parameter not in registry
+            if (hints == null)
+            {
+                LogUnknownParameterInfoNumber(logger, info);
+                return null;
+            }
+            
+            // Create a temporary definition from hints
+            def = new ParameterDefinition(
+                OriginalName: hints.ParameterName,
+                InfoNumber: info,
+                Type: hints.ParameterType,
+                Factor: hints.Factor,
+                BigEndian: hints.BigEndian
+            );
+            
+            LogDecodingUnknownParameterWithHints(logger, hints.ParameterName);
         }
 
         try
@@ -50,12 +64,12 @@ public class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
                 _ => throw new NotSupportedException($"Type {def.Type} not supported")
             };
 
-            logger.LogDebug("Decoded {ParameterName}: {Value}", def.Name, value);
+            LogDecodedParameter(logger, def.Name, value);
             return new DecodedParameter(def.Name, value, def);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error decoding parameter {ParameterName}", def.Name);
+            LogErrorDecodingParameter(logger, ex, def.Name);
             return null;
         }
     }
@@ -84,4 +98,25 @@ public class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
 
         return $"{CanFrameHelper.FormatMinutesToTime(startMinutes)}-{CanFrameHelper.FormatMinutesToTime(endMinutes)}";
     }
+
+    [LoggerMessage(LogLevel.Debug, "Invalid CAN frame: too short (length={Length})")]
+    private static partial void LogInvalidCanFrameTooShort(ILogger logger, int length);
+
+    [LoggerMessage(LogLevel.Error, "Communication command has invalid header (expected at least 3 bytes, got {Length})")]
+    private static partial void LogCommunicationCommandInvalidHeader(ILogger logger, int length);
+
+    [LoggerMessage(LogLevel.Debug, "Invalid CAN frame: bad header ({High:X2} {Mid:X2} {Low:X2}), expected ({ExpHigh:X2} {ExpMid:X2} {ExpLow:X2})")]
+    private static partial void LogInvalidCanFrameBadHeader(ILogger logger, byte high, byte mid, byte low, byte expHigh, byte expMid, byte expLow);
+
+    [LoggerMessage(LogLevel.Debug, "Unknown parameter InfoNumber: {InfoNumber}")]
+    private static partial void LogUnknownParameterInfoNumber(ILogger logger, InfoNumber infoNumber);
+
+    [LoggerMessage(LogLevel.Debug, "Decoding unknown parameter with hints: {ParameterName}")]
+    private static partial void LogDecodingUnknownParameterWithHints(ILogger logger, string parameterName);
+
+    [LoggerMessage(LogLevel.Debug, "Decoded {ParameterName}: {Value}")]
+    private static partial void LogDecodedParameter(ILogger logger, string parameterName, object value);
+
+    [LoggerMessage(LogLevel.Error, "Error decoding parameter {ParameterName}")]
+    private static partial void LogErrorDecodingParameter(ILogger logger, Exception ex, string parameterName);
 }

@@ -115,6 +115,21 @@ public sealed class RawParameterRequest
     /// Timeout in milliseconds to wait for response (default: 30000)
     /// </summary>
     public int TimeoutMs { get; set; } = 30000;
+
+    /// <summary>
+    /// Parameter type for encoding/decoding unknown parameters (Int, Float, Bool, TimeRange, Enum). Default: Int
+    /// </summary>
+    public string? ParameterType { get; set; }
+
+    /// <summary>
+    /// Whether to use big-endian encoding/decoding for unknown parameters. Default: false
+    /// </summary>
+    public bool? BigEndian { get; set; }
+
+    /// <summary>
+    /// Factor to multiply/divide by when encoding/decoding float values for unknown parameters. Default: 1.0
+    /// </summary>
+    public double? Factor { get; set; }
 }
 
 /// <summary>

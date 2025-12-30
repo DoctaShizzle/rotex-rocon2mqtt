@@ -10,6 +10,7 @@ public interface ICanEncoder
     /// <param name="command">Communication command containing the header bytes and CAN ID to use</param>
     /// <param name="info">Parameter InfoNumber</param>
     /// <param name="value">Parameter value to encode</param>
+    /// <param name="hints">Optional encoding hints for unknown parameters (ignored if parameter is in registry)</param>
     /// <returns>7-byte CAN frame (for ANSWER) or 8-byte frame (for GET/SET)</returns>
-    byte[] Encode(CommunicationCommand command, InfoNumber info, object value);
+    byte[] Encode(CommunicationCommand command, InfoNumber info, object value, EncodingHints? hints = null);
 }

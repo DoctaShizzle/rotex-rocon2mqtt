@@ -5,7 +5,7 @@ namespace RoconMqtt.Can;
 
 public partial class CanEncoder(ILogger<CanEncoder> logger) : ICanEncoder
 {
-    public byte[] Encode(CommunicationCommand command, InfoNumber info, object value)
+    public byte[] Encode(CommunicationCommand command, InfoNumber info, object value, EncodingHints? hints = null)
     {
         // Validate command has header bytes
         if (command.Bytes.Length < 3)
@@ -25,10 +25,12 @@ public partial class CanEncoder(ILogger<CanEncoder> logger) : ICanEncoder
         frame[4] = info.Low;
         
         // Look up parameter definition to determine encoding rules
-        var isBigEndian = false;
-        var factor = 1.0;
+        var isBigEndian = hints?.BigEndian ?? false;
+        var factor = hints?.Factor ?? 1.0;
+        
         if (CanParameterRegistry.Parameters.TryGetValue(info, out var def))
         {
+            // Use registry definition (overrides hints)
             isBigEndian = def.BigEndian;
             factor = def.Factor;
             LogEncodingParameter(logger, def.Name, info);

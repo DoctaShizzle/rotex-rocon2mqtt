@@ -36,7 +36,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
             throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
         }
 
-        await SendRequestByInfoNumberAsync(deviceName, paramDef.InfoNumber, commandType, value, token);
+        await SendRequestByInfoNumberAsync(deviceName, paramDef.InfoNumber, commandType, value, null, token);
         LogRequestSentSuccessfully(_logger, deviceName, parameterName, commandType);
     }
 
@@ -53,7 +53,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
             throw new ArgumentException($"Parameter '{parameterName}' not found in registry", nameof(parameterName));
         }
 
-        await ListenForResponsesByInfoNumberAsync(commandType, deviceName, paramDef.InfoNumber, responseAction, token);
+        await ListenForResponsesByInfoNumberAsync(commandType, deviceName, paramDef.InfoNumber, null, responseAction, token);
     }
 
     /// <inheritdoc/>
@@ -81,6 +81,14 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     /// <inheritdoc/>
     public async Task<DecodedParameter> SendRawRequestAndWaitForResponseAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, int timeoutMs, CancellationToken token)
     {
+        return await SendRawRequestAndWaitForResponseAsync(deviceName, infoNumber, commandType, value, timeoutMs, null, null, token);
+    }
+
+    /// <summary>
+    /// Sends a raw CAN request using InfoNumber and waits for a response with optional encoding/decoding hints for unknown parameters
+    /// </summary>
+    public async Task<DecodedParameter> SendRawRequestAndWaitForResponseAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, int timeoutMs, EncodingHints? encodingHints, DecodingHints? decodingHints, CancellationToken token)
+    {
         ArgumentNullException.ThrowIfNull(deviceName);
 
         if (commandType == CommandType.Answer)
@@ -95,7 +103,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         {
             try
             {
-                await ListenForResponsesByInfoNumberAsync(CommandType.Answer, deviceName, infoNumber, async decodedParameter =>
+                await ListenForResponsesByInfoNumberAsync(CommandType.Answer, deviceName, infoNumber, decodingHints, async decodedParameter =>
                 {
                     tcs.TrySetResult(decodedParameter);
                     await listenCts.CancelAsync();
@@ -110,7 +118,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
 
         try
         {
-            await SendRequestByInfoNumberAsync(deviceName, infoNumber, commandType, value, token);
+            await SendRequestByInfoNumberAsync(deviceName, infoNumber, commandType, value, encodingHints, token);
 
             using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(token);
             timeoutCts.CancelAfter(timeoutMs);
@@ -140,7 +148,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     /// <summary>
     /// Centralized method to send a request by InfoNumber
     /// </summary>
-    private async Task SendRequestByInfoNumberAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, CancellationToken token)
+    private async Task SendRequestByInfoNumberAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, EncodingHints? encodingHints, CancellationToken token)
     {
         // Get the specific device by name
         var device = CanParameterRegistry.GetDevice(deviceName);
@@ -161,7 +169,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
 
         // For GET requests, value is ignored (use 0). For SET, use the provided value
         var encodedValue = commandType == CommandType.Get ? 0 : (value ?? 0);
-        var frameData = _canEncoder.Encode(command, infoNumber, encodedValue);
+        var frameData = _canEncoder.Encode(command, infoNumber, encodedValue, encodingHints);
 
         // Send the frame using the command's CAN ID
         LogEncodedFrameDataByInfoNumber(_logger, deviceName, infoNumber.High, infoNumber.Low, commandType, command.CanId);
@@ -171,7 +179,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     /// <summary>
     /// Centralized method to listen for responses by InfoNumber
     /// </summary>
-    private async Task ListenForResponsesByInfoNumberAsync(CommandType commandType, string deviceName, InfoNumber infoNumber, Func<DecodedParameter, Task> responseAction, CancellationToken token)
+    private async Task ListenForResponsesByInfoNumberAsync(CommandType commandType, string deviceName, InfoNumber infoNumber, DecodingHints? decodingHints, Func<DecodedParameter, Task> responseAction, CancellationToken token)
     {
         // Get the specific device by name
         var device = CanParameterRegistry.GetDevice(deviceName);
@@ -199,7 +207,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
                 LogProcessingFrame(_logger, frame.Id);
                 
                 // Decode using the specified command
-                var decoded = _canDecoder.Decode(frame.Data, command);
+                var decoded = _canDecoder.Decode(frame.Data, command, decodingHints);
                 
                 if (decoded != null)
                 {

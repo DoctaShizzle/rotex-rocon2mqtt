@@ -19,7 +19,7 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
         Summary(s =>
         {
             s.Summary = "Send a raw parameter request using InfoNumber";
-            s.Description = "Lower-level endpoint that works directly with InfoNumbers. Sends GET/SET request and waits for ANSWER response.";
+            s.Description = "Lower-level endpoint that works directly with InfoNumbers. Sends GET/SET request and waits for ANSWER response. Supports unknown parameters via optional hints.";
             s.Response<ParameterResponse>(200, "Successfully received response");
             s.Response(400, "Invalid request (device not found or invalid command type)");
             s.Response(408, "Timeout waiting for response from device");
@@ -30,7 +30,10 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
                 InfoNumberLow = 0x06,
                 CommandType = "Get",
                 Value = null,
-                TimeoutMs = 30000
+                TimeoutMs = 30000,
+                ParameterType = "Int",
+                BigEndian = false,
+                Factor = 1.0
             };
         });
     }
@@ -53,6 +56,33 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
             ThrowError("Cannot use CommandType 'Answer' - it is only for responses from the controller");
         }
 
+        // Create hints if any hint fields are provided
+        EncodingHints? encodingHints = null;
+        DecodingHints? decodingHints = null;
+
+        if (req.ParameterType != null || req.BigEndian != null || req.Factor != null)
+        {
+            // Parse parameter type
+            var paramType = ParameterType.Int;
+            if (req.ParameterType != null && !Enum.TryParse<ParameterType>(req.ParameterType, ignoreCase: true, out paramType))
+            {
+                ThrowError($"Invalid ParameterType: {req.ParameterType}. Valid values are: Int, Float, Bool, TimeRange, Enum");
+            }
+
+            encodingHints = new EncodingHints(
+                ParameterType: paramType,
+                BigEndian: req.BigEndian ?? false,
+                Factor: req.Factor ?? 1.0
+            );
+
+            decodingHints = new DecodingHints(
+                ParameterName: "UnknownParameter",
+                ParameterType: paramType,
+                BigEndian: req.BigEndian ?? false,
+                Factor: req.Factor ?? 1.0
+            );
+        }
+
         try
         {
             var infoNumber = new InfoNumber(req.InfoNumberHigh, req.InfoNumberLow);
@@ -63,6 +93,8 @@ public sealed class RawParameterEndpoint(ICanService canService) : Endpoint<RawP
                 commandType,
                 req.Value,
                 req.TimeoutMs,
+                encodingHints,
+                decodingHints,
                 ct);
 
             var response = result.ToParameterResponse();

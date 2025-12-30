@@ -74,4 +74,9 @@ public interface ICanService
     /// <returns>A task that represents the asynchronous operation. The task result contains a DecodedParameter object with the
     /// response from the device.</returns>
     Task<DecodedParameter> SendRawRequestAndWaitForResponseAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, int timeoutMs, CancellationToken token);
+
+    /// <summary>
+    /// Sends a raw command request using InfoNumber with encoding/decoding hints and waits asynchronously for a decoded response.
+    /// </summary>
+    Task<DecodedParameter> SendRawRequestAndWaitForResponseAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, int timeoutMs, EncodingHints? encodingHints, DecodingHints? decodingHints, CancellationToken token);
 }
