@@ -1,15 +1,15 @@
 ﻿namespace RoconMqtt;
 
-using FastEndpoints;
 using RoconMqtt.Api.Models;
 using System.Text.Json.Serialization;
 
 /// <summary>
-/// Fix Linux ARM64 STJ source-gen issue for FastEndpoints
+/// JSON serialization context for Linux ARM64 STJ source-gen
 /// </summary>
-[JsonSerializable(typeof(ErrorResponse))]
 [JsonSerializable(typeof(GetParameterRequest))]
+[JsonSerializable(typeof(GetParameterMetadataRequest))]
 [JsonSerializable(typeof(SetParameterRequest))]
+[JsonSerializable(typeof(GetParametersBulkRequest))]
 [JsonSerializable(typeof(RawParameterRequest))]
 [JsonSerializable(typeof(ParameterResponse))]
 [JsonSerializable(typeof(ParameterMetadata))]

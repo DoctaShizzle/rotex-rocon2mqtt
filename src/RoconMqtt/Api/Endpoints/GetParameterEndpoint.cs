@@ -1,64 +1,57 @@
-using FastEndpoints;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
-using RoconMqtt.Mqtt.Options;
 
 namespace RoconMqtt.Api.Endpoints;
 
 /// <summary>
 /// Endpoint to query a parameter value from a device
 /// </summary>
-public sealed class GetParameterEndpoint(ICanService canService) : Endpoint<GetParameterRequest, ParameterResponse>
+public static class GetParameterEndpoint
 {
-    private readonly ICanService _canService = canService;
-
-    public override void Configure()
+    public static RouteHandlerBuilder MapGetParameterEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Get("/parameters/get");
-        AllowAnonymous();
-        Summary(s =>
+        return endpoints.MapGet("/parameters/get", async Task<Results<Ok<ParameterResponse>, BadRequest<ProblemDetails>, StatusCodeHttpResult>> (
+            [FromQuery] string deviceName,
+            [FromQuery] string parameterName,
+            [FromQuery] int timeoutMs = 30000,
+            [FromServices] ICanService canService = null!,
+            CancellationToken ct = default) =>
         {
-            s.Summary = "Query a parameter value from a device";
-            s.Description = "Sends a GET request to the specified device to read a parameter value";
-            s.Response<ParameterResponse>(200, "Successfully retrieved parameter value");
-            s.Response(400, "Invalid request (device or parameter not found)");
-            s.Response(408, "Timeout waiting for response from device");
-
-            s.ExampleRequest = new GetParameterRequest()
+            try
             {
-                DeviceName = "HG1",
-                ParameterName = "OutdoorTemperature",
-                TimeoutMs = 30000
-            };
-        });
-    }
+                var result = await canService.SendRequestAndWaitForResponseAsync(
+                    deviceName,
+                    parameterName,
+                    CommandType.Get,
+                    null,
+                    timeoutMs,
+                    ct);
 
-    public override async Task HandleAsync(GetParameterRequest req, CancellationToken ct)
-    {
-        try
-        {
-            var result = await _canService.SendRequestAndWaitForResponseAsync(
-                req.DeviceName,
-                req.ParameterName,
-                CommandType.Get,
-                null,
-                req.TimeoutMs,
-                ct);
-
-            var response = result.ToParameterResponse();
-
-            await Send.OkAsync(response, ct);
-        }
-        catch (ArgumentException ex)
-        {
-            await Send.ErrorsAsync(400, ct);
-            ThrowError(ex.Message);
-        }
-        catch (TimeoutException)
-        {
-            await Send.ErrorsAsync(408, ct);
-            ThrowError("Timeout waiting for response from device");
-        }
+                var response = result.ToParameterResponse();
+                return TypedResults.Ok(response);
+            }
+            catch (ArgumentException ex)
+            {
+                return TypedResults.BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid request",
+                    Detail = ex.Message
+                });
+            }
+            catch (TimeoutException)
+            {
+                return TypedResults.StatusCode(StatusCodes.Status408RequestTimeout);
+            }
+        })
+        .WithName("GetParameter")
+        .WithSummary("Query a parameter value from a device")
+        .WithDescription("Sends a GET request to the specified device to read a parameter value. Example: deviceName=HG1&parameterName=OutdoorTemperature&timeoutMs=30000")
+        .Produces<ParameterResponse>(StatusCodes.Status200OK)
+        .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
+        .Produces(StatusCodes.Status408RequestTimeout);
     }
 }

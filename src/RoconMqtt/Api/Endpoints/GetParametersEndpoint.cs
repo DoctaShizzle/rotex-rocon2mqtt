@@ -1,4 +1,3 @@
-using FastEndpoints;
 using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 
@@ -7,27 +6,21 @@ namespace RoconMqtt.Api.Endpoints;
 /// <summary>
 /// Endpoint to list all available parameters
 /// </summary>
-public sealed class GetParametersEndpoint : EndpointWithoutRequest<ParametersResponse>
+public static class GetParametersEndpoint
 {
-    public override void Configure()
+    public static RouteHandlerBuilder MapGetParametersEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Get("/parameters");
-        AllowAnonymous();
-        Summary(s =>
+        return endpoints.MapGet("/parameters", () =>
         {
-            s.Summary = "List all available parameters";
-            s.Description = "Returns a list of all available parameters (~4800 parameters from the registry)";
-            s.Response<ParametersResponse>(200, "Successfully retrieved parameter list");
-        });
-    }
+            var parameters = CanParameterRegistry.Parameters.Values
+                .Select(p => p.ToParameterInfo())
+                .ToList();
 
-    public override async Task HandleAsync(CancellationToken ct)
-    {
-        var parameters = CanParameterRegistry.Parameters.Values
-            .Select(p => p.ToParameterInfo())
-            .ToList();
-
-        var response = new ParametersResponse { Parameters = parameters };
-        await Send.OkAsync(response, ct);
+            return TypedResults.Ok(new ParametersResponse { Parameters = parameters });
+        })
+        .WithName("GetParameters")
+        .WithSummary("List all available parameters")
+        .WithDescription("Returns a list of all available parameters (~4800 parameters from the registry)")
+        .Produces<ParametersResponse>(StatusCodes.Status200OK);
     }
 }

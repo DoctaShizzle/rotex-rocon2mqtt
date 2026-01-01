@@ -1,4 +1,5 @@
-using FastEndpoints;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 
@@ -7,34 +8,27 @@ namespace RoconMqtt.Api.Endpoints;
 /// <summary>
 /// Endpoint to get metadata for a specific parameter
 /// </summary>
-public sealed class GetParameterMetadataEndpoint : Endpoint<GetParameterMetadataRequest, ParameterInfo>
+public static class GetParameterMetadataEndpoint
 {
-    public override void Configure()
+    public static RouteHandlerBuilder MapGetParameterMetadataEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        Get("/parameters/{ParameterName}/metadata");
-        AllowAnonymous();
-        Summary(s =>
+        return endpoints.MapGet("/parameters/{parameterName}/metadata", Results<Ok<ParameterInfo>, NotFound> (
+            [FromRoute] string parameterName) =>
         {
-            s.Summary = "Get metadata for a specific parameter";
-            s.Description = "Returns detailed information about a parameter including type, range, and writability";
-            s.Response<ParameterInfo>(200, "Successfully retrieved parameter metadata");
-            s.Response(404, "Parameter not found");
-        });
-    }
+            var parameter = CanParameterRegistry.Parameters.Values
+                .FirstOrDefault(p => p.Name.Equals(parameterName, StringComparison.OrdinalIgnoreCase));
 
-    public override async Task HandleAsync(GetParameterMetadataRequest req, CancellationToken ct)
-    {
-        var parameter = CanParameterRegistry.Parameters.Values
-            .FirstOrDefault(p => p.Name.Equals(req.ParameterName, StringComparison.OrdinalIgnoreCase));
+            if (parameter == null)
+            {
+                return TypedResults.NotFound();
+            }
 
-        if (parameter == null)
-        {
-            await Send.NotFoundAsync(ct);
-            return;
-        }
-
-        var response = parameter.ToParameterInfo();
-
-        await Send.OkAsync(response, ct);
+            return TypedResults.Ok(parameter.ToParameterInfo());
+        })
+        .WithName("GetParameterMetadata")
+        .WithSummary("Get metadata for a specific parameter")
+        .WithDescription("Returns detailed information about a parameter including type, range, and writability")
+        .Produces<ParameterInfo>(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound);
     }
 }

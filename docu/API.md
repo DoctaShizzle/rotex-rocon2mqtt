@@ -527,8 +527,9 @@ See [Configuration Documentation](../README.md#configuration) for:
 ## Technology Stack
 
 - **.NET 10.0** - Runtime framework
-- **FastEndpoints 7.1.1** - REST API framework
-- **NSwag** - OpenAPI/Swagger documentation
+- **Minimal API** - REST API framework
+- **Microsoft.AspNetCore.OpenApi** - OpenAPI document generation
+- **Swashbuckle.AspNetCore.SwaggerUI** - Swagger UI (consuming OpenAPI document)
 - **Serilog** - Structured logging
 
 ---
