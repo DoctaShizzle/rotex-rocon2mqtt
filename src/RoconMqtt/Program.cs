@@ -55,13 +55,22 @@ public static class Program
                     s.Description = "REST API for Rotex Rocon G1 heating controller communication over CAN bus";
 
                     // Fix for Linux ARM64 NSwag reflection crash
-                    s.OperationProcessors.Remove(s.OperationProcessors.FirstOrDefault(op => op.GetType().Name.Contains("OperationParameterProcessor")));
+                    //s.OperationProcessors.Remove(s.OperationProcessors.FirstOrDefault(op => op.GetType().Name.Contains("OperationParameterProcessor")));
+                    var original = s.OperationProcessors.FirstOrDefault(op => op.GetType().Name.Contains("OperationParameterProcessor"));
+                    if (original != null)
+                    {
+                        s.OperationProcessors.Remove(original);
+
+                        // Add our safe wrapper
+                        s.OperationProcessors.Add(new LinuxOperationParameterProcessor(
+                            original, o.Services.GetRequiredService<ILogger<LinuxOperationParameterProcessor>>()
+                        ));
+                    }
                 };
                 
                 o.RemoveEmptyRequestSchema = true;
                 o.EnableJWTBearerAuth = false;
             });
-
             var app = builder.Build();
 
             // Configure middleware
