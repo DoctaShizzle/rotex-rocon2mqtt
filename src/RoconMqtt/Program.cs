@@ -30,8 +30,8 @@ public static class Program
             // Configure CAN service
             builder.Services.AddCanService(builder.Configuration)
                 //.WithSocketCanBus();
-                .WithSshCanBus();
-                //.WithAutoCanBus();
+                //.WithSshCanBus();
+                .WithAutoCanBus();
 
             // Configure MQTT services
             builder.Services.AddMqttService(builder.Configuration);
