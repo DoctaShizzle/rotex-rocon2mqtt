@@ -1,0 +1,154 @@
+﻿# Raspberry Pi CAN Bus Setup (Dual-Channel HAT)
+
+This document describes how to expose `can0` and `can1` on a Raspberry Pi 3B using a dual‑channel MCP2515‑based CAN HAT.  
+It is written for an in‑line installation between a Rotex/Daikin heat pump and its room thermostat.
+
+---
+
+## 1. Hardware Overview
+
+The dual‑channel isolated CAN HAT provides:
+
+- Two independent CAN interfaces (`CAN0` and `CAN1`)
+- Two MCP2515 CAN controllers (SPI)
+- Two isolated CAN transceivers
+- Direct connection to the Raspberry Pi GPIO header (no manual wiring)
+
+### CAN wiring (only part you wire manually)
+
+```mermaid
+flowchart LR
+    A[Heat Pump<br/>CANH/CANL] 
+        ---|Twisted Pair| B((CAN0<br/>Pi CAN HAT))
+    B 
+        ---|Twisted Pair| C((CAN1<br/>Pi CAN HAT))
+    C 
+        ---|Twisted Pair| D[Room Thermostat<br/>CANH/CANL]
+
+    subgraph Raspberry Pi
+        B
+        C
+    end
+
+    %% Notes
+    classDef note fill:#f7f7f7,stroke:#999,stroke-width:1px,color:#333;
+
+    E1[CAN0 → Heat Pump<br/>CANH ↔ CANH<br/>CANL ↔ CANL]:::note
+    E2[CAN1 → Thermostat<br/>CANH ↔ CANH<br/>CANL ↔ CANL]:::note
+    E3[Termination ONLY at Heat Pump and Thermostat<br/>Disable termination on both HAT channels]:::note
+
+```
+
+- **CAN0_H → Heat pump CANH**  
+- **CAN0_L → Heat pump CANL**  
+- **CAN1_H → Thermostat CANH**  
+- **CAN1_L → Thermostat CANL**
+
+### Termination
+
+- The heat pump and thermostat already terminate the bus.
+- **Disable termination on both CAN channels on the HAT.**
+
+---
+
+## 2. Enable SPI
+
+Edit `/boot/config.txt`:
+
+```bash
+dtparam=spi=on
+```
+
+---
+
+## 3. Enable the MCP2515 CAN Controllers
+
+Add the overlays for both channels:
+
+```bash
+dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
+dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=24
+```
+
+> Adjust interrupt pins if your HAT uses different ones.
+
+Reboot:
+
+```bash
+sudo reboot
+```
+
+---
+
+## 4. Bring Up the CAN Interfaces
+
+Check that the interfaces exist:
+
+```bash
+ip link
+```
+
+You should see `can0` and `can1`.
+
+### Set bitrate (Rotex/Daikin 20 kbit/s)
+
+Example for 50 kbit/s:
+
+```bash
+sudo ip link set can0 up type can bitrate 20000
+sudo ip link set can1 up type can bitrate 20000
+```
+
+Verify: 
+
+```bash
+ip -details link show can0
+```
+
+Expected state:
+
+- `ERROR-ACTIVE`  
+- No `BUS-OFF`  
+- No `ERROR-PASSIVE`
+
+Typically:
+```bash
+root@rocon-g1:~# ip -details link show can0
+3: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UNKNOWN mode DEFAULT qlen 10
+    link/can
+    can state ERROR-ACTIVE (berr-counter tx 0 rx 0) restart-ms 0
+    bitrate 20000 sample-point 0.875
+    tq 3125 prop-seg 6 phase-seg1 7 phase-seg2 2 sjw 1
+    c_can: tseg1 2..16 tseg2 1..8 sjw 1..4 brp 1..1024 brp-inc 1
+    clock 24000000
+```
+
+---
+
+## 5. Install CAN Utilities
+
+```bash
+sudo apt install can-utils
+```
+
+This will install tools like `candump` and `cansend`.
+
+---
+
+## 6. Notes for Rotex/Daikin Heat Pumps
+
+- The CAN bus **must be linear**, not branched.
+- Stub lengths must be **short (<30–50 cm)**.
+- Incorrect topology will cause the thermostat to freeze.
+- The Pi must sit **in-line** between heat pump and thermostat.
+
+---
+
+## 7. Summary
+
+- Plug the HAT onto the Pi (no GPIO wiring needed).
+- Wire CAN0 to the heat pump, CAN1 to the thermostat.
+- Disable termination on the HAT.
+- Enable SPI + MCP2515 overlays.
+- Bring up `can0` and `can1` with the correct bitrate.
+- Use SocketCAN tools (`candump`, `cansend`, python-can, etc.).

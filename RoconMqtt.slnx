@@ -6,6 +6,7 @@
     <File Path="docu/DEPLOYMENT.md" />
     <File Path="docu/RESILIENCE.md" />
     <File Path="docu/SSH_CAN_BUS.md" />
+    <File Path="docu/HARDWARE.md" />
   </Folder>
   <Folder Name="/Solution Items/Scripts/">
     <File Path="scripts/publish-raspi.ps1" />
