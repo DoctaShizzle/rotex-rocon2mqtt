@@ -39,6 +39,12 @@ public static class Program
             // Configure FastEndpoints
             builder.Services.AddFastEndpoints();
 
+            // Fix Linux ARM64 STJ source-gen issue for FastEndpoints
+            builder.Services.ConfigureHttpJsonOptions(o =>
+            {
+                o.SerializerOptions.TypeInfoResolverChain.Insert(0, ApiJsonContext.Default);
+            });
+
             // Configure Swagger/OpenAPI
             builder.Services.SwaggerDocument(o =>
             {
