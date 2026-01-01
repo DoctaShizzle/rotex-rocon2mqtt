@@ -47,6 +47,9 @@ public static class Program
                     s.Title = "Rocon MQTT API";
                     s.Version = "v1";
                     s.Description = "REST API for Rotex Rocon G1 heating controller communication over CAN bus";
+
+                    // Fix for Linux ARM64 NSwag reflection crash
+                    s.OperationProcessors.Remove(s.OperationProcessors.FirstOrDefault(op => op.GetType().Name.Contains("OperationParameterProcessor")));
                 };
                 
                 o.RemoveEmptyRequestSchema = true;
