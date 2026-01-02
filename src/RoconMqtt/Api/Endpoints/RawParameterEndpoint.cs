@@ -129,7 +129,7 @@ public static class RawParameterEndpoint
                 Value = null,
                 TimeoutMs = 30000,
                 ParameterType = "Int",
-                BigEndian = false,
+                BigEndian = true,
                 Factor = 1.0
             };
 
