@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can.Configuration;
@@ -7,8 +8,11 @@ namespace RoconMqtt.Can.Configuration;
 /// </summary>
 public class CommunicationCommandDto
 {
-    public required string CanId { get; set; }
-    public required string[] Bytes { get; set; }
+    [Required]
+    public string CanId { get; set; } = null!;
+    
+    [Required]
+    public string[] Bytes { get; set; } = null!;
 
     /// <summary>
     /// Converts DTO to domain model

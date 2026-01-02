@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can.Configuration;
@@ -7,10 +8,18 @@ namespace RoconMqtt.Can.Configuration;
 /// </summary>
 public class ParameterDefinitionDto
 {
-    public required string OriginalName { get; set; }
-    public required string InfoNumberHigh { get; set; }
-    public required string InfoNumberLow { get; set; }
-    public required string Type { get; set; }
+    [Required]
+    public string OriginalName { get; set; } = null!;
+    
+    [Required]
+    public string InfoNumberHigh { get; set; } = null!;
+    
+    [Required]
+    public string InfoNumberLow { get; set; } = null!;
+    
+    [Required]
+    public string Type { get; set; } = null!;
+    
     public double Factor { get; set; } = 1.0;
     public double? TransferThreshold { get; set; }
     public bool Writeable { get; set; }

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can.Configuration;
@@ -7,10 +8,17 @@ namespace RoconMqtt.Can.Configuration;
 /// </summary>
 public class CommunicationProfileDto
 {
-    public required string Name { get; set; }
-    public required CommunicationCommandDto Get { get; set; }
-    public required CommunicationCommandDto Set { get; set; }
-    public required CommunicationCommandDto Answer { get; set; }
+    [Required]
+    public string Name { get; set; } = null!;
+    
+    [Required]
+    public CommunicationCommandDto Get { get; set; } = null!;
+    
+    [Required]
+    public CommunicationCommandDto Set { get; set; } = null!;
+    
+    [Required]
+    public CommunicationCommandDto Answer { get; set; } = null!;
 
     /// <summary>
     /// Converts DTO to domain model
