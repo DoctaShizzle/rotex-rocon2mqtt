@@ -2,6 +2,7 @@
 using RoconMqtt.Can.Extensions.DependencyInjection;
 using RoconMqtt.Mqtt.Extensions.DependencyInjection;
 using Serilog;
+using System.Text.Json;
 
 namespace RoconMqtt;
 
