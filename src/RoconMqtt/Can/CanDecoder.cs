@@ -3,7 +3,7 @@ using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
-public partial class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
+public partial class CanDecoder(ILogger<CanDecoder> logger, ICanParameterRegistry registry) : ICanDecoder
 {
     public DecodedParameter? Decode(byte[] data, CommunicationCommand command, DecodingHints? hints = null)
     {
@@ -46,7 +46,7 @@ public partial class CanDecoder(ILogger<CanDecoder> logger) : ICanDecoder
         } else
         {
             // Try to get parameter definition from registry
-            if (!CanParameterRegistry.Parameters.TryGetValue(info, out var def2))
+            if (!registry.Parameters.TryGetValue(info, out var def2))
             {
                 LogUnknownParameterInfoNumber(logger, info);
                 return null;

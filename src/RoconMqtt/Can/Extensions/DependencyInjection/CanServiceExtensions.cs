@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using RoconMqtt.Can.Configuration;
 using RoconMqtt.Can.Options;
 
 namespace RoconMqtt.Can.Extensions.DependencyInjection;
@@ -8,6 +9,8 @@ namespace RoconMqtt.Can.Extensions.DependencyInjection;
 public static class CanServiceExtensions
 {
     private const string canSectionKey = "Can";
+    private const string registryFilePathKey = "Can:RegistryFilePath";
+    private const string defaultRegistryFile = "can-registry.json";
 
     public static CanServiceBuilder AddCanService(this IServiceCollection services, IConfiguration configuration)
     {
@@ -25,6 +28,18 @@ public static class CanServiceExtensions
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
+        // Configure CAN parameter registry from external file
+        var registryFilePath = configuration[registryFilePathKey] ?? defaultRegistryFile;
+        
+        var registryConfiguration = new ConfigurationBuilder()
+            .AddJsonFile(registryFilePath, optional: false, reloadOnChange: true)
+            .Build();
+
+        services.AddOptions<CanRegistryOptions>()
+            .Bind(registryConfiguration)
+            .ValidateOnStart();
+
+        services.AddSingleton<ICanParameterRegistry, CanParameterRegistryService>();
         services.AddSingleton<ICanService, CanService>();
         services.AddSingleton<ICanDecoder, CanDecoder>();
         services.AddSingleton<ICanEncoder, CanEncoder>();

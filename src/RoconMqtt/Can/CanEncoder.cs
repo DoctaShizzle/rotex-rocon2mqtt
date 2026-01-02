@@ -3,7 +3,7 @@ using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Can;
 
-public partial class CanEncoder(ILogger<CanEncoder> logger) : ICanEncoder
+public partial class CanEncoder(ILogger<CanEncoder> logger, ICanParameterRegistry registry) : ICanEncoder
 {
     public byte[] Encode(CommunicationCommand command, InfoNumber info, object value, EncodingHints? hints = null)
     {
@@ -35,7 +35,7 @@ public partial class CanEncoder(ILogger<CanEncoder> logger) : ICanEncoder
         } else
         {
 
-            if (CanParameterRegistry.Parameters.TryGetValue(info, out var def))
+            if (registry.Parameters.TryGetValue(info, out var def))
             {
                 // Use registry definition (overrides hints)
                 isBigEndian = def.BigEndian;

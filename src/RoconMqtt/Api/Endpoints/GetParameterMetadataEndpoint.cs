@@ -13,9 +13,10 @@ public static class GetParameterMetadataEndpoint
     public static RouteHandlerBuilder MapGetParameterMetadataEndpoint(this IEndpointRouteBuilder endpoints)
     {
         return endpoints.MapGet("/parameters/{parameterName}/metadata", Results<Ok<ParameterInfo>, NotFound> (
-            [FromRoute] string parameterName) =>
+            [FromRoute] string parameterName,
+            [FromServices] ICanParameterRegistry registry) =>
         {
-            var parameter = CanParameterRegistry.Parameters.Values
+            var parameter = registry.Parameters.Values
                 .FirstOrDefault(p => p.Name.Equals(parameterName, StringComparison.OrdinalIgnoreCase));
 
             if (parameter == null)

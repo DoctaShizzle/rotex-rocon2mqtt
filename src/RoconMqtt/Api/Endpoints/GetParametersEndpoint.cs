@@ -10,9 +10,9 @@ public static class GetParametersEndpoint
 {
     public static RouteHandlerBuilder MapGetParametersEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/parameters", () =>
+        return endpoints.MapGet("/parameters", (ICanParameterRegistry registry) =>
         {
-            var parameters = CanParameterRegistry.Parameters.Values
+            var parameters = registry.Parameters.Values
                 .Select(p => p.ToParameterInfo())
                 .ToList();
 

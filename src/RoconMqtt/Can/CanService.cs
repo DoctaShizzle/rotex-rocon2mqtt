@@ -5,11 +5,12 @@ using RoconMqtt.Can.Options;
 
 namespace RoconMqtt.Can;
 
-internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEncoder canEncoder, IOptions<CanOptions> canOptions, ILogger<CanService> logger) : ICanService
+internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEncoder canEncoder, ICanParameterRegistry registry, IOptions<CanOptions> canOptions, ILogger<CanService> logger) : ICanService
 {
     private readonly ICanBus _canBus = canBus ?? throw new ArgumentNullException(nameof(canBus));
     private readonly ICanDecoder _canDecoder = canDecoder ?? throw new ArgumentNullException(nameof(canDecoder));
     private readonly ICanEncoder _canEncoder = canEncoder ?? throw new ArgumentNullException(nameof(canEncoder));
+    private readonly ICanParameterRegistry _registry = registry ?? throw new ArgumentNullException(nameof(registry));
     private readonly IOptions<CanOptions> _canOptions = canOptions ?? throw new ArgumentNullException(nameof(canOptions));
     private readonly ILogger<CanService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
@@ -29,7 +30,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         LogSendingRequest(_logger, deviceName, parameterName, commandType);
 
         // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
+        var paramDef = _registry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
         if (paramDef == null)
         {
             LogParameterNotFound(_logger, parameterName);
@@ -46,7 +47,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         ArgumentNullException.ThrowIfNull(responseAction);
 
         // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
+        var paramDef = _registry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
         if (paramDef == null)
         {
             LogParameterNotFound(_logger, parameterName);
@@ -68,7 +69,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         }
 
         // Find the parameter definition by name
-        var paramDef = CanParameterRegistry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
+        var paramDef = _registry.Parameters.Values.FirstOrDefault(p => p.Name == parameterName || p.OriginalName == parameterName);
         if (paramDef == null)
         {
             LogParameterNotFound(_logger, parameterName);
@@ -151,7 +152,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     private async Task SendRequestByInfoNumberAsync(string deviceName, InfoNumber infoNumber, CommandType commandType, object? value, EncodingHints? encodingHints, CancellationToken token)
     {
         // Get the specific device by name
-        var device = CanParameterRegistry.GetDevice(deviceName);
+        var device = _registry.GetDevice(deviceName);
         if (device == null)
         {
             LogDeviceNotFound(_logger, deviceName);
@@ -182,7 +183,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     private async Task ListenForResponsesByInfoNumberAsync(CommandType commandType, string deviceName, InfoNumber infoNumber, DecodingHints? decodingHints, Func<DecodedParameter, Task> responseAction, CancellationToken token)
     {
         // Get the specific device by name
-        var device = CanParameterRegistry.GetDevice(deviceName);
+        var device = _registry.GetDevice(deviceName);
         if (device == null)
         {
             LogDeviceNotFound(_logger, deviceName);

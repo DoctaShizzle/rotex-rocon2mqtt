@@ -10,61 +10,39 @@ public class CanEncoderDecoderTests
 {
     private readonly CanEncoder _encoder;
     private readonly CanDecoder _decoder;
-    private readonly Mock<ILogger<CanDecoder>> _loggerMock;
+    private readonly Mock<ICanParameterRegistry> _registryMock;
     private readonly CommunicationCommand _testCommand;
 
     public CanEncoderDecoderTests()
     {
         var encoderLoggerMock = new Mock<ILogger<CanEncoder>>();
         var decoderLoggerMock = new Mock<ILogger<CanDecoder>>();
+        _registryMock = new Mock<ICanParameterRegistry>();
         
-        _encoder = new CanEncoder(encoderLoggerMock.Object);
-        _loggerMock = decoderLoggerMock;
-        _decoder = new CanDecoder(_loggerMock.Object);
+        // Setup test parameters in mock registry
+        var testParameters = new Dictionary<InfoNumber, ParameterDefinition>
+        {
+            { new InfoNumber(0x12, 0x34), new ParameterDefinition("IntParam", new InfoNumber(0x12, 0x34), ParameterType.Int, BigEndian: false) },
+            { new InfoNumber(0x56, 0x78), new ParameterDefinition("IntParamBE", new InfoNumber(0x56, 0x78), ParameterType.Int, BigEndian: true) },
+            { new InfoNumber(0xAA, 0xBB), new ParameterDefinition("FloatParam", new InfoNumber(0xAA, 0xBB), ParameterType.Float, Factor: 1.0) },
+            { new InfoNumber(0x11, 0x22), new ParameterDefinition("BoolParam", new InfoNumber(0x11, 0x22), ParameterType.Bool) },
+            { new InfoNumber(0x33, 0x44), new ParameterDefinition("BoolParamFalse", new InfoNumber(0x33, 0x44), ParameterType.Bool) },
+            { new InfoNumber(0x55, 0x66), new ParameterDefinition("TimeRangeParam", new InfoNumber(0x55, 0x66), ParameterType.TimeRange) },
+            { new InfoNumber(0x77, 0x88), new ParameterDefinition("TimeRangeFullDay", new InfoNumber(0x77, 0x88), ParameterType.TimeRange) },
+            { new InfoNumber(0x99, 0xAA), new ParameterDefinition("TimeRangeQuarters", new InfoNumber(0x99, 0xAA), ParameterType.TimeRange) },
+        };
+
+        _registryMock.Setup(r => r.Parameters).Returns(testParameters);
         
-        // Use HG1 Answer command for testing (since we're encoding/decoding parameter values)
-        _testCommand = CanParameterRegistry.HeatGenerators[0].Profile.Answer;
+        _encoder = new CanEncoder(encoderLoggerMock.Object, _registryMock.Object);
+        _decoder = new CanDecoder(decoderLoggerMock.Object, _registryMock.Object);
         
-        // Register test parameters in the registry
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x12, 0x34),
-            new ParameterDefinition("IntParam", new InfoNumber(0x12, 0x34), ParameterType.Int, BigEndian: false)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x56, 0x78),
-            new ParameterDefinition("IntParamBE", new InfoNumber(0x56, 0x78), ParameterType.Int, BigEndian: true)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0xAA, 0xBB),
-            new ParameterDefinition("FloatParam", new InfoNumber(0xAA, 0xBB), ParameterType.Float, Factor: 1.0)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x11, 0x22),
-            new ParameterDefinition("BoolParam", new InfoNumber(0x11, 0x22), ParameterType.Bool)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x33, 0x44),
-            new ParameterDefinition("BoolParamFalse", new InfoNumber(0x33, 0x44), ParameterType.Bool)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x55, 0x66),
-            new ParameterDefinition("TimeRangeParam", new InfoNumber(0x55, 0x66), ParameterType.TimeRange)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x77, 0x88),
-            new ParameterDefinition("TimeRangeFullDay", new InfoNumber(0x77, 0x88), ParameterType.TimeRange)
-        );
-        
-        CanParameterRegistry.RegisterTestParameter(
-            new InfoNumber(0x99, 0xAA),
-            new ParameterDefinition("TimeRangeQuarters", new InfoNumber(0x99, 0xAA), ParameterType.TimeRange)
-        );
+        // Use a test command with standard header
+        _testCommand = new CommunicationCommand
+        {
+            CanId = 0x180,
+            Bytes = [0xD2, 0x1D, 0xFA]
+        };
     }
 
     [Fact]

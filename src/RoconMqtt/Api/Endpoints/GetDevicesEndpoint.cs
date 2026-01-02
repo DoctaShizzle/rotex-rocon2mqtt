@@ -10,21 +10,21 @@ public static class GetDevicesEndpoint
 {
     public static RouteHandlerBuilder MapGetDevicesEndpoint(this IEndpointRouteBuilder endpoints)
     {
-        return endpoints.MapGet("/devices", () =>
+        return endpoints.MapGet("/devices", (ICanParameterRegistry registry) =>
         {
             var devices = new List<DeviceInfo>();
 
-            foreach (var device in CanParameterRegistry.HeatGenerators)
+            foreach (var device in registry.HeatGenerators)
             {
                 devices.Add(device.ToDeviceInfo());
             }
 
-            foreach (var device in CanParameterRegistry.HeatingCircuits)
+            foreach (var device in registry.HeatingCircuits)
             {
                 devices.Add(device.ToDeviceInfo());
             }
 
-            foreach (var device in CanParameterRegistry.HeatingCircuitModules)
+            foreach (var device in registry.HeatingCircuitModules)
             {
                 devices.Add(device.ToDeviceInfo());
             }
