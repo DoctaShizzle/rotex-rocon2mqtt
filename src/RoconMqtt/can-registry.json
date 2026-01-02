@@ -3131,6 +3131,18 @@
       "waterCircuit": false,
       "bigEndian": false,
       "nameEnglish": "LeavingWaterTemperatureActual"
+    },
+    {
+      "originalName": "WaterPressure",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x1C",
+      "type": "Float",
+      "factor": 1000,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WaterPressure"
     }
   ],
   "heatGenerators": [
