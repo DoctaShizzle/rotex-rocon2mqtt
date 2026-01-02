@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.Extensions.Options;
+using RoconMqtt.Api.Extensions;
 using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
@@ -98,7 +99,6 @@ public static class GetParametersBulkEndpoint
         {
             var mqttOptions = context.ApplicationServices.GetRequiredService<IOptions<MqttOptions>>().Value;
 
-            // Add request body example
             var exampleRequest = new GetParametersBulkRequest
             {
                 DeviceName = "HG1",
@@ -109,7 +109,7 @@ public static class GetParametersBulkEndpoint
             var mediaType = operation.RequestBody?.Content?.FirstOrDefault().Value;
             if (mediaType != null)
             {
-                mediaType.Example = JsonSerializer.SerializeToNode(exampleRequest);
+                mediaType.Example = exampleRequest.SerializeToNodeWithApiJsonContext();
             }
         });
     }

@@ -21,4 +21,9 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(ParameterError))]
 [JsonSerializable(typeof(Microsoft.AspNetCore.Mvc.ProblemDetails))]
 [JsonSerializable(typeof(Microsoft.AspNetCore.Mvc.ValidationProblemDetails))]
+[JsonSerializable(typeof(List<string>))]
+[JsonSerializable(typeof(List<ParameterResponse>))]
+[JsonSerializable(typeof(List<ParameterError>))]
+[JsonSerializable(typeof(List<DeviceInfo>))]
+[JsonSerializable(typeof(List<ParameterInfo>))]
 public partial class ApiJsonContext : JsonSerializerContext;

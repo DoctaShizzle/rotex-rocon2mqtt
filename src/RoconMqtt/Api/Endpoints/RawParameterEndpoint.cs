@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OpenApi;
+using RoconMqtt.Api.Extensions;
 using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
@@ -119,7 +120,6 @@ public static class RawParameterEndpoint
         .Produces(StatusCodes.Status408RequestTimeout)
         .AddOpenApiOperationTransformer(async (operation, context, ct) =>
         {
-            // Add request body example
             var exampleRequest = new RawParameterRequest
             {
                 DeviceName = "HG1",
@@ -136,7 +136,7 @@ public static class RawParameterEndpoint
             var mediaType = operation.RequestBody?.Content?.FirstOrDefault().Value;
             if (mediaType != null)
             {
-                mediaType.Example = JsonSerializer.SerializeToNode(exampleRequest);
+                mediaType.Example = exampleRequest.SerializeToNodeWithApiJsonContext();
             }
         });
     }
