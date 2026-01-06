@@ -70,6 +70,14 @@ public static class GetParametersBulkEndpoint
                         ErrorMessage = ex.Message
                     });
                 }
+                catch (InvalidOperationException ex)
+                {
+                    response.Errors.Add(new ParameterError
+                    {
+                        ParameterName = parameterName,
+                        ErrorMessage = ex.Message
+                    });
+                }
                 catch (TimeoutException)
                 {
                     response.Errors.Add(new ParameterError
@@ -92,7 +100,7 @@ public static class GetParametersBulkEndpoint
         })
         .WithName("GetParametersBulk")
         .WithSummary("Query multiple parameter values from a device")
-        .WithDescription("Sends GET requests to the specified device to read multiple parameter values in one call")
+        .WithDescription("Sends GET requests to the specified device to read multiple parameter values in one call. Supports both regular and compound parameters.")
         .Produces<ParametersBulkResponse>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .AddOpenApiOperationTransformer(async (operation, context, ct) =>

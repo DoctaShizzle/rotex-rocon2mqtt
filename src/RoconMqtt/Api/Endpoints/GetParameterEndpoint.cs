@@ -42,6 +42,15 @@ public static class GetParameterEndpoint
                     Detail = ex.Message
                 });
             }
+            catch (InvalidOperationException ex)
+            {
+                return TypedResults.BadRequest(new ProblemDetails
+                {
+                    Status = StatusCodes.Status400BadRequest,
+                    Title = "Invalid operation",
+                    Detail = ex.Message
+                });
+            }
             catch (TimeoutException)
             {
                 return TypedResults.StatusCode(StatusCodes.Status408RequestTimeout);
@@ -49,7 +58,7 @@ public static class GetParameterEndpoint
         })
         .WithName("GetParameter")
         .WithSummary("Query a parameter value from a device")
-        .WithDescription("Sends a GET request to the specified device to read a parameter value. Example: deviceName=HG1&parameterName=OutdoorTemperature&timeoutMs=30000")
+        .WithDescription("Sends a GET request to the specified device to read a parameter value. Supports both regular and compound parameters (e.g., Timestamp). Example: deviceName=HG1&parameterName=OutdoorTemperature&timeoutMs=30000 or deviceName=HG1&parameterName=Timestamp&timeoutMs=30000")
         .Produces<ParameterResponse>(StatusCodes.Status200OK)
         .Produces<ProblemDetails>(StatusCodes.Status400BadRequest)
         .Produces(StatusCodes.Status408RequestTimeout);

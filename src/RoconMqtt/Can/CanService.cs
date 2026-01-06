@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Models;
 using RoconMqtt.Can.Options;
+using RoconMqtt.Mqtt.Compound;
 
 namespace RoconMqtt.Can;
 
@@ -66,6 +67,31 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         if (commandType == CommandType.Answer)
         {
             throw new ArgumentException("Cannot send ANSWER commands - they are responses from the controller", nameof(commandType));
+        }
+
+        // Check if this is a compound parameter
+        if (IsCompoundParameter(parameterName))
+        {
+            if (commandType != CommandType.Get)
+            {
+                throw new ArgumentException($"Compound parameter '{parameterName}' only supports GET operations", nameof(commandType));
+            }
+
+            var compoundValue = await GetCompoundParameterAsync(deviceName, parameterName, timeoutMs, token);
+            
+            // Return a synthetic DecodedParameter for the compound value
+            var syntheticDefinition = new ParameterDefinition(
+                OriginalName: parameterName,
+                InfoNumber: new InfoNumber(0, 0),
+                Type: ParameterType.Int,
+                NameEnglish: parameterName
+            );
+            
+            return new DecodedParameter(
+                Name: parameterName,
+                Value: compoundValue ?? new object(),
+                Definition: syntheticDefinition
+            );
         }
 
         // Find the parameter definition by name
@@ -236,6 +262,56 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
         }
     }
 
+    /// <summary>
+    /// Determines whether the specified parameter name is a compound parameter.
+    /// </summary>
+    private static bool IsCompoundParameter(string parameterName)
+    {
+        return CompoundParameterFactory.AvailableCompoundParameters.Contains(parameterName);
+    }
+
+    /// <summary>
+    /// Queries a compound parameter by automatically fetching all its component parameters and combining them.
+    /// </summary>
+    private async Task<object?> GetCompoundParameterAsync(string deviceName, string compoundParameterName, int timeoutMs, CancellationToken token)
+    {
+        LogQueryingCompoundParameter(_logger, deviceName, compoundParameterName);
+        
+        var compound = CompoundParameterFactory.Create(compoundParameterName);
+        
+        // Query each component parameter
+        foreach (var componentParam in compound.ComponentParameters)
+        {
+            try
+            {
+                var result = await SendRequestAndWaitForResponseAsync(
+                    deviceName,
+                    componentParam,
+                    CommandType.Get,
+                    null,
+                    timeoutMs,
+                    token);
+                
+                compound.TrySetComponent(componentParam, result.Value);
+                LogCompoundComponentReceived(_logger, compoundParameterName, componentParam);
+            }
+            catch (Exception ex)
+            {
+                LogErrorQueryingCompoundComponent(_logger, ex, compoundParameterName, componentParam);
+                throw new InvalidOperationException($"Failed to query component '{componentParam}' for compound parameter '{compoundParameterName}'", ex);
+            }
+        }
+        
+        var compoundValue = compound.GetValue();
+        if (compoundValue == null)
+        {
+            throw new InvalidOperationException($"Failed to compose compound parameter '{compoundParameterName}' - not all components were successfully retrieved");
+        }
+        
+        LogCompoundParameterComposed(_logger, compoundParameterName, compoundValue);
+        return compoundValue;
+    }
+
     [LoggerMessage(EventId = 3001, Level = LogLevel.Debug, Message = "Sending raw CAN frame with ID 0x{CanId:X8}, DataLength={DataLength}")]
     private static partial void LogSendingRawCanFrame(ILogger logger, uint canId, int dataLength);
 
@@ -274,4 +350,16 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
 
     [LoggerMessage(EventId = 3016, Level = LogLevel.Warning, Message = "Timeout waiting for {CommandType} response from device {DeviceName} for InfoNumber 0x{InfoHigh:X2}{InfoLow:X2} after {TimeoutMs}ms")]
     private static partial void LogRequestTimeoutByInfoNumber(ILogger logger, string deviceName, byte infoHigh, byte infoLow, CommandType commandType, int timeoutMs);
+
+    [LoggerMessage(EventId = 3017, Level = LogLevel.Debug, Message = "Querying compound parameter {CompoundParameterName} for device {DeviceName}")]
+    private static partial void LogQueryingCompoundParameter(ILogger logger, string deviceName, string compoundParameterName);
+
+    [LoggerMessage(EventId = 3018, Level = LogLevel.Debug, Message = "Received component '{ComponentParameter}' for compound parameter '{CompoundParameterName}'")]
+    private static partial void LogCompoundComponentReceived(ILogger logger, string compoundParameterName, string componentParameter);
+
+    [LoggerMessage(EventId = 3019, Level = LogLevel.Error, Message = "Error querying component '{ComponentParameter}' for compound parameter '{CompoundParameterName}'")]
+    private static partial void LogErrorQueryingCompoundComponent(ILogger logger, Exception exception, string compoundParameterName, string componentParameter);
+
+    [LoggerMessage(EventId = 3020, Level = LogLevel.Debug, Message = "Successfully composed compound parameter '{CompoundParameterName}' with value: {Value}")]
+    private static partial void LogCompoundParameterComposed(ILogger logger, string compoundParameterName, object? value);
 }

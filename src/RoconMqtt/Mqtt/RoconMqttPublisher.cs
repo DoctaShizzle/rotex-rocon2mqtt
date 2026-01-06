@@ -2,13 +2,11 @@ using Microsoft.Extensions.Options;
 using Polly.CircuitBreaker;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
-using RoconMqtt.Mqtt.Compound;
 using RoconMqtt.Mqtt.Models;
 using RoconMqtt.Mqtt.Options;
 using RoconMqtt.Mqtt.Resilience;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using System.Linq;
 
 namespace RoconMqtt.Mqtt;
 
@@ -22,7 +20,6 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     
     private readonly ConcurrentDictionary<string, object?> _lastPublishedValues = new();
     private readonly ConcurrentDictionary<string, string> _deviceIdentifiers = new();
-    private readonly ConcurrentDictionary<string, ICompoundParameter> _compoundParameters = new();
     private bool _discoveryPublished = false;
 
     public bool Enabled { get; set; } = options.Value.Enabled;
@@ -46,9 +43,6 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         // get data for discovery
         await QueryDeviceIdentifiersAsync(stoppingToken);
-
-        // Initialize compound parameters
-        InitializeCompoundParameters();
 
         // trigger home assistant discovery
         if (_options.HomeAssistantDiscovery)
@@ -75,34 +69,11 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 // Loop over all configured devices and parameters
                 foreach (var deviceName in _options.Devices)
                 {
-                    foreach (var parameterName in _options.Parameters)
-                    {
-                        if (stoppingToken.IsCancellationRequested)
-                            break;
-
-                        try
-                        {
-                            await resiliencePipeline.ExecuteAsync(async ct =>
-                            {
-                                await SendGetAndWaitForAnswer(deviceName, parameterName, ct);
-                            }, stoppingToken);
-                        }
-                        catch (BrokenCircuitException)
-                        {
-                            LogCircuitBreakerOpenForQuery(_logger, deviceName, parameterName);
-                        }
-                        catch (TimeoutException)
-                        {
-                            LogTimeoutWaitingForAnswer(_logger, deviceName, parameterName);
-                        }
-                        catch (Exception ex)
-                        {
-                            LogErrorQueryingDevice(_logger, ex, deviceName, parameterName);
-                        }
-                    }
+                    // Query regular parameters
+                    await QueryParametersAsync(deviceName, _options.Parameters, resiliencePipeline, stoppingToken);
                     
-                    // Check and publish completed compound parameters for this device
-                    await PublishCompoundParametersAsync(deviceName, stoppingToken);
+                    // Query compound parameters (handled transparently by CanService)
+                    await QueryParametersAsync(deviceName, _options.CompoundParameters, resiliencePipeline, stoppingToken);
                 }
 
                 // Wait before next polling cycle
@@ -167,6 +138,47 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     }
 
     /// <summary>
+    /// Queries the specified parameters from a device asynchronously, applying the provided resilience pipeline to each
+    /// query operation.
+    /// </summary>
+    /// <remarks>If the cancellation token is signaled, the operation stops processing further parameters.
+    /// Exceptions such as circuit breaker and timeout are handled and logged for each parameter individually.</remarks>
+    /// <param name="deviceName">The name of the device from which to query parameters. Cannot be null or empty.</param>
+    /// <param name="parameterNames">A collection of parameter names to query from the device. Cannot be null or contain null or empty elements.</param>
+    /// <param name="resiliencePipeline">The resilience pipeline used to execute each parameter query with fault-handling and retry logic. Cannot be
+    /// null.</param>
+    /// <param name="stoppingToken">A cancellation token that can be used to cancel the operation before completion.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
+    private async Task QueryParametersAsync(string deviceName, ICollection<string> parameterNames, Polly.ResiliencePipeline resiliencePipeline, CancellationToken stoppingToken)
+    {
+        foreach (var parameterName in parameterNames)
+        {
+            if (stoppingToken.IsCancellationRequested)
+                break;
+
+            try
+            {
+                await resiliencePipeline.ExecuteAsync(async ct =>
+                {
+                    await SendGetAndWaitForAnswer(deviceName, parameterName, ct);
+                }, stoppingToken);
+            }
+            catch (BrokenCircuitException)
+            {
+                LogCircuitBreakerOpenForQuery(_logger, deviceName, parameterName);
+            }
+            catch (TimeoutException)
+            {
+                LogTimeoutWaitingForAnswer(_logger, deviceName, parameterName);
+            }
+            catch (Exception ex)
+            {
+                LogErrorQueryingDevice(_logger, ex, deviceName, parameterName);
+            }
+        }
+    }
+
+    /// <summary>
     /// Publishes Home Assistant discovery configuration messages for all configured devices and parameters.
     /// </summary>
     /// <remarks>This method ensures that discovery messages are published only once per application lifetime.
@@ -183,29 +195,33 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         foreach (var deviceName in _options.Devices)
         {
             // Publish discovery for regular parameters
-            foreach (var parameterName in _options.Parameters)
-            {
-                var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, parameterName);
-                var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, parameterName);
-                var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
-
-                await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
-                LogPublishedDiscoveryConfig(_logger, discoveryTopic);
-            }
+            await PublishDiscoveryForParametersAsync(deviceName, _options.Parameters, token);
             
             // Publish discovery for compound parameters
-            foreach (var compoundParameterName in _options.CompoundParameters)
-            {
-                var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, compoundParameterName);
-                var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, compoundParameterName);
-                var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
-
-                await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
-                LogPublishedDiscoveryConfig(_logger, discoveryTopic);
-            }
+            await PublishDiscoveryForParametersAsync(deviceName, _options.CompoundParameters, token);
         }
 
         _discoveryPublished = true;
+    }
+
+    /// <summary>
+    /// Publishes Home Assistant discovery configuration messages for the specified parameters of a device using MQTT.
+    /// </summary>
+    /// <param name="deviceName">The name of the device for which discovery configuration will be published.</param>
+    /// <param name="parameterNames">A collection of parameter names to include in the discovery configuration messages. Cannot be null or empty.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous publish operation.</returns>
+    private async Task PublishDiscoveryForParametersAsync(string deviceName, ICollection<string> parameterNames, CancellationToken token)
+    {
+        foreach (var parameterName in parameterNames)
+        {
+            var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, parameterName);
+            var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, parameterName);
+            var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
+
+            await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
+            LogPublishedDiscoveryConfig(_logger, discoveryTopic);
+        }
     }
 
     private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() { WriteIndented = false };
@@ -344,7 +360,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task SendGetAndWaitForAnswer(string deviceName, string parameterName, CancellationToken token)
     {
-        // Use CanService to coordinate request and response
+        // Use CanService to coordinate request and response (handles compound parameters transparently)
         var result = await _roconService.SendRequestAndWaitForResponseAsync(
             deviceName, 
             parameterName, 
@@ -352,9 +368,6 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             null, 
             (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds, 
             token);
-
-        // Feed value to compound parameters
-        FeedCompoundParameters(deviceName, parameterName, result);
 
         // Publish to MQTT using resolved device identifier
         var deviceId = _deviceIdentifiers[deviceName];
@@ -374,26 +387,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         }
     }
 
-    /// <summary>
-    /// Feeds the retrieved parameter value to any compound parameters that need it.
-    /// </summary>
-    private void FeedCompoundParameters(string deviceName, string parameterName, object? value)
-    {
-        var deviceId = _deviceIdentifiers[deviceName];
-        
-        foreach (var compoundParameterName in _options.CompoundParameters)
-        {
-            var key = $"{deviceId}/{compoundParameterName}";
-            if (_compoundParameters.TryGetValue(key, out var compound))
-            {
-                if (compound.ComponentParameters.Contains(parameterName))
-                {
-                    compound.TrySetComponent(parameterName, value);
-                }
-            }
-        }
-    }
-    
+
     /// <summary>
     /// Determines whether a new value for the specified key should be published based on the configured change
     /// threshold and the previous published value.
@@ -434,77 +428,6 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         }
 
         return !newValue.Equals(lastValue);
-    }
-
-    /// <summary>
-    /// Initializes compound parameters based on configuration.
-    /// </summary>
-    private void InitializeCompoundParameters()
-    {
-        foreach (var compoundParameterName in _options.CompoundParameters)
-        {
-            foreach (var deviceName in _options.Devices)
-            {
-                var deviceId = _deviceIdentifiers[deviceName];
-                var key = $"{deviceId}/{compoundParameterName}";
-                
-                try
-                {
-                    _compoundParameters[key] = CompoundParameterFactory.Create(compoundParameterName);
-                    LogCompoundParameterInitialized(_logger, deviceName, compoundParameterName);
-                    
-                    // Ensure component parameters are in the Parameters list
-                    var compound = _compoundParameters[key];
-                    foreach (var componentParam in compound.ComponentParameters.Where(componentParam => !_options.Parameters.Contains(componentParam)))
-                    {
-                        _options.Parameters.Add(componentParam);
-                        LogAddedComponentParameter(_logger, componentParam, compoundParameterName);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    LogErrorInitializingCompoundParameter(_logger, ex, deviceName, compoundParameterName);
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// Publishes compound parameters that are complete for the specified device.
-    /// </summary>
-    private async Task PublishCompoundParametersAsync(string deviceName, CancellationToken token)
-    {
-        var deviceId = _deviceIdentifiers[deviceName];
-        
-        foreach (var compoundParameterName in _options.CompoundParameters)
-        {
-            var key = $"{deviceId}/{compoundParameterName}";
-            if (_compoundParameters.TryGetValue(key, out var compound))
-            {
-                var value = compound.GetValue();
-                if (value != null)
-                {
-                    var publishKey = $"{deviceId}/{compoundParameterName}";
-                    if (ShouldPublish(publishKey, value))
-                    {
-                        var stateTopic = GetStateTopic(deviceName, compoundParameterName);
-                        var result = new { value };
-                        var json = JsonSerializer.Serialize(result);
-                        LogPublishingToMqtt(_logger, stateTopic, json);
-                        await _mqtt.PublishAsync(stateTopic, json, token);
-                        
-                        _lastPublishedValues[publishKey] = value;
-                    }
-                    else
-                    {
-                        LogValueUnchangedSkippingPublish(_logger, deviceName, compoundParameterName);
-                    }
-                    
-                    // Reset for next polling cycle
-                    compound.Reset();
-                }
-            }
-        }
     }
 
     #region Logging
@@ -562,15 +485,6 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4018, Level = LogLevel.Error, Message = "Error querying device identifier for {DeviceName}")]
     private static partial void LogErrorQueryingDeviceIdentifier(ILogger logger, Exception exception, string deviceName);
-
-    [LoggerMessage(EventId = 4019, Level = LogLevel.Debug, Message = "Initializing compound parameter {CompoundParameterName} for device {DeviceName}")]
-    private static partial void LogCompoundParameterInitialized(ILogger logger, string deviceName, string compoundParameterName);
-
-    [LoggerMessage(EventId = 4020, Level = LogLevel.Debug, Message = "Added component parameter {ComponentParameter} for compound parameter {CompoundParameterName}")]
-    private static partial void LogAddedComponentParameter(ILogger logger, string componentParameter, string compoundParameterName);
-
-    [LoggerMessage(EventId = 4021, Level = LogLevel.Error, Message = "Error initializing compound parameter for {DeviceName}")]
-    private static partial void LogErrorInitializingCompoundParameter(ILogger logger, Exception exception, string deviceName, string compoundParameterName);
 
     #endregion
 }
