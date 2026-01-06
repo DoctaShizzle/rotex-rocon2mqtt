@@ -44,12 +44,6 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         // get data for discovery
         await QueryDeviceIdentifiersAsync(stoppingToken);
 
-        // trigger home assistant discovery
-        if (_options.HomeAssistantDiscovery)
-        {
-            await PublishHomeAssistantDiscoveryAsync(stoppingToken);
-        }
-
         // Create resilience pipeline
         var resiliencePipeline = _resilienceFactory.CreateQueryPipeline();
 
@@ -64,6 +58,12 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                     LogPublisherDisabled(_logger);
                     await Task.Delay(TimeSpan.FromSeconds(_options.PollingIntervalSeconds), stoppingToken);
                     continue;
+                }
+
+                // trigger home assistant discovery (skips if it's already done)
+                if (_options.HomeAssistantDiscovery)
+                {
+                    await PublishHomeAssistantDiscoveryAsync(stoppingToken);
                 }
 
                 // Loop over all configured devices and parameters
