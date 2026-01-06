@@ -23,6 +23,20 @@ public class MqttOptions
     public int Port { get; set; } = 1883;
 
     /// <summary>
+    /// Enable TLS/SSL for MQTT connection.
+    /// Default is false (unencrypted connection on port 1883).
+    /// Set to true for encrypted connection (typically port 8883).
+    /// </summary>
+    public bool UseTls { get; set; } = false;
+
+    /// <summary>
+    /// Validate TLS/SSL certificate when UseTls is enabled.
+    /// Default is true for security.
+    /// Set to false only for development/testing with self-signed certificates.
+    /// </summary>
+    public bool ValidateCertificate { get; set; } = true;
+
+    /// <summary>
     /// Gets or sets the unique identifier for the client application.
     /// </summary>
     [Required(ErrorMessage = "MQTT ClientId is required")]

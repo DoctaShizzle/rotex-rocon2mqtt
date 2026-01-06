@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using MQTTnet;
 using RoconMqtt.Mqtt.Options;
 
@@ -33,6 +32,19 @@ public partial class MqttService : IAsyncDisposable, IMqttService
         {
             optionsBuilder.WithCredentials(cfg.Username, cfg.Password);
             LogMqttClientConfiguredWithAuth(_logger);
+        }
+
+        if (cfg.UseTls)
+        {
+            var tlsOptions = new MqttClientTlsOptions
+            {
+                UseTls = true,
+                AllowUntrustedCertificates = !cfg.ValidateCertificate,
+                IgnoreCertificateChainErrors = !cfg.ValidateCertificate,
+                IgnoreCertificateRevocationErrors = !cfg.ValidateCertificate
+            };
+            optionsBuilder.WithTlsOptions(tlsOptions);
+            LogMqttClientConfiguredWithTls(_logger, cfg.ValidateCertificate);
         }
 
         _options = optionsBuilder.Build();
@@ -146,6 +158,9 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     [LoggerMessage(EventId = 4002, Level = LogLevel.Debug, Message = "MQTT client configured with authentication")]
     private static partial void LogMqttClientConfiguredWithAuth(ILogger logger);
+
+    [LoggerMessage(EventId = 4016, Level = LogLevel.Debug, Message = "MQTT client configured with TLS (certificate validation: {ValidateCertificate})")]
+    private static partial void LogMqttClientConfiguredWithTls(ILogger logger, bool validateCertificate);
 
     [LoggerMessage(EventId = 4003, Level = LogLevel.Warning, Message = "MQTT disconnected. Reason: {Reason}. Attempting to reconnect...")]
     private static partial void LogMqttDisconnected(ILogger logger, object reason);
