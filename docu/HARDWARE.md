@@ -53,7 +53,7 @@ flowchart LR
 
 ## 2. Enable SPI
 
-Edit `/boot/config.txt`:
+Edit `/boot/firmware/config.txt`:
 
 ```bash
 dtparam=spi=on
