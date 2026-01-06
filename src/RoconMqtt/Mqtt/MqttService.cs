@@ -86,7 +86,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
         }
     }
 
-    public async Task PublishAsync(string topic, string payload, CancellationToken cancellationToken = default)
+    public async Task PublishAsync(string topic, string payload, CancellationToken cancellationToken = default, bool retain = false)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         
@@ -102,7 +102,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                 .WithTopic(topic)
                 .WithPayload(payload)
                 .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
-                .WithRetainFlag(true)
+                .WithRetainFlag(retain)
                 .Build();
 
             LogPublishingToTopic(_logger, topic, payload.Length);

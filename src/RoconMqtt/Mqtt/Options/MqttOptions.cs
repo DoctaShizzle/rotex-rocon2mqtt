@@ -61,7 +61,7 @@ public class MqttOptions
     /// Default is 5 seconds.
     /// </summary>
     [Range(1, int.MaxValue, ErrorMessage = "Polling interval must be at least 1 second")]
-    public int PollingIntervalSeconds { get; set; } = 5;
+    public int PollingIntervalSeconds { get; set; } = 30;
 
     /// <summary>
     /// Timeout in seconds to wait for ANSWER after sending GET request.
@@ -69,4 +69,28 @@ public class MqttOptions
     /// </summary>
     [Range(1, int.MaxValue, ErrorMessage = "Response timeout must be at least 1 second")]
     public int ResponseTimeoutSeconds { get; set; } = 1;
+
+    /// <summary>
+    /// Enable Home Assistant MQTT Discovery.
+    /// When enabled, the publisher will automatically publish discovery messages
+    /// to allow Home Assistant to auto-configure entities.
+    /// Default is true.
+    /// </summary>
+    public bool HomeAssistantDiscovery { get; set; } = true;
+
+    /// <summary>
+    /// Home Assistant MQTT Discovery prefix.
+    /// Default is "homeassistant" which is the Home Assistant default.
+    /// </summary>
+    [Required(ErrorMessage = "Home Assistant discovery prefix is required")]
+    public string HomeAssistantDiscoveryPrefix { get; set; } = "homeassistant";
+
+    /// <summary>
+    /// Percentage change threshold (0-100). 
+    /// Only publish if value changes by this percentage or more.
+    /// Set to 0 to publish all changes.
+    /// Default is 0.
+    /// </summary>
+    [Range(0, 100, ErrorMessage = "Change threshold must be between 0 and 100")]
+    public double ChangeThresholdPercent { get; set; } = 0;
 }

@@ -7,6 +7,6 @@ namespace RoconMqtt.Mqtt;
 public interface IMqttService
 {
     Task ConnectAsync();
-    Task PublishAsync(string topic, string payload, CancellationToken cancellationToken = default);
+    Task PublishAsync(string topic, string payload, CancellationToken cancellationToken = default, bool retain = false);
     bool IsConnected { get; }
 }
