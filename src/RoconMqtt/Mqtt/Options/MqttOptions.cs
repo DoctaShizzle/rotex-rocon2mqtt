@@ -57,6 +57,13 @@ public class MqttOptions
     public List<string> Parameters { get; set; } = [];
 
     /// <summary>
+    /// List of compound parameter names to create (e.g., "Timestamp").
+    /// Compound parameters combine multiple individual parameters into a single value.
+    /// If empty or null, no compound parameters will be created.
+    /// </summary>
+    public List<string> CompoundParameters { get; set; } = [];
+
+    /// <summary>
     /// Interval in seconds between GET requests for each parameter.
     /// Default is 5 seconds.
     /// </summary>

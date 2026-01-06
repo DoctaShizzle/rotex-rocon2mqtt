@@ -1,0 +1,60 @@
+namespace RoconMqtt.Mqtt.Compound;
+
+/// <summary>
+/// Combines Hour and Minute parameters into a DateTime timestamp.
+/// </summary>
+public class TimestampCompoundParameter : ICompoundParameter
+{
+    private int? _hour;
+    private int? _minute;
+
+    public string Name => "Timestamp";
+
+    public IReadOnlyList<string> ComponentParameters => ["Hour", "Minute"];
+
+    public bool TrySetComponent(string parameterName, object? value)
+    {
+        ArgumentNullException.ThrowIfNull(parameterName);
+
+        switch (parameterName)
+        {
+            case "Hour":
+                _hour = value switch
+                {
+                    int intValue => intValue,
+                    double doubleValue => (int)doubleValue,
+                    _ => null
+                };
+                break;
+
+            case "Minute":
+                _minute = value switch
+                {
+                    int intValue => intValue,
+                    double doubleValue => (int)doubleValue,
+                    _ => null
+                };
+                break;
+
+            default:
+                return false;
+        }
+
+        return _hour.HasValue && _minute.HasValue;
+    }
+
+    public object? GetValue()
+    {
+        if (!_hour.HasValue || !_minute.HasValue)
+            return null;
+
+        var now = DateTime.Now;
+        return new DateTime(now.Year, now.Month, now.Day, _hour.Value, _minute.Value, 0, DateTimeKind.Local);
+    }
+
+    public void Reset()
+    {
+        _hour = null;
+        _minute = null;
+    }
+}

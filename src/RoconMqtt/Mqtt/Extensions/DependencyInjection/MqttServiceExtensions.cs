@@ -1,5 +1,4 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RoconMqtt.Mqtt.Options;
 using RoconMqtt.Mqtt.Resilience;
 

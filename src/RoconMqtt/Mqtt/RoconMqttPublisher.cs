@@ -1,14 +1,14 @@
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Polly.Caching;
 using Polly.CircuitBreaker;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
+using RoconMqtt.Mqtt.Compound;
+using RoconMqtt.Mqtt.Models;
 using RoconMqtt.Mqtt.Options;
 using RoconMqtt.Mqtt.Resilience;
 using System.Collections.Concurrent;
 using System.Text.Json;
+using System.Linq;
 
 namespace RoconMqtt.Mqtt;
 
@@ -22,6 +22,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     
     private readonly ConcurrentDictionary<string, object?> _lastPublishedValues = new();
     private readonly ConcurrentDictionary<string, string> _deviceIdentifiers = new();
+    private readonly ConcurrentDictionary<string, ICompoundParameter> _compoundParameters = new();
     private bool _discoveryPublished = false;
 
     public bool Enabled { get; set; } = options.Value.Enabled;
@@ -45,6 +46,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         // get data for discovery
         await QueryDeviceIdentifiersAsync(stoppingToken);
+
+        // Initialize compound parameters
+        InitializeCompoundParameters();
 
         // trigger home assistant discovery
         if (_options.HomeAssistantDiscovery)
@@ -96,6 +100,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                             LogErrorQueryingDevice(_logger, ex, deviceName, parameterName);
                         }
                     }
+                    
+                    // Check and publish completed compound parameters for this device
+                    await PublishCompoundParametersAsync(deviceName, stoppingToken);
                 }
 
                 // Wait before next polling cycle
@@ -133,7 +140,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             {
                 var result = await _roconService.SendRequestAndWaitForResponseAsync(
                     deviceName,
-                    "cGERAETE_KENNUNG",
+                    "DeviceIdentifier",
                     CommandType.Get,
                     null,
                     (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds,
@@ -175,11 +182,23 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         foreach (var deviceName in _options.Devices)
         {
+            // Publish discovery for regular parameters
             foreach (var parameterName in _options.Parameters)
             {
                 var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, parameterName);
                 var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, parameterName);
-                var configJson = JsonSerializer.Serialize(discoveryConfig, new JsonSerializerOptions { WriteIndented = false });
+                var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
+
+                await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
+                LogPublishedDiscoveryConfig(_logger, discoveryTopic);
+            }
+            
+            // Publish discovery for compound parameters
+            foreach (var compoundParameterName in _options.CompoundParameters)
+            {
+                var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, compoundParameterName);
+                var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, compoundParameterName);
+                var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
 
                 await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
                 LogPublishedDiscoveryConfig(_logger, discoveryTopic);
@@ -189,70 +208,102 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         _discoveryPublished = true;
     }
 
+    private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() { WriteIndented = false };
+
     /// <summary>
-    /// Creates an anonymous object representing the Home Assistant MQTT discovery configuration for a specified device
-    /// parameter.
+    /// Creates a Home Assistant MQTT discovery configuration for a specified device parameter.
     /// </summary>
-    /// <remarks>The returned object includes fields such as name, unique_id, object_id, state_topic,
+    /// <remarks>The returned configuration includes fields such as name, unique_id, object_id, state_topic,
     /// value_template, unit_of_measurement, device_class, state_class, and a nested device object with identification
     /// and metadata. This configuration can be serialized to JSON and published to Home Assistant's MQTT discovery
     /// topic to enable automatic entity creation.</remarks>
     /// <param name="deviceName">The name of the device for which to generate the discovery configuration. Cannot be null or empty.</param>
     /// <param name="parameterName">The name of the parameter to include in the discovery configuration. Cannot be null or empty.</param>
-    /// <returns>An anonymous object containing the Home Assistant MQTT discovery configuration for the specified device
-    /// parameter.</returns>
-    private object CreateHomeAssistantDiscoveryConfig(string deviceName, string parameterName)
+    /// <returns>A Home Assistant MQTT discovery configuration for the specified device parameter.</returns>
+    private HomeAssistantDiscoveryConfig CreateHomeAssistantDiscoveryConfig(string deviceName, string parameterName)
     {
         var stateTopic = GetStateTopic(deviceName, parameterName);
-        var deviceId = _deviceIdentifiers.GetValueOrDefault(deviceName, deviceName);
+        var deviceId = _deviceIdentifiers[deviceName];
         var uniqueId = $"rocon_{deviceId}_{parameterName}";
         var objectId = $"{deviceId}_{parameterName}";
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
-        return new
+        return new HomeAssistantDiscoveryConfig
         {
-            name = FormatParameterName(parameterName),
-            unique_id = uniqueId,
-            object_id = objectId,
-            state_topic = stateTopic,
-            value_template = "{{ value_json.value }}",
-            unit_of_measurement = unitOfMeasurement,
-            device_class = deviceClass,
-            state_class = stateClass,
-            device = new
+            Name = FormatParameterName(parameterName),
+            UniqueId = uniqueId,
+            ObjectId = objectId,
+            StateTopic = stateTopic,
+            ValueTemplate = "{{ value_json.value }}",
+            UnitOfMeasurement = unitOfMeasurement,
+            DeviceClass = deviceClass,
+            StateClass = stateClass,
+            Device = new HomeAssistantDeviceInfo
             {
-                identifiers = new[] { $"rocon_{deviceId}" },
-                name = $"Rotex Heat Pump {deviceId}",
-                manufacturer = "Rotex",
-                model = "Heat Pump",
-                sw_version = "1.0"
+                Identifiers = [$"rocon_{deviceId}"],
+                Name = $"Rotex Device {deviceId}",
+                Manufacturer = "Rotex",
+                Model = "Rotex",
+                SwVersion = "1.0"
             }
         };
     }
 
-    private (string component, string? unitOfMeasurement, string? deviceClass, string? stateClass) GetParameterMetadata(string parameterName)
+    /// <summary>
+    /// Retrieves metadata describing the component type, unit of measurement, device class, and state class associated
+    /// with a specified parameter name.
+    /// </summary>
+    /// <remarks>The returned metadata can be used to map parameters to standardized representations, such as
+    /// those used in sensor or device integrations. The method supports both specific parameter names and pattern-based
+    /// matching for common parameter types.</remarks>
+    /// <param name="parameterName">The name of the parameter for which to obtain metadata. The value is case-insensitive and must correspond to a
+    /// recognized parameter or pattern.</param>
+    /// <returns>A tuple containing the component type, unit of measurement, device class, and state class for the specified
+    /// parameter. If a particular metadata value is not applicable, the corresponding tuple element is null.</returns>
+    /// <exception cref="ArgumentException">Thrown if the specified parameter name is not recognized or does not match any known pattern.</exception>
+#pragma warning disable S1192
+    private static (string component, string? unitOfMeasurement, string? deviceClass, string? stateClass) GetParameterMetadata(string parameterName)
     {
         return parameterName switch
         {
-            var p when p.Contains("TEMP", StringComparison.OrdinalIgnoreCase) => ("sensor", "°C", "temperature", "measurement"),
-            var p when p.Contains("PRESSURE", StringComparison.OrdinalIgnoreCase) => ("sensor", "bar", "pressure", "measurement"),
-            var p when p.Contains("FLOW", StringComparison.OrdinalIgnoreCase) || p.Contains("VOLUMENSTROM", StringComparison.OrdinalIgnoreCase) => ("sensor", "L/min", null, "measurement"),
-            var p when p.Contains("POWER", StringComparison.OrdinalIgnoreCase) || p.Contains("LEISTUNG", StringComparison.OrdinalIgnoreCase) => ("sensor", "W", "power", "measurement"),
-            var p when p.Contains("ENERGY", StringComparison.OrdinalIgnoreCase) => ("sensor", "kWh", "energy", "total_increasing"),
-            var p when p.Contains("HUMIDITY", StringComparison.OrdinalIgnoreCase) => ("sensor", "%", "humidity", "measurement"),
-            var p when p.Contains("ZEIT", StringComparison.OrdinalIgnoreCase) || p.Contains("LAUFZEIT", StringComparison.OrdinalIgnoreCase) => ("sensor", "h", "duration", "total_increasing"),
-            var p when p.Contains("AKTIV", StringComparison.OrdinalIgnoreCase) || p.Contains("STATUS", StringComparison.OrdinalIgnoreCase) => ("binary_sensor", null, null, null),
-            var p when p.Contains("MODE", StringComparison.OrdinalIgnoreCase) || p.Contains("MODUS", StringComparison.OrdinalIgnoreCase) => ("sensor", null, null, null),
-            var p when p.Contains("FEHLER", StringComparison.OrdinalIgnoreCase) || p.Contains("ERROR", StringComparison.OrdinalIgnoreCase) => ("sensor", null, "problem", null),
-            var p when p.Contains("KURVE", StringComparison.OrdinalIgnoreCase) => ("sensor", null, null, "measurement"),
-            _ => ("sensor", null, null, "measurement")
+            // Specific parameter mappings
+            "DeviceIdentifier" => ("sensor", null, null, null),
+            "Hour" => ("sensor", null, null, "measurement"),
+            "Minute" => ("sensor", null, null, "measurement"),
+            "Timestamp" => ("sensor", null, "timestamp", null),
+            "TR" => ("sensor", "°C", "temperature", "measurement"),
+            "V" => ("sensor", "L/h", null, "measurement"),
+            "n" => ("sensor", "%", null, "measurement"),
+            "ValveCH_DHW" => ("sensor", "%", null, "measurement"),
+            "ValveCH_Bypass" => ("sensor", "%", null, "measurement"),
+            "TVBH1" => ("sensor", "°C", "temperature", "measurement"),
+            "TVBHMIX" => ("sensor", "°C", "temperature", "measurement"),
+            "TVBH" => ("sensor", "°C", "temperature", "measurement"),
+            "Defrost" => ("binary_sensor", null, null, null),
+            
+            // Pattern-based matching for remaining parameters
+            var p when p.Contains("Temp", StringComparison.OrdinalIgnoreCase) => ("sensor", "°C", "temperature", "measurement"),
+            var p when p.Contains("Pressure", StringComparison.OrdinalIgnoreCase) => ("sensor", "bar", "pressure", "measurement"),
+            var p when p.Contains("Flow", StringComparison.OrdinalIgnoreCase) || p.Contains("VOLUMENSTROM", StringComparison.OrdinalIgnoreCase) => ("sensor", "L/min", null, "measurement"),
+            var p when p.Contains("Power", StringComparison.OrdinalIgnoreCase) || p.Contains("LEISTUNG", StringComparison.OrdinalIgnoreCase) => ("sensor", "W", "power", "measurement"),
+            var p when p.Contains("Energy", StringComparison.OrdinalIgnoreCase) => ("sensor", "kWh", "energy", "total_increasing"),
+            var p when p.Contains("Humidity", StringComparison.OrdinalIgnoreCase) => ("sensor", "%", "humidity", "measurement"),
+            var p when p.Contains("OperatingHours", StringComparison.OrdinalIgnoreCase) || p.Contains("LAUFZEIT", StringComparison.OrdinalIgnoreCase) => ("sensor", "h", "duration", "total_increasing"),
+            var p when p.Contains("Active", StringComparison.OrdinalIgnoreCase) || p.Contains("STATUS", StringComparison.OrdinalIgnoreCase) => ("binary_sensor", null, null, null),
+            var p when p.Contains("Mode", StringComparison.OrdinalIgnoreCase) || p.Contains("MODUS", StringComparison.OrdinalIgnoreCase) => ("sensor", null, null, null),
+            var p when p.Contains("Error", StringComparison.OrdinalIgnoreCase) || p.Contains("FEHLER", StringComparison.OrdinalIgnoreCase) => ("sensor", null, "problem", null),
+            var p when p.Contains("Curve", StringComparison.OrdinalIgnoreCase) || p.Contains("KURVE", StringComparison.OrdinalIgnoreCase) => ("sensor", null, null, "measurement"),
+            
+            // Throw exception for unrecognized parameters
+            _ => throw new ArgumentException($"Unrecognized parameter name: {parameterName}. Please add metadata mapping for this parameter.", nameof(parameterName))
         };
     }
+#pragma warning restore S1192
 
     private string GetHomeAssistantDiscoveryTopic(string deviceName, string parameterName)
     {
-        var deviceId = _deviceIdentifiers.GetValueOrDefault(deviceName, deviceName);
+        var deviceId = _deviceIdentifiers[deviceName];
         var (component, _, _, _) = GetParameterMetadata(parameterName);
         var objectId = $"{deviceId}_{parameterName}".ToLowerInvariant().Replace(" ", "_");
         return $"{_options.HomeAssistantDiscoveryPrefix}/{component}/rocon_{objectId}/config";
@@ -260,15 +311,37 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     private string GetStateTopic(string deviceName, string parameterName)
     {
-        return $"{_options.Topic}/{deviceName}/{parameterName}/state";
+        var deviceId = _deviceIdentifiers[deviceName];
+        return $"{_options.Topic}/{deviceId}/{parameterName}/state";
     }
 
-    private string FormatParameterName(string parameterName)
+    /// <summary>
+    /// Converts a parameter name from PascalCase to snake_case format.
+    /// </summary>
+    /// <remarks>This method is useful for generating entity names compatible with systems that require
+    /// snake_case formatting, such as Home Assistant.</remarks>
+    /// <param name="parameterName">The parameter name to convert. Must not be null or empty.</param>
+    /// <returns>A string containing the parameter name converted to snake_case. The returned string is in lowercase.</returns>
+    private static string FormatParameterName(string parameterName)
     {
-        return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(
-            parameterName.Replace("_", " ").ToLower());
+        // Convert PascalCase to snake_case for Home Assistant entity names
+        return string.Concat(parameterName.Select((c, i) =>
+            i > 0 && char.IsUpper(c) && !char.IsUpper(parameterName[i - 1])
+                ? $"_{c}"
+                : c.ToString()
+        )).ToLowerInvariant();
     }
 
+    /// <summary>
+    /// Sends a 'Get' command to the specified device for the given parameter and waits for a response, then publishes
+    /// the result to MQTT if the value has changed.
+    /// </summary>
+    /// <remarks>If the retrieved value differs from the last published value, the result is serialized and
+    /// published to the corresponding MQTT topic. If the value has not changed, publishing is skipped.</remarks>
+    /// <param name="deviceName">The name of the device to which the 'Get' command is sent. Cannot be null or empty.</param>
+    /// <param name="parameterName">The name of the parameter to retrieve from the device. Cannot be null or empty.</param>
+    /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task SendGetAndWaitForAnswer(string deviceName, string parameterName, CancellationToken token)
     {
         // Use CanService to coordinate request and response
@@ -280,8 +353,12 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds, 
             token);
 
-        // Publish to MQTT
-        var key = $"{deviceName}/{parameterName}";
+        // Feed value to compound parameters
+        FeedCompoundParameters(deviceName, parameterName, result);
+
+        // Publish to MQTT using resolved device identifier
+        var deviceId = _deviceIdentifiers[deviceName];
+        var key = $"{deviceId}/{parameterName}";
         if (ShouldPublish(key, result))
         {
             var stateTopic = GetStateTopic(deviceName, parameterName);
@@ -294,6 +371,26 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         else
         {
             LogValueUnchangedSkippingPublish(_logger, deviceName, parameterName);
+        }
+    }
+
+    /// <summary>
+    /// Feeds the retrieved parameter value to any compound parameters that need it.
+    /// </summary>
+    private void FeedCompoundParameters(string deviceName, string parameterName, object? value)
+    {
+        var deviceId = _deviceIdentifiers[deviceName];
+        
+        foreach (var compoundParameterName in _options.CompoundParameters)
+        {
+            var key = $"{deviceId}/{compoundParameterName}";
+            if (_compoundParameters.TryGetValue(key, out var compound))
+            {
+                if (compound.ComponentParameters.Contains(parameterName))
+                {
+                    compound.TrySetComponent(parameterName, value);
+                }
+            }
         }
     }
     
@@ -338,6 +435,79 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         return !newValue.Equals(lastValue);
     }
+
+    /// <summary>
+    /// Initializes compound parameters based on configuration.
+    /// </summary>
+    private void InitializeCompoundParameters()
+    {
+        foreach (var compoundParameterName in _options.CompoundParameters)
+        {
+            foreach (var deviceName in _options.Devices)
+            {
+                var deviceId = _deviceIdentifiers[deviceName];
+                var key = $"{deviceId}/{compoundParameterName}";
+                
+                try
+                {
+                    _compoundParameters[key] = CompoundParameterFactory.Create(compoundParameterName);
+                    LogCompoundParameterInitialized(_logger, deviceName, compoundParameterName);
+                    
+                    // Ensure component parameters are in the Parameters list
+                    var compound = _compoundParameters[key];
+                    foreach (var componentParam in compound.ComponentParameters.Where(componentParam => !_options.Parameters.Contains(componentParam)))
+                    {
+                        _options.Parameters.Add(componentParam);
+                        LogAddedComponentParameter(_logger, componentParam, compoundParameterName);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogErrorInitializingCompoundParameter(_logger, ex, deviceName, compoundParameterName);
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Publishes compound parameters that are complete for the specified device.
+    /// </summary>
+    private async Task PublishCompoundParametersAsync(string deviceName, CancellationToken token)
+    {
+        var deviceId = _deviceIdentifiers[deviceName];
+        
+        foreach (var compoundParameterName in _options.CompoundParameters)
+        {
+            var key = $"{deviceId}/{compoundParameterName}";
+            if (_compoundParameters.TryGetValue(key, out var compound))
+            {
+                var value = compound.GetValue();
+                if (value != null)
+                {
+                    var publishKey = $"{deviceId}/{compoundParameterName}";
+                    if (ShouldPublish(publishKey, value))
+                    {
+                        var stateTopic = GetStateTopic(deviceName, compoundParameterName);
+                        var result = new { value };
+                        var json = JsonSerializer.Serialize(result);
+                        LogPublishingToMqtt(_logger, stateTopic, json);
+                        await _mqtt.PublishAsync(stateTopic, json, token);
+                        
+                        _lastPublishedValues[publishKey] = value;
+                    }
+                    else
+                    {
+                        LogValueUnchangedSkippingPublish(_logger, deviceName, compoundParameterName);
+                    }
+                    
+                    // Reset for next polling cycle
+                    compound.Reset();
+                }
+            }
+        }
+    }
+
+    #region Logging
 
     [LoggerMessage(EventId = 4001, Level = LogLevel.Information, Message = "RoconMqttPublisher started")]
     private static partial void LogPublisherStarted(ILogger logger);
@@ -392,4 +562,15 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4018, Level = LogLevel.Error, Message = "Error querying device identifier for {DeviceName}")]
     private static partial void LogErrorQueryingDeviceIdentifier(ILogger logger, Exception exception, string deviceName);
+
+    [LoggerMessage(EventId = 4019, Level = LogLevel.Debug, Message = "Initializing compound parameter {CompoundParameterName} for device {DeviceName}")]
+    private static partial void LogCompoundParameterInitialized(ILogger logger, string deviceName, string compoundParameterName);
+
+    [LoggerMessage(EventId = 4020, Level = LogLevel.Debug, Message = "Added component parameter {ComponentParameter} for compound parameter {CompoundParameterName}")]
+    private static partial void LogAddedComponentParameter(ILogger logger, string componentParameter, string compoundParameterName);
+
+    [LoggerMessage(EventId = 4021, Level = LogLevel.Error, Message = "Error initializing compound parameter for {DeviceName}")]
+    private static partial void LogErrorInitializingCompoundParameter(ILogger logger, Exception exception, string deviceName, string compoundParameterName);
+
+    #endregion
 }

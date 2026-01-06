@@ -1120,7 +1120,7 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "RoomTemperatureSetpoint"
+      "nameEnglish": "RoomTargetTemperature1"
     },
     {
       "originalName": "cRAUMSOLLTEMP_II",
@@ -2307,7 +2307,7 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "Defrost   "
+      "nameEnglish": "Defrost"
     },
     {
       "originalName": "cPUMPENLAUFZEIT",
