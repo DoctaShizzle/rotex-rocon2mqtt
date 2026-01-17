@@ -8,6 +8,7 @@ Wants=network-online.target
 Type=simple
 User=rocon
 Group=rocon
+SupplementaryGroups=can
 WorkingDirectory=/opt/roconmqtt
 ExecStart=/opt/roconmqtt/RoconMqtt
 Restart=always

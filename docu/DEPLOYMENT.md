@@ -51,6 +51,35 @@ src/RoconMqtt/bin/publish/linux-arm64/
 
 ---
 
+## Running in Development Mode (Command Line)
+
+For testing and debugging, you can run the application directly from the command line with verbose logging.
+
+### Prerequisites
+
+- The application must be run with `sudo` to access CAN interfaces
+- Ensure `can0` and `can1` are properly configured (see [HARDWARE.md](HARDWARE.md))
+
+### Running the Application
+
+Transfer the build output to your Raspberry Pi (as described in [Deployment Steps](#deployment-steps)), then:
+
+```bash
+cd /opt/roconmqtt
+sudo ASPNETCORE_ENVIRONMENT=Development ./RoconMqtt
+```
+
+This will:
+- Run with **verbose Debug logging** to help diagnose issues
+- Output logs to both console and file (`/opt/roconmqtt/logs/rocon-mqtt-*.txt`)
+- Show detailed error messages and state transitions
+
+### Stopping the Application
+
+Press `Ctrl+C` in the terminal to gracefully stop the application.
+
+---
+
 ## Deployment Steps
 
 ### 1. Create User and Directory on Raspberry Pi
@@ -58,13 +87,15 @@ src/RoconMqtt/bin/publish/linux-arm64/
 SSH into your Raspberry Pi and run:
 
 ```bash
-# Create a dedicated user for the service
-sudo useradd -r -m -d /opt/roconmqtt -s /bin/false rocon
+# Create a dedicated user for the service and add to can group for SocketCAN access
+sudo useradd -r -m -d /opt/roconmqtt -s /bin/false -G can rocon
 
 # Create the application directory
 sudo mkdir -p /opt/roconmqtt/logs
 sudo chown -R rocon:rocon /opt/roconmqtt
 ```
+
+**Note**: The `can` group membership allows the `rocon` user to access CAN interfaces without root privileges.
 
 ### 2. Transfer Files to Raspberry Pi
 
@@ -124,7 +155,7 @@ Update the following sections with your specific values:
 
 ## Running as a systemd Service
 
-### 1. Install the Service File
+### 1. Install and Configure the Service File
 
 From your development machine, copy the service file:
 
@@ -138,6 +169,20 @@ On the Raspberry Pi:
 sudo mv /tmp/roconmqtt.service /etc/systemd/system/
 sudo chmod 644 /etc/systemd/system/roconmqtt.service
 ```
+
+Edit the service file to add SocketCAN group membership:
+
+```bash
+sudo nano /etc/systemd/system/roconmqtt.service
+```
+
+Add the following line in the `[Service]` section (near the `User=rocon` line):
+
+```ini
+SupplementaryGroups=can
+```
+
+This ensures the `rocon` user has access to CAN interfaces at runtime.
 
 ### 2. Enable and Start the Service
 
