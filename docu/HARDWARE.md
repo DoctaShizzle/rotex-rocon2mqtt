@@ -63,12 +63,16 @@ dtparam=spi=on
 
 ## 3. Enable the MCP2515 CAN Controllers
 
-Add the overlays for both channels:
+Edit `/boot/firmware/config.txt` and add the overlays for both channels:
 
 ```bash
 dtoverlay=mcp2515-can0,oscillator=16000000,interrupt=25
 dtoverlay=mcp2515-can1,oscillator=16000000,interrupt=24
 ```
+
+**Parameter explanation:**
+- `oscillator=16000000` – The clock frequency (16 MHz) of the MCP2515 chip used for baud rate calculations. Not related to termination resistors.
+- `interrupt=25` – The GPIO pin number on the Raspberry Pi that the MCP2515 uses to signal hardware interrupts when CAN messages arrive. Adjust these pins if your HAT uses different ones.
 
 > Adjust interrupt pins if your HAT uses different ones.
 
@@ -92,7 +96,46 @@ You should see `can0` and `can1`.
 
 ### Set bitrate (Rotex/Daikin 20 kbit/s)
 
-Example for 50 kbit/s:
+Create a startup script to persist these settings across reboots. Create `/opt/rocon/setup-can.sh`:
+
+```bash
+#!/bin/bash
+sleep 2  # Wait for interfaces to be ready
+ip link set can0 up type can bitrate 20000
+ip link set can1 up type can bitrate 20000
+```
+
+Make it executable:
+
+```bash
+sudo chmod +x /opt/rocon/setup-can.sh
+```
+
+Create a systemd service file at `/etc/systemd/system/setup-can.service`:
+
+```ini
+[Unit]
+Description=Setup CAN Interfaces
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/rocon/setup-can.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable the service:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable setup-can.service
+sudo systemctl start setup-can.service
+```
+
+To manually verify the setup:
 
 ```bash
 sudo ip link set can0 up type can bitrate 20000
