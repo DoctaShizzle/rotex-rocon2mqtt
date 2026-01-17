@@ -135,7 +135,17 @@ This will install tools like `candump` and `cansend`.
 
 ---
 
-## 6. Notes for Rotex/Daikin Heat Pumps
+## 6. Open up SSH and VNC on the PI
+
+```bash
+sudo raspi-config
+```
+
+Go to `3 Interface Options`, and enable SSH and VNC.
+
+---
+
+## 7. Notes for Rotex/Daikin Heat Pumps
 
 - The CAN bus **must be linear**, not branched.
 - Stub lengths must be **short (<30–50 cm)**.
@@ -144,7 +154,7 @@ This will install tools like `candump` and `cansend`.
 
 ---
 
-## 7. Summary
+## 8. Summary
 
 - Plug the HAT onto the Pi (no GPIO wiring needed).
 - Wire CAN0 to the heat pump, CAN1 to the thermostat.
