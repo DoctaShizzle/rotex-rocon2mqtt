@@ -31,8 +31,13 @@ public partial class SocketCanBus : ICanBus, IDisposable
     {
         try
         {
-            var iface = new CanNetworkInterface(0, _options.CanInterfaceName, false);
-            _socket.Bind(iface);
+            // Dynamically look up the interface index by name
+            // This is necessary because the interface index varies based on system configuration
+            using (var tempSocket = new RawCanSocket())
+            {
+                var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
+                _socket.Bind(iface);
+            }
             LogSocketCanInitialized(_logger, _options.CanInterfaceName);
         }
         catch (Exception ex)
