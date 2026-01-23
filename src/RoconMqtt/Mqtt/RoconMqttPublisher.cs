@@ -61,7 +61,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 }
 
                 // trigger home assistant discovery (skips if it's already done)
-                if (_options.HomeAssistantDiscovery)
+                if (_options.HomeAssistant.Discovery)
                 {
                     await PublishHomeAssistantDiscoveryAsync(stoppingToken);
                 }
@@ -226,6 +226,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() { WriteIndented = false };
 
+    private const string deviceIdKey = "deviceId";
+
     /// <summary>
     /// Creates a Home Assistant MQTT discovery configuration for a specified device parameter.
     /// </summary>
@@ -240,8 +242,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var stateTopic = GetStateTopic(deviceName, parameterName);
         var deviceId = _deviceIdentifiers[deviceName];
-        var uniqueId = $"rocon_{deviceId}_{parameterName}";
-        var objectId = $"{deviceId}_{parameterName}";
+        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterName } });
+        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterName } });
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
@@ -251,17 +253,17 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             UniqueId = uniqueId,
             ObjectId = objectId,
             StateTopic = stateTopic,
-            ValueTemplate = "{{ value_json.value }}",
+            ValueTemplate = _options.HomeAssistant.ValueTemplate,
             UnitOfMeasurement = unitOfMeasurement,
             DeviceClass = deviceClass,
             StateClass = stateClass,
             Device = new HomeAssistantDeviceInfo
             {
-                Identifiers = [$"rocon_{deviceId}"],
-                Name = $"Rotex Device {deviceId}",
-                Manufacturer = "Rotex",
-                Model = "Rotex",
-                SwVersion = "1.0"
+                Identifiers = [FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceIdKey, deviceId } })],
+                Name = FormatTemplate(_options.HomeAssistant.DeviceNameFormat, new() { { deviceIdKey, deviceId } }),
+                Manufacturer = _options.HomeAssistant.DeviceManufacturer,
+                Model = _options.HomeAssistant.DeviceModel,
+                SwVersion = _options.HomeAssistant.DeviceSoftwareVersion
             }
         };
     }
@@ -322,13 +324,29 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         var deviceId = _deviceIdentifiers[deviceName];
         var (component, _, _, _) = GetParameterMetadata(parameterName);
         var objectId = $"{deviceId}_{parameterName}".ToLowerInvariant().Replace(" ", "_");
-        return $"{_options.HomeAssistantDiscoveryPrefix}/{component}/rocon_{objectId}/config";
+        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/rocon_{objectId}/config";
     }
 
     private string GetStateTopic(string deviceName, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
         return $"{_options.Topic}/{deviceId}/{parameterName}/state";
+    }
+
+    /// <summary>
+    /// Formats a template string by replacing named placeholders with values from the provided dictionary.
+    /// </summary>
+    /// <param name="template">The template string with placeholders in the format {name}.</param>
+    /// <param name="values">A dictionary containing the placeholder names and their corresponding values.</param>
+    /// <returns>The formatted string with placeholders replaced by their values.</returns>
+    private static string FormatTemplate(string template, Dictionary<string, object> values)
+    {
+        var result = template;
+        foreach (var (key, value) in values)
+        {
+            result = result.Replace($"{{{key}}}", value?.ToString() ?? "");
+        }
+        return result;
     }
 
     /// <summary>
