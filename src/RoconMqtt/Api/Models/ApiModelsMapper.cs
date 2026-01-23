@@ -63,6 +63,10 @@ public static partial class ApiModelsMapper
         target.Max = source.Max;
         target.Default = source.Default;
         target.BigEndian = source.BigEndian;
+        target.HomeAssistantComponent = source.HomeAssistantComponent;
+        target.UnitOfMeasurement = source.UnitOfMeasurement;
+        target.DeviceClass = source.DeviceClass;
+        target.StateClass = source.StateClass;
     }
 
     /// <summary>

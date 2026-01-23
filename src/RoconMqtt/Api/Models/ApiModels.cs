@@ -202,6 +202,26 @@ public sealed class ParameterMetadata
     /// InfoNumber low byte (e.g., 0x06)
     /// </summary>
     public byte InfoNumberLow { get; set; }
+
+    /// <summary>
+    /// Home Assistant component type
+    /// </summary>
+    public string? HomeAssistantComponent { get; set; }
+
+    /// <summary>
+    /// Unit of measurement
+    /// </summary>
+    public string? UnitOfMeasurement { get; set; }
+
+    /// <summary>
+    /// Home Assistant device class
+    /// </summary>
+    public string? DeviceClass { get; set; }
+
+    /// <summary>
+    /// Home Assistant state class
+    /// </summary>
+    public string? StateClass { get; set; }
 }
 
 /// <summary>
