@@ -17,7 +17,11 @@ public record ParameterDefinition(
     bool BigEndian = false,
     IReadOnlyDictionary<int, string>? EnumValues = null,
     string? DefaultTimeRange = null,
-    string? NameEnglish = null
+    string? NameEnglish = null,
+    string? HomeAssistantComponent = null,
+    string? UnitOfMeasurement = null,
+    string? DeviceClass = null,
+    string? StateClass = null
 )
 {
     /// <summary>

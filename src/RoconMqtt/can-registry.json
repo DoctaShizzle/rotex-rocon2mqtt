@@ -10,7 +10,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "DeviceIdentifier"
+      "nameEnglish": "DeviceIdentifier",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
     },
     {
       "originalName": "cAUSSENTEMP",
@@ -23,7 +27,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "OutdoorTemperature"
+      "nameEnglish": "OutdoorTemperature",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cAUSSENTEMP_WAERMEPUMPE",
@@ -129,7 +137,11 @@
       "display": true,
       "waterCircuit": true,
       "bigEndian": true,
-      "nameEnglish": "BufferTemperatureActual"
+      "nameEnglish": "BufferTemperatureActual",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cVERSTELLTE_SPEICHERSOLLTEMP",
@@ -145,7 +157,11 @@
       "display": true,
       "waterCircuit": true,
       "bigEndian": true,
-      "nameEnglish": "BufferTemperatureSetpointAdjusted"
+      "nameEnglish": "BufferTemperatureSetpointAdjusted",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cEINSTELL_SPEICHERSOLLTEMP",
@@ -161,7 +177,11 @@
       "display": true,
       "waterCircuit": true,
       "bigEndian": true,
-      "nameEnglish": "BufferTemperatureSetpoint"
+      "nameEnglish": "BufferTemperatureSetpoint",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cEINSTELL_SPEICHERSOLLTEMP2",
@@ -1076,7 +1096,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "HotWaterProductionActive"
+      "nameEnglish": "HotWaterProductionActive",
+      "homeAssistantComponent": "binary_sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
     },
     {
       "originalName": "cRAUMISTTEMP",
@@ -1089,7 +1113,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "RoomTemperatureActual"
+      "nameEnglish": "RoomTemperatureActual",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cVERSTELLTE_RAUMSOLLTEMP",
@@ -1104,7 +1132,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "RoomTemperatureSetpointAdjusted"
+      "nameEnglish": "RoomTemperatureSetpointAdjusted",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cRAUMSOLLTEMP_I",
@@ -1120,7 +1152,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "RoomTargetTemperature1"
+      "nameEnglish": "RoomTargetTemperature1",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cRAUMSOLLTEMP_II",
@@ -2178,7 +2214,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "HeaterTemperatureActual"
+      "nameEnglish": "HeaterTemperatureActual",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cKESSELSOLLTEMP",
@@ -2194,7 +2234,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "HeaterTemperatureSetpoint"
+      "nameEnglish": "HeaterTemperatureSetpoint",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cRUECKLAUFTEMP",
@@ -2207,7 +2251,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "TR"
+      "nameEnglish": "TR",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cVOLUMENSTROM",
@@ -2220,7 +2268,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "V"
+      "nameEnglish": "V",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "L/h",
+      "deviceClass": null,
+      "stateClass": "measurement"
     },
     {
       "originalName": "cPWM_SIGNAL",
@@ -2232,7 +2284,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "n"
+      "nameEnglish": "n",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "%",
+      "deviceClass": null,
+      "stateClass": "measurement"
     },
     {
       "originalName": "cMISCHERSTELLUNG_1_3UV1",
@@ -2244,7 +2300,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "ValveCH_DHW"
+      "nameEnglish": "ValveCH_DHW",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "%",
+      "deviceClass": null,
+      "stateClass": "measurement"
     },
     {
       "originalName": "cMISCHERSTELLUNG_2_3UVB",
@@ -2256,7 +2316,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "ValveCH_Bypass"
+      "nameEnglish": "ValveCH_Bypass",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "%",
+      "deviceClass": null,
+      "stateClass": "measurement"
     },
     {
       "originalName": "cT_TVBH1",
@@ -2269,7 +2333,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "TVBH1"
+      "nameEnglish": "TVBH1",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cT_TVBHMIX",
@@ -2282,7 +2350,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "TVBHMIX"
+      "nameEnglish": "TVBHMIX",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "cT_TVBH",
@@ -2307,7 +2379,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "Defrost"
+      "nameEnglish": "Defrost",
+      "homeAssistantComponent": "binary_sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
     },
     {
       "originalName": "cPUMPENLAUFZEIT",
@@ -2319,7 +2395,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "PumpOperatingHours"
+      "nameEnglish": "PumpOperatingHours",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "h",
+      "deviceClass": "duration",
+      "stateClass": "total_increasing"
     },
     {
       "originalName": "cKOMPRESSORLAUFZEIT",
@@ -2331,7 +2411,11 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "CompressorOperatingHours"
+      "nameEnglish": "CompressorOperatingHours",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "h",
+      "deviceClass": "duration",
+      "stateClass": "total_increasing"
     },
     {
       "originalName": "cVMIN_A1",
@@ -2379,7 +2463,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "CurrentError"
+      "nameEnglish": "CurrentError",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": "problem",
+      "stateClass": null
     },
     {
       "originalName": "eZEITMASTER",
@@ -2738,7 +2826,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": true,
-      "nameEnglish": "WeatherDependentCurveSetting"
+      "nameEnglish": "WeatherDependentCurveSetting",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": "measurement"
     },
     {
       "originalName": "eKUEHLSOLLWERT_KORR_HZK_0",
@@ -3117,7 +3209,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "LeavingWaterTemperatureSetpoint"
+      "nameEnglish": "LeavingWaterTemperatureSetpoint",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "eVORLAUFISTTEMP",
@@ -3130,7 +3226,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "LeavingWaterTemperatureActual"
+      "nameEnglish": "LeavingWaterTemperatureActual",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
     },
     {
       "originalName": "WaterPressure",

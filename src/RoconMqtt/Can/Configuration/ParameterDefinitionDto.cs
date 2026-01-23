@@ -34,6 +34,26 @@ public class ParameterDefinitionDto
     public string? NameEnglish { get; set; }
 
     /// <summary>
+    /// Home Assistant component type (sensor, binary_sensor, etc.)
+    /// </summary>
+    public string? HomeAssistantComponent { get; set; }
+
+    /// <summary>
+    /// Home Assistant unit of measurement (°C, L/h, %, etc.)
+    /// </summary>
+    public string? UnitOfMeasurement { get; set; }
+
+    /// <summary>
+    /// Home Assistant device class (temperature, pressure, etc.)
+    /// </summary>
+    public string? DeviceClass { get; set; }
+
+    /// <summary>
+    /// Home Assistant state class (measurement, total_increasing, etc.)
+    /// </summary>
+    public string? StateClass { get; set; }
+
+    /// <summary>
     /// Converts DTO to domain model
     /// </summary>
     public ParameterDefinition ToParameterDefinition()
@@ -59,7 +79,11 @@ public class ParameterDefinitionDto
             BigEndian: BigEndian,
             EnumValues: EnumValues,
             DefaultTimeRange: DefaultTimeRange,
-            NameEnglish: NameEnglish
+            NameEnglish: NameEnglish,
+            HomeAssistantComponent: HomeAssistantComponent,
+            UnitOfMeasurement: UnitOfMeasurement,
+            DeviceClass: DeviceClass,
+            StateClass: StateClass
         );
     }
 
@@ -85,7 +109,11 @@ public class ParameterDefinitionDto
             BigEndian = parameter.BigEndian,
             EnumValues = parameter.EnumValues?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value),
             DefaultTimeRange = parameter.DefaultTimeRange,
-            NameEnglish = parameter.NameEnglish
+            NameEnglish = parameter.NameEnglish,
+            HomeAssistantComponent = parameter.HomeAssistantComponent,
+            UnitOfMeasurement = parameter.UnitOfMeasurement,
+            DeviceClass = parameter.DeviceClass,
+            StateClass = parameter.StateClass
         };
     }
 }

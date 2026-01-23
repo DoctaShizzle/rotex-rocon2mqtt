@@ -10,9 +10,10 @@ using System.Text.Json;
 
 namespace RoconMqtt.Mqtt;
 
-public partial class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ResiliencePipelineFactory resilienceFactory, ILogger<RoconMqttPublisher> logger) : BackgroundService
+public partial class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ICanParameterRegistry parameterRegistry, ResiliencePipelineFactory resilienceFactory, ILogger<RoconMqttPublisher> logger) : BackgroundService
 {
     private readonly MqttOptions _options = options.Value;
+    private readonly ICanParameterRegistry _parameterRegistry = parameterRegistry ?? throw new ArgumentNullException(nameof(parameterRegistry));
     private readonly ICanService _roconService = roconService ?? throw new ArgumentNullException(nameof(roconService));
     private readonly IMqttService _mqtt = mqtt;
     private readonly ILogger<RoconMqttPublisher> _logger = logger;
@@ -270,54 +271,34 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     /// <summary>
     /// Retrieves metadata describing the component type, unit of measurement, device class, and state class associated
-    /// with a specified parameter name.
+    /// with a specified parameter name from the parameter registry.
     /// </summary>
-    /// <remarks>The returned metadata can be used to map parameters to standardized representations, such as
-    /// those used in sensor or device integrations. The method supports both specific parameter names and pattern-based
-    /// matching for common parameter types.</remarks>
-    /// <param name="parameterName">The name of the parameter for which to obtain metadata. The value is case-insensitive and must correspond to a
-    /// recognized parameter or pattern.</param>
+    /// <remarks>The method looks up the parameter in the registry by NameEnglish. If the parameter is not found or is 
+    /// missing required metadata fields, an error is logged indicating the misconfiguration.</remarks>
+    /// <param name="parameterName">The name of the parameter (NameEnglish) for which to obtain metadata.</param>
     /// <returns>A tuple containing the component type, unit of measurement, device class, and state class for the specified
-    /// parameter. If a particular metadata value is not applicable, the corresponding tuple element is null.</returns>
-    /// <exception cref="ArgumentException">Thrown if the specified parameter name is not recognized or does not match any known pattern.</exception>
-#pragma warning disable S1192
-    private static (string component, string? unitOfMeasurement, string? deviceClass, string? stateClass) GetParameterMetadata(string parameterName)
+    /// parameter.</returns>
+    /// <exception cref="ArgumentException">Thrown if the specified parameter is not found in the registry or if required
+    /// metadata is missing.</exception>
+    private (string component, string? unitOfMeasurement, string? deviceClass, string? stateClass) GetParameterMetadata(string parameterName)
     {
-        return parameterName switch
+        // Find the parameter by NameEnglish in the registry
+        var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
+
+        if (paramDef == null)
         {
-            // Specific parameter mappings
-            "DeviceIdentifier" => ("sensor", null, null, null),
-            "Hour" => ("sensor", null, null, "measurement"),
-            "Minute" => ("sensor", null, null, "measurement"),
-            "Timestamp" => ("sensor", null, "timestamp", null),
-            "TR" => ("sensor", "°C", "temperature", "measurement"),
-            "V" => ("sensor", "L/h", null, "measurement"),
-            "n" => ("sensor", "%", null, "measurement"),
-            "ValveCH_DHW" => ("sensor", "%", null, "measurement"),
-            "ValveCH_Bypass" => ("sensor", "%", null, "measurement"),
-            "TVBH1" => ("sensor", "°C", "temperature", "measurement"),
-            "TVBHMIX" => ("sensor", "°C", "temperature", "measurement"),
-            "TVBH" => ("sensor", "°C", "temperature", "measurement"),
-            "Defrost" => ("binary_sensor", null, null, null),
-            
-            // Pattern-based matching for remaining parameters
-            var p when p.Contains("Temp", StringComparison.OrdinalIgnoreCase) => ("sensor", "°C", "temperature", "measurement"),
-            var p when p.Contains("Pressure", StringComparison.OrdinalIgnoreCase) => ("sensor", "bar", "pressure", "measurement"),
-            var p when p.Contains("Flow", StringComparison.OrdinalIgnoreCase) || p.Contains("VOLUMENSTROM", StringComparison.OrdinalIgnoreCase) => ("sensor", "L/min", null, "measurement"),
-            var p when p.Contains("Power", StringComparison.OrdinalIgnoreCase) || p.Contains("LEISTUNG", StringComparison.OrdinalIgnoreCase) => ("sensor", "W", "power", "measurement"),
-            var p when p.Contains("Energy", StringComparison.OrdinalIgnoreCase) => ("sensor", "kWh", "energy", "total_increasing"),
-            var p when p.Contains("Humidity", StringComparison.OrdinalIgnoreCase) => ("sensor", "%", "humidity", "measurement"),
-            var p when p.Contains("OperatingHours", StringComparison.OrdinalIgnoreCase) || p.Contains("LAUFZEIT", StringComparison.OrdinalIgnoreCase) => ("sensor", "h", "duration", "total_increasing"),
-            var p when p.Contains("Active", StringComparison.OrdinalIgnoreCase) || p.Contains("STATUS", StringComparison.OrdinalIgnoreCase) => ("binary_sensor", null, null, null),
-            var p when p.Contains("Mode", StringComparison.OrdinalIgnoreCase) || p.Contains("MODUS", StringComparison.OrdinalIgnoreCase) => ("sensor", null, null, null),
-            var p when p.Contains("Error", StringComparison.OrdinalIgnoreCase) || p.Contains("FEHLER", StringComparison.OrdinalIgnoreCase) => ("sensor", null, "problem", null),
-            var p when p.Contains("Curve", StringComparison.OrdinalIgnoreCase) || p.Contains("KURVE", StringComparison.OrdinalIgnoreCase) => ("sensor", null, null, "measurement"),
-            
-            // Throw exception for unrecognized parameters
-            _ => throw new ArgumentException($"Unrecognized parameter name: {parameterName}. Please add metadata mapping for this parameter.", nameof(parameterName))
-        };
+            LogParameterNotFoundInRegistry(_logger, parameterName);
+            throw new ArgumentException($"Parameter '{parameterName}' not found in registry. Please ensure it is properly configured in can-registry.json.", nameof(parameterName));
+        }
+
+        if (paramDef.HomeAssistantComponent == null)
+        {
+            LogMissingHomeAssistantMetadata(_logger, parameterName, "HomeAssistantComponent");
+            throw new ArgumentException($"Parameter '{parameterName}' is missing HomeAssistantComponent in registry configuration.", nameof(parameterName));
+        }
+
+        return (paramDef.HomeAssistantComponent, paramDef.UnitOfMeasurement, paramDef.DeviceClass, paramDef.StateClass);
     }
-#pragma warning restore S1192
 
     private string GetHomeAssistantDiscoveryTopic(string deviceName, string parameterName)
     {
@@ -503,6 +484,12 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4018, Level = LogLevel.Error, Message = "Error querying device identifier for {DeviceName}")]
     private static partial void LogErrorQueryingDeviceIdentifier(ILogger logger, Exception exception, string deviceName);
+
+    [LoggerMessage(EventId = 4022, Level = LogLevel.Error, Message = "Parameter '{ParameterName}' not found in registry. Ensure it is configured in can-registry.json")]
+    private static partial void LogParameterNotFoundInRegistry(ILogger logger, string parameterName);
+
+    [LoggerMessage(EventId = 4023, Level = LogLevel.Error, Message = "Parameter '{ParameterName}' is missing Home Assistant metadata field '{FieldName}' in registry configuration")]
+    private static partial void LogMissingHomeAssistantMetadata(ILogger logger, string parameterName, string fieldName);
 
     #endregion
 }
