@@ -4,14 +4,39 @@ using RoconMqtt.Mqtt.Options;
 
 namespace RoconMqtt.Mqtt;
 
+/// <summary>
+/// Provides an asynchronous service for connecting to an MQTT broker, publishing messages, and managing connection
+/// state.
+/// </summary>
+/// <remarks>MqttService handles connection management, including automatic reconnection with exponential backoff
+/// if the connection to the broker is lost. It is designed for use in applications that require reliable MQTT messaging
+/// and integrates with dependency injection and logging. The service should be disposed asynchronously when no longer
+/// needed to ensure proper cleanup of resources. This class is thread-safe and supports concurrent access from multiple threads.</remarks>
 public partial class MqttService : IAsyncDisposable, IMqttService
 {
     private readonly IMqttClient _client;
     private readonly MqttClientOptions _options;
     private readonly ILogger<MqttService> _logger;
     private bool _disposed;
+    private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
+    private readonly ReaderWriterLockSlim _disposedLock = new ReaderWriterLockSlim();
 
-    public bool IsConnected => _client.IsConnected;
+    public bool IsConnected
+    {
+        get
+        {
+            _disposedLock.EnterReadLock();
+            try
+            {
+                ObjectDisposedException.ThrowIf(_disposed, this);
+                return _client.IsConnected;
+            }
+            finally
+            {
+                _disposedLock.ExitReadLock();
+            }
+        }
+    }
 
     public MqttService(IOptions<MqttOptions> settings, ILogger<MqttService> logger)
     {
@@ -80,74 +105,153 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     public async Task ConnectAsync()
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-        
-        if (!_client.IsConnected)
+        _disposedLock.EnterReadLock();
+        try
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+        }
+        finally
+        {
+            _disposedLock.ExitReadLock();
+        }
+
+        await _connectionLock.WaitAsync();
+        try
+        {
+            _disposedLock.EnterReadLock();
             try
             {
-                LogConnectingToMqttBroker(_logger);
-                await _client.ConnectAsync(_options);
-                LogConnectedToMqttBrokerSuccessfully(_logger);
+                ObjectDisposedException.ThrowIf(_disposed, this);
             }
-            catch (Exception ex)
+            finally
             {
-                LogFailedToConnectToMqttBroker(_logger, ex);
-                throw;
+                _disposedLock.ExitReadLock();
             }
+
+            if (!_client.IsConnected)
+            {
+                try
+                {
+                    LogConnectingToMqttBroker(_logger);
+                    await _client.ConnectAsync(_options);
+                    LogConnectedToMqttBrokerSuccessfully(_logger);
+                }
+                catch (Exception ex)
+                {
+                    LogFailedToConnectToMqttBroker(_logger, ex);
+                    throw;
+                }
+            }
+        }
+        finally
+        {
+            _connectionLock.Release();
         }
     }
 
     public async Task PublishAsync(string topic, string payload, CancellationToken cancellationToken = default, bool retain = false)
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
-        
-        if (!_client.IsConnected)
-        {
-            LogMqttClientNotConnected(_logger);
-            await ConnectAsync();
-        }
-
+        _disposedLock.EnterReadLock();
         try
         {
-            var message = new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                .WithPayload(payload)
-                .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
-                .WithRetainFlag(retain)
-                .Build();
-
-            LogPublishingToTopic(_logger, topic, payload.Length);
-            await _client.PublishAsync(message, cancellationToken);
-            LogSuccessfullyPublishedToTopic(_logger, topic);
+            ObjectDisposedException.ThrowIf(_disposed, this);
         }
-        catch (Exception ex)
+        finally
         {
-            LogFailedToPublishMessageToTopic(_logger, ex, topic);
-            throw;
+            _disposedLock.ExitReadLock();
+        }
+
+        await _connectionLock.WaitAsync(cancellationToken);
+        try
+        {
+            _disposedLock.EnterReadLock();
+            try
+            {
+                ObjectDisposedException.ThrowIf(_disposed, this);
+            }
+            finally
+            {
+                _disposedLock.ExitReadLock();
+            }
+
+            if (!_client.IsConnected)
+            {
+                LogMqttClientNotConnected(_logger);
+                // Recursively call to ensure connection, but without holding the lock
+                _connectionLock.Release();
+                try
+                {
+                    await ConnectAsync();
+                }
+                finally
+                {
+                    await _connectionLock.WaitAsync(cancellationToken);
+                }
+            }
+
+            try
+            {
+                var message = new MqttApplicationMessageBuilder()
+                    .WithTopic(topic)
+                    .WithPayload(payload)
+                    .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce)
+                    .WithRetainFlag(retain)
+                    .Build();
+
+                LogPublishingToTopic(_logger, topic, payload.Length);
+                await _client.PublishAsync(message, cancellationToken);
+                LogSuccessfullyPublishedToTopic(_logger, topic);
+            }
+            catch (Exception ex)
+            {
+                LogFailedToPublishMessageToTopic(_logger, ex, topic);
+                throw;
+            }
+        }
+        finally
+        {
+            _connectionLock.Release();
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-
+        _disposedLock.EnterWriteLock();
         try
         {
-            if (_client.IsConnected)
-            {
-                LogDisconnectingFromMqttBroker(_logger);
-                await _client.DisconnectAsync();
-            }
-            
-            _client.Dispose();
+            if (_disposed)
+                return;
+
+            _disposed = true;
         }
-        catch (Exception ex)
+        finally
         {
-            LogErrorDuringMqttDisconnection(_logger, ex);
+            _disposedLock.ExitWriteLock();
+        }
+
+        // Wait for any ongoing operations to complete
+        await _connectionLock.WaitAsync();
+        try
+        {
+            try
+            {
+                if (_client.IsConnected)
+                {
+                    LogDisconnectingFromMqttBroker(_logger);
+                    await _client.DisconnectAsync();
+                }
+                
+                _client.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogErrorDuringMqttDisconnection(_logger, ex);
+            }
+        }
+        finally
+        {
+            _connectionLock.Release();
+            _disposedLock.Dispose();
         }
         
         GC.SuppressFinalize(this);
