@@ -1,6 +1,7 @@
 ﻿namespace RoconMqtt;
 
 using RoconMqtt.Api.Models;
+using RoconMqtt.Mqtt.Models;
 using System.Text.Json.Serialization;
 
 /// <summary>
@@ -26,4 +27,6 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(List<ParameterError>))]
 [JsonSerializable(typeof(List<DeviceInfo>))]
 [JsonSerializable(typeof(List<ParameterInfo>))]
+[JsonSerializable(typeof(HomeAssistantDiscoveryConfig))]
+[JsonSerializable(typeof(HomeAssistantDeviceInfo))]
 public partial class ApiJsonContext : JsonSerializerContext;
