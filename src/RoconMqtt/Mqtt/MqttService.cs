@@ -51,7 +51,8 @@ public partial class MqttService : IAsyncDisposable, IMqttService
         var optionsBuilder = new MqttClientOptionsBuilder()
             .WithTcpServer(cfg.Host, cfg.Port)
             .WithClientId(cfg.ClientId)
-            .WithCleanSession();
+            .WithCleanSession()
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
 
         if (!string.IsNullOrEmpty(cfg.Username))
         {
@@ -76,7 +77,19 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
         _client.DisconnectedAsync += async e =>
         {
-            LogMqttDisconnected(_logger, e.Reason);
+            // Don't attempt reconnection if service is being disposed
+            _disposedLock.EnterReadLock();
+            try
+            {
+                if (_disposed)
+                    return;
+            }
+            finally
+            {
+                _disposedLock.ExitReadLock();
+            }
+
+            LogMqttDisconnected(_logger, e.Reason, e.Exception?.GetType().Name ?? "None", e.Exception?.Message ?? "");
 
             // Simple exponential backoff
             var delay = TimeSpan.FromSeconds(2);
@@ -89,8 +102,33 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                     attemptCount++;
                     LogMqttReconnectionAttempt(_logger, attemptCount, delay.TotalSeconds);
                     await Task.Delay(delay);
-                    await _client.ConnectAsync(_options);
-                    LogMqttReconnectedSuccessfully(_logger, attemptCount);
+                    
+                    // Acquire lock to prevent concurrent connection attempts
+                    await _connectionLock.WaitAsync();
+                    try
+                    {
+                        _disposedLock.EnterReadLock();
+                        try
+                        {
+                            ObjectDisposedException.ThrowIf(_disposed, this);
+                        }
+                        finally
+                        {
+                            _disposedLock.ExitReadLock();
+                        }
+
+                        if (!_client.IsConnected)
+                        {
+                            LogAttemptingReconnect(_logger, attemptCount);
+                            await _client.ConnectAsync(_options);
+                            LogMqttReconnectedSuccessfully(_logger, attemptCount);
+                            LogConnectionStateAfterReconnect(_logger, _client.IsConnected);
+                        }
+                    }
+                    finally
+                    {
+                        _connectionLock.Release();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -135,6 +173,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                     LogConnectingToMqttBroker(_logger);
                     await _client.ConnectAsync(_options);
                     LogConnectedToMqttBrokerSuccessfully(_logger);
+                    LogConnectionStateAfterConnect(_logger, _client.IsConnected);
                 }
                 catch (Exception ex)
                 {
@@ -201,6 +240,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                 LogPublishingToTopic(_logger, topic, payload.Length);
                 await _client.PublishAsync(message, cancellationToken);
                 LogSuccessfullyPublishedToTopic(_logger, topic);
+                LogConnectionStateAfterPublish(_logger, _client.IsConnected);
             }
             catch (Exception ex)
             {
@@ -266,14 +306,20 @@ public partial class MqttService : IAsyncDisposable, IMqttService
     [LoggerMessage(EventId = 4016, Level = LogLevel.Debug, Message = "MQTT client configured with TLS (certificate validation: {ValidateCertificate})")]
     private static partial void LogMqttClientConfiguredWithTls(ILogger logger, bool validateCertificate);
 
-    [LoggerMessage(EventId = 4003, Level = LogLevel.Warning, Message = "MQTT disconnected. Reason: {Reason}. Attempting to reconnect...")]
-    private static partial void LogMqttDisconnected(ILogger logger, object reason);
+    [LoggerMessage(EventId = 4003, Level = LogLevel.Warning, Message = "MQTT disconnected. Reason: {Reason}, Exception Type: {ExceptionType}, Details: {ExceptionMessage}. Attempting to reconnect...")]
+    private static partial void LogMqttDisconnected(ILogger logger, object reason, string exceptionType, string exceptionMessage);
 
     [LoggerMessage(EventId = 4004, Level = LogLevel.Debug, Message = "MQTT reconnection attempt {AttemptCount} - waiting {DelaySeconds}s")]
     private static partial void LogMqttReconnectionAttempt(ILogger logger, int attemptCount, double delaySeconds);
 
     [LoggerMessage(EventId = 4005, Level = LogLevel.Information, Message = "Successfully reconnected to MQTT after {AttemptCount} attempts")]
     private static partial void LogMqttReconnectedSuccessfully(ILogger logger, int attemptCount);
+
+    [LoggerMessage(EventId = 4019, Level = LogLevel.Debug, Message = "Attempting reconnect on attempt {AttemptCount}")]
+    private static partial void LogAttemptingReconnect(ILogger logger, int attemptCount);
+
+    [LoggerMessage(EventId = 4020, Level = LogLevel.Debug, Message = "Connection state after reconnect attempt: {IsConnected}")]
+    private static partial void LogConnectionStateAfterReconnect(ILogger logger, bool isConnected);
 
     [LoggerMessage(EventId = 4006, Level = LogLevel.Debug, Message = "MQTT reconnection attempt {AttemptCount} failed")]
     private static partial void LogMqttReconnectionAttemptFailed(ILogger logger, Exception exception, int attemptCount);
@@ -283,6 +329,9 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     [LoggerMessage(EventId = 4008, Level = LogLevel.Information, Message = "Connected to MQTT broker successfully")]
     private static partial void LogConnectedToMqttBrokerSuccessfully(ILogger logger);
+
+    [LoggerMessage(EventId = 4017, Level = LogLevel.Debug, Message = "Connection state after ConnectAsync: {IsConnected}")]
+    private static partial void LogConnectionStateAfterConnect(ILogger logger, bool isConnected);
 
     [LoggerMessage(EventId = 4009, Level = LogLevel.Error, Message = "Failed to connect to MQTT broker")]
     private static partial void LogFailedToConnectToMqttBroker(ILogger logger, Exception exception);
@@ -295,6 +344,9 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     [LoggerMessage(EventId = 4012, Level = LogLevel.Debug, Message = "Successfully published to topic {Topic}")]
     private static partial void LogSuccessfullyPublishedToTopic(ILogger logger, string topic);
+
+    [LoggerMessage(EventId = 4018, Level = LogLevel.Debug, Message = "Connection state after publish: {IsConnected}")]
+    private static partial void LogConnectionStateAfterPublish(ILogger logger, bool isConnected);
 
     [LoggerMessage(EventId = 4013, Level = LogLevel.Error, Message = "Failed to publish message to topic {Topic}")]
     private static partial void LogFailedToPublishMessageToTopic(ILogger logger, Exception exception, string topic);

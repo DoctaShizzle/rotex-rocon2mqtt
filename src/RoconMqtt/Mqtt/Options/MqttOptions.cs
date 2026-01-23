@@ -53,6 +53,15 @@ public class MqttOptions
     public string? Password { get; set; }
 
     /// <summary>
+    /// Keep-alive period in seconds for MQTT connection.
+    /// The client will send a keep-alive ping to the broker at this interval.
+    /// Default is 30 seconds.
+    /// Should be lower than the broker's keep-alive timeout setting.
+    /// </summary>
+    [Range(1, int.MaxValue, ErrorMessage = "Keep-alive period must be at least 1 second")]
+    public int KeepAlivePeriodSeconds { get; set; } = 30;
+
+    /// <summary>
     /// Gets or sets the topic associated with the current instance.
     /// </summary>
     [Required(ErrorMessage = "MQTT Topic is required")]

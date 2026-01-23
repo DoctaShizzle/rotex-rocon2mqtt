@@ -208,6 +208,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// <summary>
     /// Publishes Home Assistant discovery configuration messages for the specified parameters of a device using MQTT.
     /// </summary>
+    /// <remarks>Parameters that are not found in the registry or lack required Home Assistant metadata are skipped
+    /// with a warning log. This is common for compound parameters that may not have Home Assistant component definitions.</remarks>
     /// <param name="deviceName">The name of the device for which discovery configuration will be published.</param>
     /// <param name="parameterNames">A collection of parameter names to include in the discovery configuration messages. Cannot be null or empty.</param>
     /// <param name="token">A cancellation token that can be used to cancel the asynchronous operation.</param>
@@ -216,12 +218,19 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         foreach (var parameterName in parameterNames)
         {
-            var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, parameterName);
-            var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, parameterName);
-            var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
+            try
+            {
+                var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, parameterName);
+                var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, parameterName);
+                var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
 
-            await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
-            LogPublishedDiscoveryConfig(_logger, discoveryTopic);
+                await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
+                LogPublishedDiscoveryConfig(_logger, discoveryTopic);
+            }
+            catch (ArgumentException ex)
+            {
+                LogSkippingDiscoveryForParameter(_logger, parameterName, ex.Message);
+            }
         }
     }
 
@@ -426,7 +435,10 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             return (change / (double)referenceValue) > threshold;
         }
 
-        return !newValue.Equals(lastValue);
+        // For complex objects, compare their JSON serializations to avoid reference equality issues
+        var newJson = JsonSerializer.Serialize(newValue, _unIndentedJsonSerializerOptions);
+        var lastJson = JsonSerializer.Serialize(lastValue, _unIndentedJsonSerializerOptions);
+        return !newJson.Equals(lastJson);
     }
 
     #region Logging
@@ -490,6 +502,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4023, Level = LogLevel.Error, Message = "Parameter '{ParameterName}' is missing Home Assistant metadata field '{FieldName}' in registry configuration")]
     private static partial void LogMissingHomeAssistantMetadata(ILogger logger, string parameterName, string fieldName);
+
+    [LoggerMessage(EventId = 4024, Level = LogLevel.Warning, Message = "Skipping Home Assistant discovery for parameter '{ParameterName}': {Reason}")]
+    private static partial void LogSkippingDiscoveryForParameter(ILogger logger, string parameterName, string reason);
 
     #endregion
 }
