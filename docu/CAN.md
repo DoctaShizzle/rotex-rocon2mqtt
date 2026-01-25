@@ -598,44 +598,58 @@ sequenceDiagram
 
 ## Configuration
 
-### MQTT Options (appsettings.json)
+### MQTT Publisher Configuration
 
-**Connection Settings:**
-- `Host` - MQTT broker hostname/IP
-- `Port` - MQTT broker port (default: 1883)
-- `ClientId` - Unique client identifier
-- `Username` - Optional MQTT username
-- `Password` - Optional MQTT password
-- `Topic` - MQTT topic for publishing telemetry
+The MQTT publisher polls CAN parameters and publishes them to an MQTT broker. For complete MQTT configuration options including:
+- Home Assistant auto-discovery
+- Compound parameters (e.g., Timestamp)
+- Change detection thresholds
+- TLS/SSL settings
+- Resilience policies
 
-**Polling Configuration:**
-- `Devices` - List of device names to query (e.g., ["HG1", "HC1", "HCM1"])
-- `Parameters` - List of parameter names to query (e.g., ["cAUSSENTEMP", "cTAG"])
-- `PollingIntervalSeconds` - Seconds between polling cycles (default: 5)
-- `ResponseTimeoutSeconds` - Seconds to wait for ANSWER after GET (default: 1)
+See **[MQTT.md](MQTT.md)** for detailed documentation.
 
-**Example:**
+**Minimal Example:**
 ```json
 {
   "Mqtt": {
     "Host": "192.168.0.254",
     "Port": 1883,
     "ClientId": "rocon-publisher",
-    "Topic": "rocon/telemetry",
+    "Topic": "rocon",
     "Devices": ["HG1"],
     "Parameters": ["cAUSSENTEMP", "cTAG", "cMONAT"],
-    "PollingIntervalSeconds": 5,
-    "ResponseTimeoutSeconds": 1
+    "CompoundParameters": ["Timestamp"],
+    "PollingIntervalSeconds": 30,
+    "ResponseTimeoutSeconds": 1,
+    "ChangeThresholdPercent": 1.0,
+    "HomeAssistant": {
+      "Discovery": true,
+      "DiscoveryPrefix": "homeassistant"
+    }
   }
 }
 ```
 
-## Related Files
+**Key MQTT Options:**
+- `Devices` - List of device names to query (HG1-HG8, HC1-HC16, HCM1-HCM16)
+- `Parameters` - List of parameter names from registry
+- `CompoundParameters` - Synthetic parameters combining multiple values (e.g., "Timestamp")
+- `PollingIntervalSeconds` - Seconds between polling cycles (default: 30)
+- `ResponseTimeoutSeconds` - Timeout for CAN responses (default: 1)
+- `ChangeThresholdPercent` - Minimum change to publish (default: 1.0%)
 
+## Related Documentation
+
+### Core Documentation
+- **[MQTT.md](MQTT.md)** - MQTT publisher, Home Assistant integration, compound parameters
+
+### Implementation Files
 - `RoconMqttPublisher.cs` - Background service implementing GET/ANSWER polling cycle
 - `CanService.cs` - CAN communication service with GET/SET request methods
 - `ICanService.cs` - Service interface for CAN communication
 
+### Registry and Encoding
 - `CanParameterRegistry.cs` - Central parameter and device registry (~4800 parameters)
 - `CanDecoder.cs` - Decodes CAN frames to parameter values
 - `CanEncoder.cs` - Encodes parameter values to CAN frames

@@ -1,9 +1,12 @@
 <Solution>
-  <Folder Name="/Solution Items/" />
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+  </Folder>
   <Folder Name="/Solution Items/docu/">
     <File Path="docu/API.md" />
     <File Path="docu/CAN.md" />
     <File Path="docu/DEPLOYMENT.md" />
+    <File Path="docu/MQTT.md" />
     <File Path="docu/SSH_CAN_BUS.md" />
     <File Path="docu/HARDWARE.md" />
   </Folder>

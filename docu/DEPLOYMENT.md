@@ -130,14 +130,22 @@ Edit the configuration file:
 sudo nano /opt/roconmqtt/appsettings.json
 ```
 
-Update the following sections with your specific values:
+Update the configuration with your specific values. Here's a minimal example:
 
 ```json
 {
   "Mqtt": {
     "Host": "192.168.0.254",  // Your MQTT broker IP
+    "ClientId": "rocon-mqtt",
+    "Topic": "rocon",
     "Username": "your-username",
-    "Password": "your-password"
+    "Password": "your-password",
+    "Devices": ["HG1"],
+    "Parameters": ["cAUSSENTEMP", "cVORLAUFTEMP"],
+    "CompoundParameters": ["Timestamp"],
+    "PollingIntervalSeconds": 30,
+    "ResponseTimeoutSeconds": 1,
+    "ChangeThresholdPercent": 1.0
   },
   "Can": {
     "Ssh": {
@@ -148,6 +156,10 @@ Update the following sections with your specific values:
   }
 }
 ```
+
+**Configuration Notes:**
+- For complete MQTT options including Home Assistant auto-discovery, TLS, and more, see **[MQTT.md](MQTT.md)**
+- For CAN bus configuration (SocketCAN vs SSH), see **[SSH_CAN_BUS.md](SSH_CAN_BUS.md)**
 
 **?? Security Note**: For production, consider using environment variables or secrets management instead of storing passwords in plain text.
 
@@ -213,6 +225,17 @@ sudo journalctl -u roconmqtt -n 100
 ---
 
 ## Configuration
+
+### Application Settings
+
+For detailed MQTT configuration options including:
+- Home Assistant auto-discovery
+- Compound parameters
+- Change detection thresholds
+- TLS/SSL configuration
+- Topic formats
+
+See **[MQTT.md](MQTT.md)** for complete documentation.
 
 ### Environment Variables
 
@@ -502,5 +525,10 @@ To run multiple instances (e.g., for different heat pumps):
 
 For issues or questions:
 - Check logs: `sudo journalctl -u roconmqtt -f`
-- Review documentation: [RESILIENCE.md](RESILIENCE.md)
+- Review documentation:
+  - [MQTT.md](MQTT.md) - MQTT publisher and Home Assistant integration
+  - [CAN.md](CAN.md) - CAN bus communication
+  - [SSH_CAN_BUS.md](SSH_CAN_BUS.md) - Remote CAN access
+  - [HARDWARE.md](HARDWARE.md) - Hardware setup
+  - [RESILIENCE.md](RESILIENCE.md) - Retry and circuit breaker policies
 - GitHub Issues: [https://github.com/DoctaShizzle/rotex-rocon2mqtt/issues](https://github.com/DoctaShizzle/rotex-rocon2mqtt/issues)

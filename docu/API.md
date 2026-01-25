@@ -517,8 +517,11 @@ See [Configuration Documentation](../README.md#configuration) for:
 
 ## Related Documentation
 
+- **[MQTT.md](./MQTT.md)** - MQTT publisher, Home Assistant integration, compound parameters
 - **[CAN.md](./CAN.md)** - CAN bus communication protocol, parameter encoding/decoding, device subsystems
 - **[SSH_CAN_BUS.md](./SSH_CAN_BUS.md)** - Remote CAN bus access via SSH
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Deployment guide for Raspberry Pi
+- **[HARDWARE.md](./HARDWARE.md)** - Hardware setup and CAN interface configuration
 - **[RESILIENCE.md](./RESILIENCE.md)** - Retry and circuit breaker policies
 - **[README.md](../README.md)** - Project overview and setup
 
