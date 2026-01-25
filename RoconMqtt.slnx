@@ -4,7 +4,6 @@
     <File Path="docu/API.md" />
     <File Path="docu/CAN.md" />
     <File Path="docu/DEPLOYMENT.md" />
-    <File Path="docu/RESILIENCE.md" />
     <File Path="docu/SSH_CAN_BUS.md" />
     <File Path="docu/HARDWARE.md" />
   </Folder>
