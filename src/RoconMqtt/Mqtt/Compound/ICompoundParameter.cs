@@ -16,6 +16,26 @@ public interface ICompoundParameter
     IReadOnlyList<string> ComponentParameters { get; }
 
     /// <summary>
+    /// The Home Assistant component type (e.g., "sensor", "binary_sensor").
+    /// </summary>
+    string HomeAssistantComponent { get; }
+
+    /// <summary>
+    /// The unit of measurement for Home Assistant (e.g., "°C", "%"). Can be null if no unit applies.
+    /// </summary>
+    string? UnitOfMeasurement { get; }
+
+    /// <summary>
+    /// The Home Assistant device class (e.g., "temperature", "timestamp"). Can be null.
+    /// </summary>
+    string? DeviceClass { get; }
+
+    /// <summary>
+    /// The Home Assistant state class (e.g., "measurement", "total"). Can be null.
+    /// </summary>
+    string? StateClass { get; }
+
+    /// <summary>
     /// Tries to set a component value and returns whether the compound parameter is complete.
     /// </summary>
     /// <param name="parameterName">The name of the component parameter.</param>

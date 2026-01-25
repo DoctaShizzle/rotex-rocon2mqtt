@@ -12,6 +12,14 @@ public class TimestampCompoundParameter : ICompoundParameter
 
     public IReadOnlyList<string> ComponentParameters => ["Hour", "Minute"];
 
+    public string HomeAssistantComponent => "sensor";
+
+    public string? UnitOfMeasurement => null;
+
+    public string? DeviceClass => "timestamp";
+
+    public string? StateClass => null;
+
     public bool TrySetComponent(string parameterName, object? value)
     {
         ArgumentNullException.ThrowIfNull(parameterName);

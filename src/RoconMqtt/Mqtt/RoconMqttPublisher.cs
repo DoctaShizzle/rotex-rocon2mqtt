@@ -282,7 +282,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// Retrieves metadata describing the component type, unit of measurement, device class, and state class associated
     /// with a specified parameter name from the parameter registry.
     /// </summary>
-    /// <remarks>The method looks up the parameter in the registry by NameEnglish. If the parameter is not found or is 
+    /// <remarks>The method looks up the parameter in the registry by NameEnglish. For compound parameters,
+    /// metadata is retrieved from the compound parameter definition. If a regular parameter is not found or is 
     /// missing required metadata fields, an error is logged indicating the misconfiguration.</remarks>
     /// <param name="parameterName">The name of the parameter (NameEnglish) for which to obtain metadata.</param>
     /// <returns>A tuple containing the component type, unit of measurement, device class, and state class for the specified
@@ -291,6 +292,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// metadata is missing.</exception>
     private (string component, string? unitOfMeasurement, string? deviceClass, string? stateClass) GetParameterMetadata(string parameterName)
     {
+        // Check if this is a compound parameter (synthetic, not in registry)
+        if (IsCompoundParameter(parameterName))
+        {
+            var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName);
+            LogUsingCompoundParameterMetadata(_logger, parameterName);
+            return (compound.HomeAssistantComponent, compound.UnitOfMeasurement, compound.DeviceClass, compound.StateClass);
+        }
+
         // Find the parameter by NameEnglish in the registry
         var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
 
@@ -321,6 +330,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var deviceId = _deviceIdentifiers[deviceName];
         return $"{_options.Topic}/{deviceId}/{parameterName}/state";
+    }
+
+    /// <summary>
+    /// Determines whether the specified parameter name is a compound parameter.
+    /// </summary>
+    private static bool IsCompoundParameter(string parameterName)
+    {
+        return RoconMqtt.Mqtt.Compound.CompoundParameterFactory.AvailableCompoundParameters.Contains(parameterName);
     }
 
     /// <summary>
@@ -505,6 +522,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4024, Level = LogLevel.Warning, Message = "Skipping Home Assistant discovery for parameter '{ParameterName}': {Reason}")]
     private static partial void LogSkippingDiscoveryForParameter(ILogger logger, string parameterName, string reason);
+
+    [LoggerMessage(EventId = 4025, Level = LogLevel.Debug, Message = "Using synthetic metadata for compound parameter '{ParameterName}'")]
+    private static partial void LogUsingCompoundParameterMetadata(ILogger logger, string parameterName);
 
     #endregion
 }
