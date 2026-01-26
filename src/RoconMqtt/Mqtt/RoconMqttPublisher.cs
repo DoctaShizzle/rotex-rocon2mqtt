@@ -400,7 +400,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         if (ShouldPublish(key, result))
         {
             var stateTopic = GetStateTopic(deviceName, parameterName);
-            var json = JsonSerializer.Serialize(result);
+            var json = JsonSerializer.Serialize(result, _unIndentedJsonSerializerOptions);
             LogPublishingToMqtt(_logger, stateTopic, json);
             await _mqtt.PublishAsync(stateTopic, json, token);
             
