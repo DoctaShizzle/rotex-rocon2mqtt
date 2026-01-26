@@ -54,7 +54,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             try
             {
                 // Check if publisher is enabled
-                if (!_options.Enabled)
+                if (!Enabled)
                 {
                     LogPublisherDisabled(_logger);
                     await Task.Delay(TimeSpan.FromSeconds(_options.PollingIntervalSeconds), stoppingToken);

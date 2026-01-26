@@ -15,5 +15,7 @@ public static class MinimalApiEndpoints
         api.MapSetParameterEndpoint();
         api.MapGetParametersBulkEndpoint();
         api.MapRawParameterEndpoint();
+        api.MapGetMqttPublishingStatusEndpoint();
+        api.MapUpdateMqttPublishingStatus();
     }
 }

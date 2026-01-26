@@ -133,6 +133,28 @@ public sealed class RawParameterRequest
 }
 
 /// <summary>
+/// Request to update MQTT publishing status
+/// </summary>
+public sealed class MqttPublishingStatusRequest
+{
+    /// <summary>
+    /// Whether MQTT publishing should be enabled
+    /// </summary>
+    public bool Enabled { get; set; }
+}
+
+/// <summary>
+/// Response containing MQTT publishing status
+/// </summary>
+public sealed class MqttPublishingStatusResponse
+{
+    /// <summary>
+    /// Whether MQTT publishing is currently enabled
+    /// </summary>
+    public bool Enabled { get; set; }
+}
+
+/// <summary>
 /// Response containing a decoded parameter value
 /// </summary>
 public sealed class ParameterResponse

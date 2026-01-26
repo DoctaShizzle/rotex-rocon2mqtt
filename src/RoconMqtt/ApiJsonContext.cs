@@ -20,6 +20,8 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(ParameterInfo))]
 [JsonSerializable(typeof(ParametersBulkResponse))]
 [JsonSerializable(typeof(ParameterError))]
+[JsonSerializable(typeof(MqttPublishingStatusRequest))]
+[JsonSerializable(typeof(MqttPublishingStatusResponse))]
 [JsonSerializable(typeof(Microsoft.AspNetCore.Mvc.ProblemDetails))]
 [JsonSerializable(typeof(Microsoft.AspNetCore.Mvc.ValidationProblemDetails))]
 [JsonSerializable(typeof(List<string>))]

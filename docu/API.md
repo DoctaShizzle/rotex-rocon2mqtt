@@ -317,7 +317,85 @@ Returns metadata for a specific parameter.
 
 ---
 
-### 8. Health Check
+### 8. Get MQTT Publishing Status
+
+**`GET /mqtt/status`**
+
+Returns the current MQTT publishing status (enabled or disabled).
+
+**Response (200 OK):**
+
+```json
+{
+  "enabled": true
+}
+```
+
+**Example:**
+
+```bash
+curl "http://localhost:5000/api/mqtt/status"
+```
+
+**Use Case:**
+- Check whether the MQTT publisher is currently active
+- Monitor publishing state in monitoring dashboards
+
+---
+
+### 9. Update MQTT Publishing Status
+
+**`PUT /mqtt/status`**
+
+Enable or disable MQTT publishing at runtime without restarting the application.
+
+**Request Body:**
+
+```json
+{
+  "enabled": false
+}
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "enabled": false
+}
+```
+
+**Example - Disable Publishing:**
+
+```bash
+curl -X PUT "http://localhost:5000/api/mqtt/status" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}'
+```
+
+**Example - Enable Publishing:**
+
+```bash
+curl -X PUT "http://localhost:5000/api/mqtt/status" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'
+```
+
+**Use Cases:**
+- Temporarily stop MQTT publishing during maintenance
+- Dynamically control publishing based on external conditions
+- Pause publishing while testing or debugging
+- Reduce system load by disabling publishing on demand
+
+**Notes:**
+- Changes take effect immediately in the next polling cycle
+- Setting persists until application restart (reverts to `appsettings.json` value)
+- When disabled, the publisher continues running but skips all queries and MQTT publishes
+- Does not affect the REST API endpoints - they remain operational
+
+---
+
+### 10. Health Check
 
 **`GET /health`**
 
@@ -386,6 +464,22 @@ Returns health status of the API and its dependencies.
 {
   name: string,
   type: "HeatGenerator" | "HeatingCircuit" | "HeatingCircuitModule"
+}
+```
+
+### MqttPublishingStatusRequest
+
+```typescript
+{
+  enabled: boolean
+}
+```
+
+### MqttPublishingStatusResponse
+
+```typescript
+{
+  enabled: boolean
 }
 ```
 
@@ -501,6 +595,27 @@ curl "http://localhost:5000/api/devices"
 
 ```bash
 curl "http://localhost:5000/api/parameters/cAUSSENTEMP/metadata"
+```
+
+### Controlling MQTT Publishing
+
+**Check Publishing Status:**
+```bash
+curl "http://localhost:5000/api/mqtt/status"
+```
+
+**Disable Publishing:**
+```bash
+curl -X PUT "http://localhost:5000/api/mqtt/status" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": false}'
+```
+
+**Re-enable Publishing:**
+```bash
+curl -X PUT "http://localhost:5000/api/mqtt/status" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'
 ```
 
 ---
