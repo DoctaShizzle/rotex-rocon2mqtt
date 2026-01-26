@@ -256,6 +256,10 @@ public partial class MqttService : IAsyncDisposable, IMqttService
 
     public async ValueTask DisposeAsync()
     {
+        // Early check to avoid acquiring disposed lock on subsequent calls
+        if (_disposed)
+            return;
+
         _disposedLock.EnterWriteLock();
         try
         {
