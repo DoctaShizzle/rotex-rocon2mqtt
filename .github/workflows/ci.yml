@@ -1,0 +1,130 @@
+name: CI Build and Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+    
+    - name: Run Unit Tests
+      run: dotnet test --no-build --configuration Release --verbosity normal --logger "trx;LogFileName=test-results.trx"
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: '**/test-results.trx'
+
+  # Test with trimming enabled to catch reflection issues early
+  build-and-test-trimmed:
+    name: Build and Test (Trimmed)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    # Build with PublishTrimmed to simulate AOT constraints
+    - name: Build with Trimming
+      run: dotnet publish src/RoconMqtt/RoconMqtt.csproj --configuration Release /p:PublishTrimmed=true /p:TrimMode=partial
+    
+    - name: Run Unit Tests
+      run: dotnet test --configuration Release --verbosity normal
+
+  # Test JSON serialization specifically
+  json-serialization-tests:
+    name: JSON Serialization Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Run JSON Serialization Tests
+      run: dotnet test --filter "FullyQualifiedName~JsonSerializationTests" --configuration Release --verbosity detailed
+
+  # Optional: Build for ARM64 to catch platform-specific issues
+  build-arm64:
+    name: Build for ARM64 Linux
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Build for ARM64
+      run: dotnet build src/RoconMqtt/RoconMqtt.csproj --configuration Release --runtime linux-arm64
+    
+    - name: Publish for ARM64
+      run: dotnet publish src/RoconMqtt/RoconMqtt.csproj --configuration Release --runtime linux-arm64 --self-contained true /p:PublishTrimmed=true
+
+  # Code coverage
+  code-coverage:
+    name: Code Coverage
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+    
+    - name: Install dotnet-coverage tool
+      run: dotnet tool install -g dotnet-coverage
+    
+    - name: Restore dependencies
+      run: dotnet restore
+    
+    - name: Collect Code Coverage
+      run: dotnet-coverage collect -f cobertura -o coverage.cobertura.xml "dotnet test --configuration Release"
+    
+    - name: Upload Coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        files: ./coverage.cobertura.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
