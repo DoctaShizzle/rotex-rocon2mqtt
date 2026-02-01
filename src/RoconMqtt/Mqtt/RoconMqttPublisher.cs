@@ -263,7 +263,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         return new HomeAssistantDiscoveryConfig
         {
-            Name = FormatParameterName(parameterName),
+            Name = FormatParameterDisplayName(parameterName),
             UniqueId = uniqueId,
             DefaultEntityId = defaultEntityId,
             StateTopic = stateTopic,
@@ -360,20 +360,22 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     }
 
     /// <summary>
-    /// Converts a parameter name from PascalCase to snake_case format.
+    /// Converts a parameter name from PascalCase to a human-readable display name with spaces.
     /// </summary>
-    /// <remarks>This method is useful for generating entity names compatible with systems that require
-    /// snake_case formatting, such as Home Assistant.</remarks>
+    /// <remarks>This method creates friendly display names for Home Assistant by inserting spaces before
+    /// capital letters and preserving the original casing. For example, "BufferTemperatureActual" becomes
+    /// "Buffer Temperature Actual".</remarks>
     /// <param name="parameterName">The parameter name to convert. Must not be null or empty.</param>
-    /// <returns>A string containing the parameter name converted to snake_case. The returned string is in lowercase.</returns>
-    private static string FormatParameterName(string parameterName)
+    /// <returns>A string containing the parameter name with spaces inserted before capital letters.</returns>
+    private static string FormatParameterDisplayName(string parameterName)
     {
-        // Convert PascalCase to snake_case for Home Assistant entity names
+        // Convert PascalCase to "Spaced Title Case" for display names
+        // e.g., "BufferTemperatureActual" -> "Buffer Temperature Actual"
         return string.Concat(parameterName.Select((c, i) =>
             i > 0 && char.IsUpper(c) && !char.IsUpper(parameterName[i - 1])
-                ? $"_{c}"
+                ? $" {c}"
                 : c.ToString()
-        )).ToLowerInvariant();
+        ));
     }
 
     /// <summary>
