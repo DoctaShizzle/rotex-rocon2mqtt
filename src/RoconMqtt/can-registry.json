@@ -3245,7 +3245,7 @@
       "nameEnglish": "WaterPressure",
       "homeAssistantComponent": "sensor",
       "unitOfMeasurement": "Bar",
-      "deviceClass": "temperature",
+      "deviceClass": "pressure",
       "stateClass": "measurement"
     }
   ],
