@@ -2468,6 +2468,13 @@
       "unitOfMeasurement": null,
       "deviceClass": null,
       "stateClass": null
+      //"enumValues": {
+      //  "0": "No Error",
+      //  "1": "Temperature Sensor Fault",
+      //  "2": "Pressure Fault",
+      //  "42": "Heat Pump Fault"
+      //  // Add all known error codes here, and put deviceClass to "enum" instead
+      //}
     },
     {
       "originalName": "eZEITMASTER",
