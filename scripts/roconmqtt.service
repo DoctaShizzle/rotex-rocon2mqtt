@@ -1,8 +1,9 @@
 [Unit]
 Description=Rocon MQTT Publisher Service
 Documentation=https://github.com/DoctaShizzle/rotex-rocon2mqtt
-After=network-online.target
+After=network-online.target setup-can.service
 Wants=network-online.target
+Requires=setup-can.service
 
 [Service]
 Type=simple
