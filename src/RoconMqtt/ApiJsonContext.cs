@@ -33,6 +33,7 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(List<ParameterInfo>))]
 [JsonSerializable(typeof(HomeAssistantDiscoveryConfig))]
 [JsonSerializable(typeof(HomeAssistantDeviceInfo))]
+[JsonSerializable(typeof(MqttStatePayload))]
 [JsonSerializable(typeof(DecodedParameter))]
 [JsonSerializable(typeof(ParameterDefinition))]
 [JsonSerializable(typeof(InfoNumber))]

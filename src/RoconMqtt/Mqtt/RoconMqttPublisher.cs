@@ -403,7 +403,11 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         if (ShouldPublish(key, result))
         {
             var stateTopic = GetStateTopic(deviceName, parameterName);
-            var json = JsonSerializer.Serialize(result, _unIndentedJsonSerializerOptions);
+            
+            // Create a payload without the Definition for Home Assistant
+            var statePayload = new MqttStatePayload(result.Name, result.Value);
+            var json = JsonSerializer.Serialize(statePayload, _unIndentedJsonSerializerOptions);
+            
             LogPublishingToMqtt(_logger, stateTopic, json);
             await _mqtt.PublishAsync(stateTopic, json, token);
             
