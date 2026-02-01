@@ -39,4 +39,6 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(ParameterType))]
 [JsonSerializable(typeof(Dictionary<int, string>))]
 [JsonSerializable(typeof(IReadOnlyDictionary<int, string>))]
+[JsonSerializable(typeof(System.DateTime))]
+[JsonSerializable(typeof(System.DateTimeOffset))]
 public partial class ApiJsonContext : JsonSerializerContext;
