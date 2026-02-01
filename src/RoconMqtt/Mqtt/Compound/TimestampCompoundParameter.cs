@@ -59,8 +59,8 @@ public class TimestampCompoundParameter : ICompoundParameter
         var now = DateTime.Now;
         var timestamp = new DateTime(now.Year, now.Month, now.Day, _hour.Value, _minute.Value, 0, DateTimeKind.Local);
         
-        // Return ISO 8601 formatted string without timezone for Home Assistant timestamp device class
-        return timestamp.ToString("yyyy-MM-ddTHH:mm:ss");
+        // Return ISO 8601 formatted string with timezone offset for Home Assistant timestamp device class
+        return timestamp.ToString("yyyy-MM-ddTHH:mm:sszzz");
     }
 
     public void Reset()
