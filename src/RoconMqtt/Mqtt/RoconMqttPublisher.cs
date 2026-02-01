@@ -409,7 +409,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             var json = JsonSerializer.Serialize(statePayload, _unIndentedJsonSerializerOptions);
             
             LogPublishingToMqtt(_logger, stateTopic, json);
-            await _mqtt.PublishAsync(stateTopic, json, token);
+            await _mqtt.PublishAsync(stateTopic, json, token, retain: true);
             
             _lastPublishedValues[key] = result;
         }
