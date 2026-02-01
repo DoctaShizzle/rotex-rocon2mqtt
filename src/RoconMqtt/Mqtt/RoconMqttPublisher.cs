@@ -253,8 +253,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var stateTopic = GetStateTopic(deviceName, parameterName);
         var deviceId = _deviceIdentifiers[deviceName];
-        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterName } });
-        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterName } });
+        var parameterNameSnakeCase = ToSnakeCase(parameterName);
+        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
