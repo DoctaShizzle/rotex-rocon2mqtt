@@ -326,13 +326,13 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var deviceId = _deviceIdentifiers[deviceName];
         var (component, _, _, _) = GetParameterMetadata(parameterName);
-        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, parameterName.ToLowerInvariant().Replace(" ", "_") } })}/config";
+        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
     }
 
     private string GetStateTopic(string deviceName, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
-        return $"{_options.Topic}/{deviceId.ToLowerInvariant()}/{parameterName.ToLowerInvariant().Replace(" ", "_")}/state";
+        return $"{_options.Topic}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
     }
 
     /// <summary>
@@ -357,6 +357,25 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             result = result.Replace($"{{{key}}}", value?.ToString() ?? "");
         }
         return result;
+    }
+
+    /// <summary>
+    /// Converts a PascalCase or camelCase string to snake_case.
+    /// </summary>
+    /// <remarks>This method is used to format parameter names for Home Assistant entity IDs and MQTT topics,
+    /// converting names like "BufferTemperatureActual" to "buffer_temperature_actual".</remarks>
+    /// <param name="input">The input string to convert. Must not be null or empty.</param>
+    /// <returns>A string in snake_case format.</returns>
+    private static string ToSnakeCase(string input)
+    {
+        if (string.IsNullOrWhiteSpace(input))
+            return input;
+
+        return string.Concat(input.Select((c, i) =>
+            i > 0 && char.IsUpper(c) && !char.IsUpper(input[i - 1])
+                ? $"_{char.ToLowerInvariant(c)}"
+                : char.ToLowerInvariant(c).ToString()
+        ));
     }
 
     /// <summary>
