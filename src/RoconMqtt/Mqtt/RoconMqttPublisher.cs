@@ -237,6 +237,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() { WriteIndented = false, TypeInfoResolver = ApiJsonContext.Default };
 
     private const string deviceIdKey = "deviceId";
+    private const string objectIdKey = "objectId";
 
     /// <summary>
     /// Creates a Home Assistant MQTT discovery configuration for a specified device parameter.
@@ -325,14 +326,13 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var deviceId = _deviceIdentifiers[deviceName];
         var (component, _, _, _) = GetParameterMetadata(parameterName);
-        var objectId = $"{deviceId}_{parameterName}".ToLowerInvariant().Replace(" ", "_");
-        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceIdKey, deviceId } })}/config";
+        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, parameterName.ToLowerInvariant().Replace(" ", "_") } })}/config";
     }
 
     private string GetStateTopic(string deviceName, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
-        return $"{_options.Topic}/{deviceId}/{parameterName}/state";
+        return $"{_options.Topic}/{deviceId.ToLowerInvariant()}/{parameterName.ToLowerInvariant().Replace(" ", "_")}/state";
     }
 
     /// <summary>
