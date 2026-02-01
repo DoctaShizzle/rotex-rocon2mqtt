@@ -219,20 +219,6 @@ sudo mv /tmp/roconmqtt.service /etc/systemd/system/
 sudo chmod 644 /etc/systemd/system/roconmqtt.service
 ```
 
-Edit the service file to add SocketCAN group membership:
-
-```bash
-sudo nano /etc/systemd/system/roconmqtt.service
-```
-
-Add the following line in the `[Service]` section (near the `User=rocon` line):
-
-```ini
-SupplementaryGroups=can
-```
-
-This ensures the `rocon` user has access to CAN interfaces at runtime.
-
 ### 2. Enable and Start the Service
 
 ```bash
