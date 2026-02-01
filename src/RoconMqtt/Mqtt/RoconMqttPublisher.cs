@@ -364,7 +364,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// Converts a PascalCase or camelCase string to snake_case.
     /// </summary>
     /// <remarks>This method is used to format parameter names for Home Assistant entity IDs and MQTT topics,
-    /// converting names like "BufferTemperatureActual" to "buffer_temperature_actual".</remarks>
+    /// converting names like "BufferTemperatureActual" to "buffer_temperature_actual" and "RoomTargetTemperature1"
+    /// to "room_target_temperature_1".</remarks>
     /// <param name="input">The input string to convert. Must not be null or empty.</param>
     /// <returns>A string in snake_case format.</returns>
     private static string ToSnakeCase(string input)
@@ -373,10 +374,22 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             return input;
 
         return string.Concat(input.Select((c, i) =>
-            i > 0 && char.IsUpper(c) && !char.IsUpper(input[i - 1])
-                ? $"_{char.ToLowerInvariant(c)}"
-                : char.ToLowerInvariant(c).ToString()
-        ));
+        {
+            if (i == 0)
+                return char.ToLowerInvariant(c).ToString();
+            
+            var prevChar = input[i - 1];
+            
+            // Add underscore before uppercase letter if previous is not uppercase
+            if (char.IsUpper(c) && !char.IsUpper(prevChar))
+                return $"_{char.ToLowerInvariant(c)}";
+            
+            // Add underscore before digit if previous is not a digit
+            if (char.IsDigit(c) && !char.IsDigit(prevChar))
+                return $"_{c}";
+            
+            return char.ToLowerInvariant(c).ToString();
+        }));
     }
 
     /// <summary>
