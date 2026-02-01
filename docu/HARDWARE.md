@@ -96,7 +96,7 @@ You should see `can0` and `can1`.
 
 ### Set bitrate (Rotex/Daikin 20 kbit/s)
 
-Create a startup script to persist these settings across reboots. Create `/opt/rocon/setup-can.sh`:
+Create a startup script to persist these settings across reboots. Create `/opt/roconmqtt/setup-can.sh`:
 
 ```bash
 #!/bin/bash
@@ -108,7 +108,7 @@ ip link set can1 up type can bitrate 20000
 Make it executable:
 
 ```bash
-sudo chmod +x /opt/rocon/setup-can.sh
+sudo chmod +x /opt/roconmqtt/setup-can.sh
 ```
 
 Create a systemd service file at `/etc/systemd/system/setup-can.service`:
@@ -120,7 +120,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-ExecStart=/opt/rocon/setup-can.sh
+ExecStart=/opt/roconmqtt/setup-can.sh
 RemainAfterExit=yes
 
 [Install]
