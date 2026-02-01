@@ -156,7 +156,7 @@ sudo mv /tmp/roconmqtt/* /opt/roconmqtt/
 sudo chown -R rocon:rocon /opt/roconmqtt
 
 # Make the executable runnable
-sudo chmod +x /opt/roconmqtt/RoconMqtt
+sudo chmod +x /opt/roconmqtt
 ```
 
 ### 5. Configure the Application
