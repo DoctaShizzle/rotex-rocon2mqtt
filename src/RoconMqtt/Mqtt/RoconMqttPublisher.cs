@@ -404,8 +404,11 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         {
             var stateTopic = GetStateTopic(deviceName, parameterName);
             
+            // Translate values based on parameter type and Home Assistant component
+            var publishValue = TranslateParameterValue(parameterName, result.Value);
+            
             // Create a payload without the Definition for Home Assistant
-            var statePayload = new MqttStatePayload(result.Name, result.Value);
+            var statePayload = new MqttStatePayload(result.Name, publishValue);
             var json = JsonSerializer.Serialize(statePayload, _unIndentedJsonSerializerOptions);
             
             LogPublishingToMqtt(_logger, stateTopic, json);
@@ -464,6 +467,114 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         var lastJson = JsonSerializer.Serialize(lastValue, _unIndentedJsonSerializerOptions);
         return !newJson.Equals(lastJson);
     }
+
+
+    /// <summary>
+    /// Translates a parameter value based on its type definition and Home Assistant component.
+    /// </summary>
+    /// <remarks>
+    /// This method provides type-specific value translations using a double switch/case approach:
+    /// 1. First checks the Home Assistant component type (binary_sensor requires special handling)
+    /// 2. Then checks the parameter type (Enum, Bool, etc.)
+    /// 
+    /// Currently supports:
+    /// - binary_sensor component: Translates to "OFF"/"ON" using enumValues if defined
+    /// - Enum types: Translates integer values to their string representations from enumValues
+    /// - Bool types: Translates 0/1 to "OFF"/"ON"
+    /// 
+    /// Future translations can be added by extending the switch statements.
+    /// </remarks>
+    /// <param name="parameterName">The name of the parameter.</param>
+    /// <param name="value">The raw value to translate.</param>
+    /// <returns>The translated value if a translation is defined, otherwise the original value.</returns>
+    private object? TranslateParameterValue(string parameterName, object? value)
+    {
+        if (value == null)
+            return null;
+
+        // Skip compound parameters (they handle their own formatting)
+        if (IsCompoundParameter(parameterName))
+            return value;
+
+        // Find the parameter definition
+        var paramDefinition = _parameterRegistry.Parameters.Values
+            .FirstOrDefault(p => p.Name == parameterName);
+
+        if (paramDefinition == null)
+            return value;
+
+        // First switch: Check Home Assistant component type
+        // binary_sensor needs special handling regardless of underlying CAN type
+        switch (paramDefinition.HomeAssistantComponent)
+        {
+            case "binary_sensor":
+                // Binary sensors are always translated to OFF/ON
+                return TranslateBinaryValue(value, paramDefinition);
+            
+            default:
+                // Second switch: Check parameter type for non-binary-sensor components
+                return paramDefinition.Type switch
+                {
+                    ParameterType.Enum => TranslateEnumValue(value, paramDefinition),
+                    ParameterType.Bool => TranslateBinaryValue(value, paramDefinition),
+                    // Add future translation types here:
+                    // ParameterType.TimeRange => TranslateTimeRangeValue(value, paramDefinition),
+                    // ParameterType.Custom => TranslateCustomValue(value, paramDefinition),
+                    _ => value // No translation for other types
+                };
+        }
+    }
+
+    /// <summary>
+    /// Translates an enum value to its string representation.
+    /// </summary>
+    private static object? TranslateEnumValue(object value, ParameterDefinition paramDefinition)
+    {
+        if (paramDefinition.EnumValues == null || paramDefinition.EnumValues.Count == 0)
+            return value;
+
+        // Convert value to int
+        int enumKey = value switch
+        {
+            int intValue => intValue,
+            double doubleValue => (int)doubleValue,
+            _ => throw new InvalidOperationException($"Cannot convert value of type {value.GetType()} to enum key")
+        };
+
+        // Lookup and return enum string, or original value if not found
+        return paramDefinition.EnumValues.TryGetValue(enumKey, out var enumString) 
+            ? enumString 
+            : value;
+    }
+
+    /// <summary>
+    /// Translates a binary value (boolean/binary_sensor) to its string representation.
+    /// </summary>
+    /// <remarks>
+    /// Used for both Bool parameter types and Enum types that represent binary_sensor in Home Assistant.
+    /// Prefers enumValues if defined, otherwise defaults to "OFF"/"ON".
+    /// </remarks>
+    private static object? TranslateBinaryValue(object value, ParameterDefinition paramDefinition)
+    {
+        // If enum values are defined, use them (e.g., custom labels like "Inactive"/"Active")
+        if (paramDefinition.EnumValues != null && paramDefinition.EnumValues.Count > 0)
+            return TranslateEnumValue(value, paramDefinition);
+
+        // Default binary translation: 0 = "OFF", 1 = "ON"
+        int binaryValue = value switch
+        {
+            int intValue => intValue,
+            double doubleValue => (int)doubleValue,
+            bool boolValue => boolValue ? 1 : 0,
+            _ => throw new InvalidOperationException($"Cannot convert value of type {value.GetType()} to binary")
+        };
+
+        return binaryValue == 0 ? "OFF" : "ON";
+    }
+
+
+
+
 
     #region Logging
 
