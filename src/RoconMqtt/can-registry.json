@@ -1084,7 +1084,11 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
-      "nameEnglish": "OneTimeHotWaterActive"
+      "nameEnglish": "OneTimeHotWaterActive",
+      "homeAssistantComponent": "binary_sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
     },
     {
       "originalName": "cWW_AKTIV",
