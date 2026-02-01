@@ -1096,6 +1096,10 @@
       "display": true,
       "waterCircuit": false,
       "bigEndian": false,
+      "enumValues": {
+        "0": "OFF",
+        "1": "ON"
+      },
       "nameEnglish": "HotWaterProductionActive",
       "homeAssistantComponent": "binary_sensor",
       "unitOfMeasurement": null,
@@ -2379,6 +2383,10 @@
       "display": false,
       "waterCircuit": false,
       "bigEndian": true,
+      "enumValues": {
+        "0": "OFF",
+        "1": "ON"
+      },
       "nameEnglish": "Defrost",
       "homeAssistantComponent": "binary_sensor",
       "unitOfMeasurement": null,
