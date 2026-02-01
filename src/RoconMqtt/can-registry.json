@@ -3244,7 +3244,7 @@
       "bigEndian": true,
       "nameEnglish": "WaterPressure",
       "homeAssistantComponent": "sensor",
-      "unitOfMeasurement": "Bar",
+      "unitOfMeasurement": "bar",
       "deviceClass": "pressure",
       "stateClass": "measurement"
     }
