@@ -74,4 +74,12 @@ public class HomeAssistantOptions
     /// </summary>
     [Required(ErrorMessage = "Object ID format is required")]
     public string ObjectIdFormat { get; set; } = null!;
+
+    /// <summary>
+    /// Object identifier format string for Home Assistant discovery topic.
+    /// Used to create unique discovery topics for each entity.
+    /// The placeholders {deviceId} and {objectId} will be replaced.
+    /// </summary>
+    [Required(ErrorMessage = "Object identifier format is required")]
+    public string ObjectIdentifierFormat { get; set; } = null!;
 }
