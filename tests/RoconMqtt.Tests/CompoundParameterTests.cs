@@ -22,7 +22,8 @@ public class CompoundParameterTests
         Assert.True(minuteSet); // Should return true because all components are now set
         Assert.NotNull(value);
         
-        var dateTime = Assert.IsType<DateTime>(value);
+        var iso8601String = Assert.IsType<string>(value);
+        var dateTime = DateTime.Parse(iso8601String);
         Assert.Equal(14, dateTime.Hour);
         Assert.Equal(30, dateTime.Minute);
         Assert.Equal(now.Year, dateTime.Year);
@@ -43,7 +44,8 @@ public class CompoundParameterTests
         
         // Assert
         Assert.NotNull(value);
-        var dateTime = Assert.IsType<DateTime>(value);
+        var iso8601String = Assert.IsType<string>(value);
+        var dateTime = DateTime.Parse(iso8601String);
         Assert.Equal(9, dateTime.Hour);
         Assert.Equal(45, dateTime.Minute);
     }
