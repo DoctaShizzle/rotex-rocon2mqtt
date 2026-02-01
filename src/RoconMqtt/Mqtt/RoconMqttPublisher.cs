@@ -257,11 +257,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
+        // Format default_entity_id as {component}.{objectId}
+        var defaultEntityId = $"{component}.{objectId}";
+
         return new HomeAssistantDiscoveryConfig
         {
             Name = FormatParameterName(parameterName),
             UniqueId = uniqueId,
-            ObjectId = objectId,
+            DefaultEntityId = defaultEntityId,
             StateTopic = stateTopic,
             ValueTemplate = _options.HomeAssistant.ValueTemplate,
             UnitOfMeasurement = unitOfMeasurement,

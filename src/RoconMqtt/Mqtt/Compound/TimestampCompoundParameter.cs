@@ -57,7 +57,10 @@ public class TimestampCompoundParameter : ICompoundParameter
             return null;
 
         var now = DateTime.Now;
-        return new DateTime(now.Year, now.Month, now.Day, _hour.Value, _minute.Value, 0, DateTimeKind.Local);
+        var timestamp = new DateTime(now.Year, now.Month, now.Day, _hour.Value, _minute.Value, 0, DateTimeKind.Local);
+        
+        // Return ISO 8601 formatted string for Home Assistant timestamp device class
+        return timestamp.ToString("O");
     }
 
     public void Reset()

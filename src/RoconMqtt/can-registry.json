@@ -2466,7 +2466,7 @@
       "nameEnglish": "CurrentError",
       "homeAssistantComponent": "sensor",
       "unitOfMeasurement": null,
-      "deviceClass": "problem",
+      "deviceClass": null,
       "stateClass": null
     },
     {

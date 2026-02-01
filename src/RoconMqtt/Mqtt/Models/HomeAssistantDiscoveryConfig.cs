@@ -20,10 +20,10 @@ public record HomeAssistantDiscoveryConfig
     public required string UniqueId { get; init; }
 
     /// <summary>
-    /// Gets the object ID for the entity.
+    /// Gets the default entity ID for the entity (replaces deprecated object_id in home assistant).
     /// </summary>
-    [JsonPropertyName("object_id")]
-    public required string ObjectId { get; init; }
+    [JsonPropertyName("default_entity_id")]
+    public required string DefaultEntityId { get; init; }
 
     /// <summary>
     /// Gets the MQTT topic where the state is published.

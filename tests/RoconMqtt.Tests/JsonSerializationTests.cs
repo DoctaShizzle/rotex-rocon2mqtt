@@ -302,7 +302,7 @@ public class JsonSerializationTests
         {
             Name = "Outside Temperature",
             UniqueId = "rocon_hg1_cAUSSENTEMP",
-            ObjectId = "rocon_hg1_cAUSSENTEMP",
+            DefaultEntityId = "sensor.rocon_hg1_cAUSSENTEMP",
             StateTopic = "rocon/HG1/cAUSSENTEMP",
             ValueTemplate = "{{ value_json.value }}",
             UnitOfMeasurement = "°C",
