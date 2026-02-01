@@ -51,6 +51,32 @@ public class CompoundParameterTests
     }
     
     [Fact]
+    public void TimestampCompoundParameter_ShouldFormatWithoutTimezoneOffset()
+    {
+        // Arrange
+        var timestamp = new TimestampCompoundParameter();
+        var now = DateTime.Now;
+        
+        // Act
+        timestamp.TrySetComponent("Hour", 14);
+        timestamp.TrySetComponent("Minute", 30);
+        var value = timestamp.GetValue();
+        
+        // Assert
+        Assert.NotNull(value);
+        var iso8601String = Assert.IsType<string>(value);
+        
+        // Verify format is yyyy-MM-ddTHH:mm:ss without timezone offset
+        Assert.Matches(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$", iso8601String);
+        Assert.DoesNotContain("+", iso8601String);
+        Assert.DoesNotContain("Z", iso8601String);
+        
+        // Verify the expected format
+        var expectedFormat = $"{now.Year:D4}-{now.Month:D2}-{now.Day:D2}T14:30:00";
+        Assert.Equal(expectedFormat, iso8601String);
+    }
+    
+    [Fact]
     public void TimestampCompoundParameter_ShouldResetCorrectly()
     {
         // Arrange
