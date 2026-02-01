@@ -110,6 +110,13 @@ public class MqttOptions
     public double ChangeThresholdPercent { get; set; } = 0;
 
     /// <summary>
+    /// IANA timezone identifier for timestamps (e.g., "Europe/Brussels", "America/New_York").
+    /// If not specified, the system's local timezone will be used.
+    /// See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for valid values.
+    /// </summary>
+    public string? TimeZoneId { get; set; }
+
+    /// <summary>
     /// home assistant info
     /// </summary>
     [Required(ErrorMessage = "Home Assistant info is required")]

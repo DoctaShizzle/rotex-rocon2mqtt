@@ -7,6 +7,18 @@ public class TimestampCompoundParameter : ICompoundParameter
 {
     private int? _hour;
     private int? _minute;
+    private readonly TimeZoneInfo _timeZone;
+
+    /// <summary>
+    /// Initializes a new instance of the TimestampCompoundParameter class.
+    /// </summary>
+    /// <param name="timeZoneId">Optional IANA timezone identifier (e.g., "Europe/Brussels"). If null, system local timezone is used.</param>
+    public TimestampCompoundParameter(string? timeZoneId = null)
+    {
+        _timeZone = string.IsNullOrWhiteSpace(timeZoneId) 
+            ? TimeZoneInfo.Local 
+            : TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+    }
 
     public string Name => "Timestamp";
 
@@ -56,11 +68,22 @@ public class TimestampCompoundParameter : ICompoundParameter
         if (!_hour.HasValue || !_minute.HasValue)
             return null;
 
-        var now = DateTime.Now;
-        var timestamp = new DateTime(now.Year, now.Month, now.Day, _hour.Value, _minute.Value, 0, DateTimeKind.Local);
+        // Get current date in the configured timezone
+        var nowUtc = DateTime.UtcNow;
+        var nowInTimeZone = TimeZoneInfo.ConvertTimeFromUtc(nowUtc, _timeZone);
+        
+        // Create timestamp with the specified hour and minute in the configured timezone
+        var timestamp = new DateTime(nowInTimeZone.Year, nowInTimeZone.Month, nowInTimeZone.Day, 
+            _hour.Value, _minute.Value, 0, DateTimeKind.Unspecified);
+        
+        // Get the UTC offset for this timezone at the timestamp date/time
+        var offset = _timeZone.GetUtcOffset(timestamp);
+        
+        // Create DateTimeOffset with the correct offset
+        var timestampWithOffset = new DateTimeOffset(timestamp, offset);
         
         // Return ISO 8601 formatted string with timezone offset for Home Assistant timestamp device class
-        return timestamp.ToString("yyyy-MM-ddTHH:mm:sszzz");
+        return timestampWithOffset.ToString("yyyy-MM-ddTHH:mm:sszzz");
     }
 
     public void Reset()

@@ -300,7 +300,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         // Check if this is a compound parameter (synthetic, not in registry)
         if (IsCompoundParameter(parameterName))
         {
-            var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName);
+            var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
             LogUsingCompoundParameterMetadata(_logger, parameterName);
             return (compound.HomeAssistantComponent, compound.UnitOfMeasurement, compound.DeviceClass, compound.StateClass);
         }
@@ -383,19 +383,32 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// Converts a parameter name from PascalCase to a human-readable display name with spaces.
     /// </summary>
     /// <remarks>This method creates friendly display names for Home Assistant by inserting spaces before
-    /// capital letters and preserving the original casing. For example, "BufferTemperatureActual" becomes
-    /// "Buffer Temperature Actual".</remarks>
+    /// capital letters and digits, preserving the original casing. For example, "BufferTemperatureActual" becomes
+    /// "Buffer Temperature Actual" and "RoomTargetTemperature1" becomes "Room Target Temperature 1".</remarks>
     /// <param name="parameterName">The parameter name to convert. Must not be null or empty.</param>
-    /// <returns>A string containing the parameter name with spaces inserted before capital letters.</returns>
+    /// <returns>A string containing the parameter name with spaces inserted before capital letters and digits.</returns>
     private static string FormatParameterDisplayName(string parameterName)
     {
         // Convert PascalCase to "Spaced Title Case" for display names
         // e.g., "BufferTemperatureActual" -> "Buffer Temperature Actual"
+        // e.g., "RoomTargetTemperature1" -> "Room Target Temperature 1"
         return string.Concat(parameterName.Select((c, i) =>
-            i > 0 && char.IsUpper(c) && !char.IsUpper(parameterName[i - 1])
-                ? $" {c}"
-                : c.ToString()
-        ));
+        {
+            if (i == 0)
+                return c.ToString();
+            
+            var prevChar = parameterName[i - 1];
+            
+            // Add space before uppercase letter if previous is not uppercase
+            if (char.IsUpper(c) && !char.IsUpper(prevChar))
+                return $" {c}";
+            
+            // Add space before digit if previous is not a digit
+            if (char.IsDigit(c) && !char.IsDigit(prevChar))
+                return $" {c}";
+            
+            return c.ToString();
+        }));
     }
 
     /// <summary>

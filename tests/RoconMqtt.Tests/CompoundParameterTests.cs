@@ -51,7 +51,7 @@ public class CompoundParameterTests
     }
     
     [Fact]
-    public void TimestampCompoundParameter_ShouldFormatWithoutTimezoneOffset()
+    public void TimestampCompoundParameter_ShouldFormatWithTimezoneOffset()
     {
         // Arrange
         var timestamp = new TimestampCompoundParameter();
@@ -66,14 +66,16 @@ public class CompoundParameterTests
         Assert.NotNull(value);
         var iso8601String = Assert.IsType<string>(value);
         
-        // Verify format is yyyy-MM-ddTHH:mm:ss without timezone offset
-        Assert.Matches(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$", iso8601String);
-        Assert.DoesNotContain("+", iso8601String);
-        Assert.DoesNotContain("Z", iso8601String);
+        // Verify format is yyyy-MM-ddTHH:mm:ss with timezone offset (e.g., +01:00 or -05:00)
+        Assert.Matches(@"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}$", iso8601String);
         
-        // Verify the expected format
-        var expectedFormat = $"{now.Year:D4}-{now.Month:D2}-{now.Day:D2}T14:30:00";
-        Assert.Equal(expectedFormat, iso8601String);
+        // Verify the date and time components
+        var dateTime = DateTime.Parse(iso8601String);
+        Assert.Equal(14, dateTime.Hour);
+        Assert.Equal(30, dateTime.Minute);
+        Assert.Equal(now.Year, dateTime.Year);
+        Assert.Equal(now.Month, dateTime.Month);
+        Assert.Equal(now.Day, dateTime.Day);
     }
     
     [Fact]

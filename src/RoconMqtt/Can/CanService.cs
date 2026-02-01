@@ -277,7 +277,7 @@ internal partial class CanService(ICanBus canBus, ICanDecoder canDecoder, ICanEn
     {
         LogQueryingCompoundParameter(_logger, deviceName, compoundParameterName);
         
-        var compound = CompoundParameterFactory.Create(compoundParameterName);
+        var compound = CompoundParameterFactory.Create(compoundParameterName, _canOptions.Value.TimeZoneId);
         
         // Query each component parameter
         foreach (var componentParam in compound.ComponentParameters)
