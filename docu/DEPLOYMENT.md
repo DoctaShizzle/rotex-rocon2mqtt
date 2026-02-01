@@ -87,6 +87,9 @@ Press `Ctrl+C` in the terminal to gracefully stop the application.
 SSH into your Raspberry Pi and run:
 
 ```bash
+# Create the can group for SocketCAN access (if it doesn't exist)
+sudo groupadd -f can
+
 # Create a dedicated user for the service and add to can group for SocketCAN access
 sudo useradd -r -m -d /opt/roconmqtt -s /bin/false -G can rocon
 
@@ -97,7 +100,41 @@ sudo chown -R rocon:rocon /opt/roconmqtt
 
 **Note**: The `can` group membership allows the `rocon` user to access CAN interfaces without root privileges.
 
-### 2. Transfer Files to Raspberry Pi
+### 2. Configure CAN Group Permissions (udev rules)
+
+To allow the `can` group to access CAN interfaces, create a udev rule:
+
+```bash
+# Create udev rules file
+sudo nano /etc/udev/rules.d/90-can.rules
+```
+
+Add the following content:
+
+```
+# Grant can group access to SocketCAN interfaces
+KERNEL=="can*", SUBSYSTEM=="net", GROUP="can", MODE="0660"
+```
+
+Save the file and reload udev rules:
+
+```bash
+# Reload udev rules
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+
+# Verify the rule is active (after CAN interfaces are up)
+ls -l /sys/class/net/can*
+```
+
+**What this does:**
+- When any CAN interface (`can0`, `can1`, etc.) is created, it will be assigned to the `can` group
+- Group members get read/write access (mode `0660`)
+- The `rocon` user (member of `can` group) can now send and receive CAN frames without `sudo`
+
+**Note**: Make sure your CAN interfaces are properly configured as described in **[HARDWARE.md](HARDWARE.md)** before testing permissions.
+
+### 3. Transfer Files to Raspberry Pi
 
 From your development machine:
 
@@ -109,7 +146,7 @@ scp -r src/RoconMqtt/bin/publish/linux-arm64/* pi@<raspberry-pi-ip>:/tmp/roconmq
 rsync -avz --progress src/RoconMqtt/bin/publish/linux-arm64/ pi@<raspberry-pi-ip>:/tmp/roconmqtt/
 ```
 
-### 3. Move Files and Set Permissions
+### 4. Move Files and Set Permissions
 
 On the Raspberry Pi:
 
@@ -122,7 +159,7 @@ sudo chown -R rocon:rocon /opt/roconmqtt
 sudo chmod +x /opt/roconmqtt/RoconMqtt
 ```
 
-### 4. Configure the Application
+### 5. Configure the Application
 
 Edit the configuration file:
 
