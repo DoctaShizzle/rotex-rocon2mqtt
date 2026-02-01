@@ -323,7 +323,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         var deviceId = _deviceIdentifiers[deviceName];
         var (component, _, _, _) = GetParameterMetadata(parameterName);
         var objectId = $"{deviceId}_{parameterName}".ToLowerInvariant().Replace(" ", "_");
-        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/rocon_{objectId}/config";
+        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceIdKey, deviceId } })}/config";
     }
 
     private string GetStateTopic(string deviceName, string parameterName)
