@@ -204,6 +204,11 @@ Update the configuration with your specific values. Here's a minimal example:
 
 ## Running as a systemd Service
 
+**Prerequisites:**
+- Ensure CAN interfaces are configured as described in **[HARDWARE.md](HARDWARE.md)**
+- The `setup-can.service` must be installed and enabled (creates `can0` and `can1` interfaces)
+- The RoconMqtt service has a hard dependency on `setup-can.service` to ensure CAN interfaces are ready before starting
+
 ### 1. Install and Configure the Service File
 
 From your development machine, copy the service file:
@@ -219,19 +224,21 @@ sudo mv /tmp/roconmqtt.service /etc/systemd/system/
 sudo chmod 644 /etc/systemd/system/roconmqtt.service
 ```
 
-Edit the service file to add SocketCAN group membership:
+**Service Dependencies:**
 
-```bash
-sudo nano /etc/systemd/system/roconmqtt.service
-```
-
-Add the following line in the `[Service]` section (near the `User=rocon` line):
-
+The service file includes these critical dependencies:
 ```ini
+After=network-online.target setup-can.service
+Wants=network-online.target
+Requires=setup-can.service
 SupplementaryGroups=can
 ```
 
-This ensures the `rocon` user has access to CAN interfaces at runtime.
+- `After=setup-can.service` - Waits for CAN interfaces to be configured
+- `Requires=setup-can.service` - Hard dependency; service won't start if setup-can fails
+- `SupplementaryGroups=can` - Grants access to CAN interfaces via the `can` group
+
+**Important:** If you get "SocketCanException: network is down" errors on boot, verify that `setup-can.service` is installed and enabled (see [HARDWARE.md](HARDWARE.md)).
 
 ### 2. Enable and Start the Service
 
@@ -257,6 +264,46 @@ sudo journalctl -u roconmqtt -f
 
 # View recent logs
 sudo journalctl -u roconmqtt -n 100
+```
+
+### 4. Verify Service Dependencies
+
+Check that the service dependencies are correctly configured:
+
+```bash
+# Verify setup-can.service is enabled and active
+sudo systemctl status setup-can.service
+
+# Check if CAN interfaces are up
+ip link show can0
+ip link show can1
+
+# View dependency tree (shows startup order)
+systemctl list-dependencies roconmqtt.service
+```
+
+**Expected output:**
+- `setup-can.service` should be **active** and **enabled**
+- `can0` and `can1` should show state **UP** with correct bitrate (20000)
+- Dependency tree should show `setup-can.service` before `roconmqtt.service`
+
+**Troubleshooting startup issues:**
+
+If you get "SocketCanException: network is down" after reboot:
+
+```bash
+# Check if setup-can ran successfully
+sudo journalctl -u setup-can.service -n 50
+
+# Manually verify CAN interfaces
+ip link show can0
+ip link show can1
+
+# If interfaces are down, check the setup script
+cat /opt/rocon/setup-can.sh
+
+# Verify the service is enabled
+sudo systemctl is-enabled setup-can.service
 ```
 
 ---
