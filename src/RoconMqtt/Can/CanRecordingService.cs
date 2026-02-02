@@ -14,7 +14,7 @@ public sealed class CanRecordingService : BackgroundService
     private readonly ConcurrentBag<RecordedCanFrame> _recordedFrames = new();
     private DateTime? _recordingStartedAt;
     private CanRecordingOptions? _currentOptions;
-    private bool _isRecording;
+    private bool _isRecording = false;
     private readonly SemaphoreSlim _recordingLock = new(1, 1);
     private CancellationTokenSource? _recordingCts;
 
