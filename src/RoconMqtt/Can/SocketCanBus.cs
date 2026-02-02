@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using RoconMqtt.Can.Models;
+﻿using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Options;
-using SocketCANSharp;
 using SocketCANSharp.Network;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
