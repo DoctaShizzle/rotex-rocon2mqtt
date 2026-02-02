@@ -14,10 +14,10 @@ namespace RoconMqtt.Can;
 /// <summary>
 /// SocketCAN implementation of the CAN bus interface.
 /// </summary>
-public partial class SocketCanBus : ICanBus, IDisposable
+public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
 {
-    private RawCanSocket _socket;
-    private readonly object _socketLock = new();
+    private RawCanSocket? _socket;
+    private readonly Lock _socketLock = new();
     private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
     private bool _disposed;
@@ -168,7 +168,7 @@ public partial class SocketCanBus : ICanBus, IDisposable
                         SocketCANSharp.CanFrame f;
                         lock (_socketLock)
                         {
-                            _socket.Read(out f);
+                            _socket!.Read(out f);
                         }
                         return f;
                     }, _readerCts.Token);
@@ -180,7 +180,7 @@ public partial class SocketCanBus : ICanBus, IDisposable
                     LogCanFrameReadingCancelled(_logger);
                     break;
                 }
-                catch (Exception ex) when (_disposed || _readerCts.Token.IsCancellationRequested)
+                catch (Exception) when (_disposed || _readerCts.Token.IsCancellationRequested)
                 {
                     // Expected during shutdown
                     LogCanFrameReadingCancelled(_logger);
@@ -323,7 +323,7 @@ public partial class SocketCanBus : ICanBus, IDisposable
             LogSendingCanFrame(_logger, canId, data.Length, cansendCommand);
             lock (_socketLock)
             {
-                _socket.Write(frame);
+                _socket!.Write(frame);
             }
             LogCanFrameSentSuccessfully(_logger);
             return Task.CompletedTask;
@@ -337,20 +337,109 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     public void Dispose()
     {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore().ConfigureAwait(false);
+        
+        Dispose(disposing: false);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
         if (_disposed)
             return;
 
+        if (disposing)
+        {
+            LogDisposingSocketCanBus(_logger);
+
+            // Stop the background reader
+            _readerCts.Cancel();
+            if (_readerTask != null)
+            {
+                try
+                {
+                    _readerTask.Wait(TimeSpan.FromSeconds(5));
+                }
+                catch (Exception ex)
+                {
+                    LogErrorWaitingForReaderShutdown(_logger, ex);
+                }
+            }
+
+            // Close all subscriber channels
+            foreach (var subscriber in _subscribers.Values)
+            {
+                try
+                {
+                    subscriber.Channel.Writer.Complete();
+                }
+                catch
+                {
+                    // Ignore errors during channel cleanup
+                }
+            }
+            _subscribers.Clear();
+
+            // Ensure socket is properly closed and disposed
+            lock (_socketLock)
+            {
+                try
+                {
+                    _socket?.Close();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorClosingSocket(_logger, ex);
+                }
+
+                try
+                {
+                    _socket?.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    LogErrorDisposingSocket(_logger, ex);
+                }
+                
+                _socket = null;
+            }
+
+            // Dispose CancellationTokenSource LAST - after background task is guaranteed to be stopped
+            try
+            {
+                _readerCts.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogErrorDisposingCancellationTokenSource(_logger, ex);
+            }
+
+            LogSocketCanBusDisposed(_logger);
+        }
+
         _disposed = true;
+    }
+
+    protected virtual async ValueTask DisposeAsyncCore()
+    {
+        if (_disposed)
+            return;
 
         LogDisposingSocketCanBus(_logger);
 
         // Stop the background reader
-        _readerCts.Cancel();
+        await _readerCts.CancelAsync().ConfigureAwait(false);
         if (_readerTask != null)
         {
             try
             {
-                _readerTask.Wait(TimeSpan.FromSeconds(5));
+                await _readerTask.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -392,10 +481,11 @@ public partial class SocketCanBus : ICanBus, IDisposable
             {
                 LogErrorDisposingSocket(_logger, ex);
             }
+            
+            _socket = null;
         }
 
-        // Dispose CancellationTokenSource LAST - after background task is guaranteed to be stopped
-        // This prevents ObjectDisposedException when the task is still accessing the token
+        // Dispose CancellationTokenSource LAST
         try
         {
             _readerCts.Dispose();
@@ -406,7 +496,6 @@ public partial class SocketCanBus : ICanBus, IDisposable
         }
 
         LogSocketCanBusDisposed(_logger);
-        GC.SuppressFinalize(this);
     }
 
     /// <summary>
