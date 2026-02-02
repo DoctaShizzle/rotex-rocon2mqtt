@@ -183,6 +183,7 @@ public partial class SocketCanBus : ICanBus, IDisposable
                 catch (Exception ex) when (_disposed || _readerCts.Token.IsCancellationRequested)
                 {
                     // Expected during shutdown
+                    LogCanFrameReadingCancelled(_logger);
                     break;
                 }
                 catch (Exception ex)
