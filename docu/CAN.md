@@ -44,6 +44,82 @@ graph TB
     CAN <--> CTRL
 ```
 
+## CAN Bus Access Layer
+
+The system supports two methods for accessing the CAN bus:
+
+### 1. Native SocketCAN (Linux)
+
+**Implementation:** `NativeCanSocket` uses native .NET `Socket` APIs with P/Invoke for direct SocketCAN access.
+
+```mermaid
+graph LR
+    APP[CanService] --> SOCKET[NativeCanSocket]
+    SOCKET --> BUS[SocketCanBus]
+    BUS --> NATIVE[.NET Socket API]
+    NATIVE --> KERNEL[Linux Kernel<br/>SocketCAN]
+    KERNEL --> HW[CAN Hardware<br/>can0/can1]
+```
+
+**Characteristics:**
+- **Zero external dependencies** - Uses only .NET BCL types (`System.Net.Sockets.Socket`)
+- **Low-level P/Invoke** - Direct system calls for `AF_CAN` (29) socket family
+- **High performance** - Direct kernel access without intermediate libraries
+- **Platform-specific** - Linux only (requires SocketCAN kernel module)
+- **Automatic reconnection** - Built-in retry logic with exponential backoff
+
+**Usage:** Automatically selected when no SSH configuration is present.
+
+### 2. SSH Remote Access
+
+**Implementation:** `SshCanBus` uses SSH.NET to remotely execute `candump` and `cansend` on a CAN gateway device.
+
+```mermaid
+graph LR
+    APP[CanService] --> SSH[SshCanBus]
+    SSH --> SSHNET[SSH.NET Library]
+    SSHNET --> NET[Network]
+    NET --> REMOTE[Remote Device<br/>192.168.0.250]
+    REMOTE --> CANDUMP[candump/cansend]
+    CANDUMP --> HW[CAN Hardware]
+```
+
+**Characteristics:**
+- **Platform-independent** - Works on Windows, Linux, macOS
+- **Remote CAN access** - Connect to CAN gateway over network
+- **No local hardware required** - Ideal for development machines
+- **Higher latency** - Network + SSH overhead vs direct kernel access
+
+**Usage:** Automatically selected when `Can:Ssh` section is configured in `appsettings.json`.
+
+### Configuration
+
+The system automatically selects the appropriate CAN bus implementation:
+
+```json
+{
+  "Can": {
+    "CanInterfaceName": "can0",
+    "Ssh": null  // Native SocketCAN (default)
+  }
+}
+```
+
+```json
+{
+  "Can": {
+    "CanInterfaceName": "can0",
+    "Ssh": {
+      "Host": "192.168.0.250",
+      "Username": "root",
+      "Password": "your-password"
+    }  // SSH remote access
+  }
+}
+```
+
+See **[SSH_CAN_BUS.md](SSH_CAN_BUS.md)** for detailed SSH configuration and troubleshooting.
+
 ## CAN Frame Structure
 
 All frames are **exactly 7 bytes**:

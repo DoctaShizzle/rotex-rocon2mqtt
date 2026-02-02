@@ -87,10 +87,10 @@ Press `Ctrl+C` in the terminal to gracefully stop the application.
 SSH into your Raspberry Pi and run:
 
 ```bash
-# Create the can group for SocketCAN access (if it doesn't exist)
+# Create the can group for CAN interface access (if it doesn't exist)
 sudo groupadd -f can
 
-# Create a dedicated user for the service and add to can group for SocketCAN access
+# Create a dedicated user for the service and add to can group for CAN interface access
 sudo useradd -r -m -d /opt/roconmqtt -s /bin/false -G can rocon
 
 # Create the application directory
@@ -112,7 +112,7 @@ sudo nano /etc/udev/rules.d/90-can.rules
 Add the following content:
 
 ```
-# Grant can group access to SocketCAN interfaces
+# Grant can group access to CAN network interfaces
 KERNEL=="can*", SUBSYSTEM=="net", GROUP="can", MODE="0660"
 ```
 
@@ -238,7 +238,7 @@ SupplementaryGroups=can
 - `Requires=setup-can.service` - Hard dependency; service won't start if setup-can fails
 - `SupplementaryGroups=can` - Grants access to CAN interfaces via the `can` group
 
-**Important:** If you get "SocketCanException: network is down" errors on boot, verify that `setup-can.service` is installed and enabled (see [HARDWARE.md](HARDWARE.md)).
+**Important:** If you get socket errors indicating "network is down" on boot, verify that `setup-can.service` is installed and enabled (see [HARDWARE.md](HARDWARE.md)). The application uses native .NET sockets (AF_CAN) to communicate with the Linux SocketCAN kernel module.
 
 ### 2. Enable and Start the Service
 
