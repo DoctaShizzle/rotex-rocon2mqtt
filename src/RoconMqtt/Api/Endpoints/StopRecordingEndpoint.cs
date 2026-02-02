@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
 
@@ -15,10 +16,11 @@ public static class StopRecordingEndpoint
 
             if (result == null)
             {
-                return Results.BadRequest(new
+                var errorResponse = new ApiErrorResponse
                 {
-                    error = "No active recording to stop"
-                });
+                    Error = "No active recording to stop"
+                };
+                return Results.BadRequest(errorResponse);
             }
 
             return Results.Ok(result);
