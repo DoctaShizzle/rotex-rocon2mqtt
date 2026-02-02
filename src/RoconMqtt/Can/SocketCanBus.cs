@@ -48,6 +48,21 @@ public partial class SocketCanBus : ICanBus, IDisposable
                 var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
                 lock (_socketLock)
                 {
+                    // Ensure socket is in a clean state before binding
+                    // This helps recover from previous unclean shutdowns
+                    try
+                    {
+                        _socket.Close();
+                    }
+                    catch
+                    {
+                        // Ignore errors during close - socket might already be closed
+                    }
+                    
+                    // Recreate socket to ensure clean state
+                    _socket?.Dispose();
+                    _socket = new RawCanSocket();
+                    
                     _socket.Bind(iface);
                 }
             }
@@ -305,6 +320,8 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
         _disposed = true;
 
+        LogDisposingSocketCanBus(_logger);
+
         // Stop the background reader
         _readerCts.Cancel();
         if (_readerTask != null)
@@ -313,24 +330,59 @@ public partial class SocketCanBus : ICanBus, IDisposable
             {
                 _readerTask.Wait(TimeSpan.FromSeconds(5));
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore exceptions during shutdown
+                LogErrorWaitingForReaderShutdown(_logger, ex);
             }
         }
 
         // Close all subscriber channels
         foreach (var subscriber in _subscribers.Values)
         {
-            subscriber.Channel.Writer.Complete();
+            try
+            {
+                subscriber.Channel.Writer.Complete();
+            }
+            catch
+            {
+                // Ignore errors during channel cleanup
+            }
         }
         _subscribers.Clear();
 
-        _readerCts.Dispose();
+        // Clean up resources
+        try
+        {
+            _readerCts.Dispose();
+        }
+        catch
+        {
+            // Ignore
+        }
+
+        // Ensure socket is properly closed and disposed
         lock (_socketLock)
         {
-            _socket?.Dispose();
+            try
+            {
+                _socket?.Close();
+            }
+            catch (Exception ex)
+            {
+                LogErrorClosingSocket(_logger, ex);
+            }
+
+            try
+            {
+                _socket?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogErrorDisposingSocket(_logger, ex);
+            }
         }
+
+        LogSocketCanBusDisposed(_logger);
         GC.SuppressFinalize(this);
     }
 
@@ -405,4 +457,20 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2023, Level = LogLevel.Error, Message = "Failed to reconnect CAN socket on interface {InterfaceName}")]
     private static partial void LogSocketReconnectionFailed(ILogger logger, Exception exception, string interfaceName);
+
+    [LoggerMessage(EventId = 2024, Level = LogLevel.Debug, Message = "Disposing SocketCAN bus")]
+    private static partial void LogDisposingSocketCanBus(ILogger logger);
+
+    [LoggerMessage(EventId = 2025, Level = LogLevel.Warning, Message = "Error waiting for background reader shutdown during disposal")]
+    private static partial void LogErrorWaitingForReaderShutdown(ILogger logger, Exception exception);
+
+    [LoggerMessage(EventId = 2026, Level = LogLevel.Warning, Message = "Error closing CAN socket during disposal")]
+    private static partial void LogErrorClosingSocket(ILogger logger, Exception exception);
+
+    [LoggerMessage(EventId = 2027, Level = LogLevel.Warning, Message = "Error disposing CAN socket during disposal")]
+    private static partial void LogErrorDisposingSocket(ILogger logger, Exception exception);
+
+    [LoggerMessage(EventId = 2028, Level = LogLevel.Information, Message = "SocketCAN bus disposed successfully")]
+    private static partial void LogSocketCanBusDisposed(ILogger logger);
 }
+
