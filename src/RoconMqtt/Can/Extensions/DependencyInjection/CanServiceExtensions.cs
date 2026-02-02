@@ -56,6 +56,7 @@ public static class CanServiceExtensions
     /// </summary>
     public static CanServiceBuilder WithSocketCanBus(this CanServiceBuilder builder)
     {
+        builder.Services.AddSingleton<ICanSocket, NativeCanSocket>();
         builder.Services.AddSingleton<ICanBus, SocketCanBus>();
         return builder;
     }
@@ -87,6 +88,7 @@ public static class CanServiceExtensions
         });
         
         // Register both implementations so they can be resolved
+        builder.Services.AddSingleton<ICanSocket, NativeCanSocket>();
         builder.Services.AddSingleton<SocketCanBus>();
         builder.Services.AddSingleton<SshCanBus>();
         

@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Options;
-using SocketCANSharp;
-using SocketCANSharp.Network;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading.Channels;
@@ -11,11 +9,11 @@ namespace RoconMqtt.Can;
 
 /// <summary>
 /// SocketCAN implementation of the CAN bus interface.
+/// Manages frame broadcasting to multiple subscribers using channels.
 /// </summary>
 public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
 {
-    private RawCanSocket? _socket;
-    private readonly Lock _socketLock = new();
+    private readonly ICanSocket _canSocket;
     private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
     private bool _disposed;
@@ -23,136 +21,26 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
     // Broadcast infrastructure
     private readonly ConcurrentDictionary<Guid, FrameSubscriber> _subscribers = new();
     private readonly CancellationTokenSource _readerCts = new();
-    private Task? _readerTask;
+    private readonly Task? _readerTask;
     
     // Reconnection state
     private int _consecutiveErrors = 0;
     private const int MaxConsecutiveErrors = 10;
-    private const int MaxInitRetries = 5;
-    private const int InitRetryDelayMs = 1000;
 
-    public SocketCanBus(ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
+    public SocketCanBus(ICanSocket canSocket, ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
     {
+        _canSocket = canSocket ?? throw new ArgumentNullException(nameof(canSocket));
         _logger = logger;
         _options = options.Value;
-        _socket = new RawCanSocket();
 
-        Init();
-    }
-
-    private void Init()
-    {
-        Exception? lastException = null;
-        
-        for (int attempt = 1; attempt <= MaxInitRetries; attempt++)
-        {
-            try
-            {
-                LogInitializationAttempt(_logger, attempt, MaxInitRetries, _options.CanInterfaceName);
-                
-                // Dynamically look up the interface index by name
-                // This is necessary because the interface index varies based on system configuration
-                using (var tempSocket = new RawCanSocket())
-                {
-                    var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
-                    lock (_socketLock)
-                    {
-                        // Ensure socket is in a clean state before binding
-                        // This helps recover from previous unclean shutdowns
-                        try
-                        {
-                            _socket?.Close();
-                        }
-                        catch
-                        {
-                            // Ignore errors during close - socket might already be closed
-                        }
-                        
-                        // Recreate socket to ensure clean state
-                        _socket?.Dispose();
-                        _socket = new RawCanSocket();
-                        
-                        // Set receive timeout to allow responsive cancellation checking
-                        // Without this, Read() blocks indefinitely until a frame arrives
-                        // 20ms provides good balance: responsive to cancellation, minimal CPU overhead
-                        _socket.ReceiveTimeout = 20; // milliseconds
-                        
-                        _socket.Bind(iface);
-                    }
-                }
-                
-                LogSocketCanInitialized(_logger, _options.CanInterfaceName);
-
-                // Start the background reader task
-                _readerTask = Task.Run(BackgroundReaderAsync, _readerCts.Token);
-                
-                // Success - exit retry loop
-                return;
-            }
-            catch (Exception ex)
-            {
-                lastException = ex;
-                LogInitializationAttemptFailed(_logger, ex, attempt, MaxInitRetries, _options.CanInterfaceName);
-                
-                if (attempt < MaxInitRetries)
-                {
-                    // Calculate exponential backoff delay
-                    var delayMs = InitRetryDelayMs * (int)Math.Pow(2, attempt - 1);
-                    LogRetryingInitialization(_logger, delayMs, _options.CanInterfaceName);
-                    Thread.Sleep(delayMs);
-                }
-            }
-        }
-        
-        // All retries failed
-        LogSocketCanInitializationFailed(_logger, lastException!, _options.CanInterfaceName);
-        throw new InvalidOperationException($"Failed to initialize SocketCAN bus on interface {_options.CanInterfaceName} after {MaxInitRetries} attempts", lastException);
-    }
-    
-    /// <summary>
-    /// Attempts to reconnect the CAN socket after a fatal error.
-    /// </summary>
-    private async Task<bool> TryReconnectSocketAsync(CancellationToken token)
-    {
-        LogAttemptingSocketReconnection(_logger, _options.CanInterfaceName);
-        
-        try
-        {
-            // Dispose old socket
-            lock (_socketLock)
-            {
-                _socket?.Dispose();
-                _socket = new RawCanSocket();
-            }
-            
-            // Delay before reconnection attempt (exponential backoff)
-            var delayMs = Math.Min(1000 * Math.Pow(2, Math.Min(_consecutiveErrors, 5)), 30000);
-            await Task.Delay((int)delayMs, token);
-            
-            // Try to rebind
-            using (var tempSocket = new RawCanSocket())
-            {
-                var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
-                lock (_socketLock)
-                {
-                    _socket.ReceiveTimeout = 20; // milliseconds
-                    _socket.Bind(iface);
-                }
-            }
-            
-            LogSocketReconnected(_logger, _options.CanInterfaceName);
-            _consecutiveErrors = 0; // Reset error counter on success
-            return true;
-        }
-        catch (Exception ex)
-        {
-            LogSocketReconnectionFailed(_logger, ex, _options.CanInterfaceName);
-            return false;
-        }
+        // Start the background reader task
+        _readerTask = Task.Run(BackgroundReaderAsync, _readerCts.Token);
+        LogSocketCanBusInitialized(_logger, _options.CanInterfaceName);
     }
 
     /// <summary>
-    /// Background task that continuously reads from the CAN socket and broadcasts frames to all subscribers
+    /// Background task that continuously reads from the CAN socket and broadcasts frames to all subscribers.
+    /// Uses true async I/O without blocking any threads.
     /// </summary>
     private async Task BackgroundReaderAsync()
     {
@@ -162,13 +50,13 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
         {
             while (!_readerCts.Token.IsCancellationRequested)
             {
-                // If no subscribers are listening, don't block on socket Read()
-                // This allows the reader to be responsive when new subscribers arrive
+                // If no subscribers are listening, don't perform I/O
+                // This conserves resources when idle
                 if (_subscribers.IsEmpty)
                 {
                     try
                     {
-                        await Task.Delay(10, _readerCts.Token); // Wait for subscribers
+                        await Task.Delay(10, _readerCts.Token);
                     }
                     catch (OperationCanceledException)
                     {
@@ -177,25 +65,32 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                     continue;
                 }
                 
-                SocketCANSharp.CanFrame frame;
-                bool frameReceived = false;
-                
                 try
                 {
-                    // Read frame from socket with timeout
-                    // Reduced timeout for faster query cycles between subscribers
-                    frame = await Task.Run(() =>
-                    {
-                        SocketCANSharp.CanFrame f;
-                        lock (_socketLock)
-                        {
-                            _socket!.Read(out f);
-                        }
-                        return f;
-                    }, _readerCts.Token);
+                    // Receive CAN frame from low-level socket
+                    var (canId, data) = await _canSocket.ReceiveAsync(_readerCts.Token);
                     
-                    frameReceived = true;
                     _consecutiveErrors = 0; // Reset on successful read
+                    
+                    // Format candump command for logging
+                    var dataHex = BitConverter.ToString(data).Replace("-", " ");
+                    var candumpOutput = $"{_options.CanInterfaceName}  {canId:X3}   [{data.Length}]  {dataHex}";
+                    
+                    LogReceivedCanFrame(_logger, canId, data.Length, candumpOutput);
+
+                    // Broadcast to all subscribers
+                    var canFrameModel = new CanFrameModel(canId, data);
+                    foreach (var subscriber in _subscribers.Values)
+                    {
+                        // Apply per-subscriber filter
+                        if (subscriber.CanIdFilter.HasValue && subscriber.CanIdFilter.Value != canId)
+                        {
+                            continue;
+                        }
+
+                        // Try to write to subscriber channel (non-blocking)
+                        subscriber.Channel.Writer.TryWrite(canFrameModel);
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -208,19 +103,6 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                     LogCanFrameReadingCancelled(_logger);
                     break;
                 }
-                catch (SocketCanException ex) when (ex.Message.Contains("temporarily unavailable", StringComparison.OrdinalIgnoreCase))
-                {
-                    // Socket read timeout - this is expected and allows cancellation checking
-                    // EAGAIN/EWOULDBLOCK from the socket when ReceiveTimeout expires with no data
-                    // Continue to next iteration to check cancellation token
-                    continue;
-                }
-                catch (TimeoutException)
-                {
-                    // .NET timeout exception - also expected with socket timeouts
-                    // Continue to next iteration to check cancellation token
-                    continue;
-                }
                 catch (Exception ex)
                 {
                     _consecutiveErrors++;
@@ -231,7 +113,7 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                     {
                         LogTooManyConsecutiveErrors(_logger, _consecutiveErrors);
                         
-                        var reconnected = await TryReconnectSocketAsync(_readerCts.Token);
+                        var reconnected = await _canSocket.TryReconnectAsync(_readerCts.Token);
                         if (!reconnected)
                         {
                             // Failed to reconnect, continue with exponential backoff
@@ -258,31 +140,6 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                             break;
                         }
                     }
-                    continue;
-                }
-                
-                // Only process frame if we actually received one
-                if (!frameReceived)
-                    continue;
-
-                // Format candump command for logging
-                var dataHex = BitConverter.ToString(frame.Data).Replace("-", " ");
-                var candumpOutput = $"{_options.CanInterfaceName}  {frame.CanId:X3}   [{frame.Data.Length}]  {dataHex}";
-                
-                LogReceivedCanFrame(_logger, frame.CanId, frame.Data.Length, candumpOutput);
-
-                // Broadcast to all subscribers
-                var canFrameModel = new CanFrameModel(frame.CanId, frame.Data);
-                foreach (var subscriber in _subscribers.Values)
-                {
-                    // Apply per-subscriber filter
-                    if (subscriber.CanIdFilter.HasValue && subscriber.CanIdFilter.Value != frame.CanId)
-                    {
-                        continue;
-                    }
-
-                    // Try to write to subscriber channel (non-blocking)
-                    subscriber.Channel.Writer.TryWrite(canFrameModel);
                 }
             }
         }
@@ -356,25 +213,22 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
         }
     }
 
-    public Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
+    public async Task SendFrameAsync(uint canId, byte[] data, CancellationToken token)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         
         try
         {
-            var frame = new SocketCANSharp.CanFrame(canId, data);
-            
             // Format cansend command for logging
             var dataHex = Convert.ToHexString(data);
             var cansendCommand = $"cansend {_options.CanInterfaceName} {canId:X3}#{dataHex}";
             
             LogSendingCanFrame(_logger, canId, data.Length, cansendCommand);
-            lock (_socketLock)
-            {
-                _socket!.Write(frame);
-            }
+            
+            // Delegate to low-level socket
+            await _canSocket.SendAsync(canId, data, token);
+            
             LogCanFrameSentSuccessfully(_logger);
-            return Task.CompletedTask;
         }
         catch (Exception ex)
         {
@@ -434,31 +288,17 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
             }
             _subscribers.Clear();
 
-            // Ensure socket is properly closed and disposed
-            lock (_socketLock)
+            // Dispose the CAN socket
+            try
             {
-                try
-                {
-                    _socket?.Close();
-                }
-                catch (Exception ex)
-                {
-                    LogErrorClosingSocket(_logger, ex);
-                }
-
-                try
-                {
-                    _socket?.Dispose();
-                }
-                catch (Exception ex)
-                {
-                    LogErrorDisposingSocket(_logger, ex);
-                }
-                
-                _socket = null;
+                _canSocket?.Dispose();
+            }
+            catch (Exception ex)
+            {
+                LogErrorDisposingSocket(_logger, ex);
             }
 
-            // Dispose CancellationTokenSource LAST - after background task is guaranteed to be stopped
+            // Dispose CancellationTokenSource LAST
             try
             {
                 _readerCts.Dispose();
@@ -509,28 +349,14 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
         }
         _subscribers.Clear();
 
-        // Ensure socket is properly closed and disposed
-        lock (_socketLock)
+        // Dispose the CAN socket
+        try
         {
-            try
-            {
-                _socket?.Close();
-            }
-            catch (Exception ex)
-            {
-                LogErrorClosingSocket(_logger, ex);
-            }
-
-            try
-            {
-                _socket?.Dispose();
-            }
-            catch (Exception ex)
-            {
-                LogErrorDisposingSocket(_logger, ex);
-            }
-            
-            _socket = null;
+            await _canSocket.DisposeAsync().ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            LogErrorDisposingSocket(_logger, ex);
         }
 
         // Dispose CancellationTokenSource LAST
@@ -562,10 +388,7 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
     }
 
     [LoggerMessage(EventId = 2001, Level = LogLevel.Information, Message = "SocketCAN bus initialized on interface {InterfaceName}")]
-    private static partial void LogSocketCanInitialized(ILogger logger, string interfaceName);
-
-    [LoggerMessage(EventId = 2002, Level = LogLevel.Error, Message = "Failed to initialize SocketCAN bus on interface {InterfaceName}")]
-    private static partial void LogSocketCanInitializationFailed(ILogger logger, Exception exception, string interfaceName);
+    private static partial void LogSocketCanBusInitialized(ILogger logger, string interfaceName);
 
     [LoggerMessage(EventId = 2003, Level = LogLevel.Debug, Message = "Starting to read CAN frames")]
     private static partial void LogStartReadingCanFrames(ILogger logger);
@@ -609,38 +432,17 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
     [LoggerMessage(EventId = 2020, Level = LogLevel.Warning, Message = "Too many consecutive errors ({ErrorCount}) reading CAN frames, attempting socket reconnection")]
     private static partial void LogTooManyConsecutiveErrors(ILogger logger, int errorCount);
 
-    [LoggerMessage(EventId = 2021, Level = LogLevel.Information, Message = "Attempting to reconnect CAN socket on interface {InterfaceName}")]
-    private static partial void LogAttemptingSocketReconnection(ILogger logger, string interfaceName);
-
-    [LoggerMessage(EventId = 2022, Level = LogLevel.Information, Message = "Successfully reconnected CAN socket on interface {InterfaceName}")]
-    private static partial void LogSocketReconnected(ILogger logger, string interfaceName);
-
-    [LoggerMessage(EventId = 2023, Level = LogLevel.Error, Message = "Failed to reconnect CAN socket on interface {InterfaceName}")]
-    private static partial void LogSocketReconnectionFailed(ILogger logger, Exception exception, string interfaceName);
-
     [LoggerMessage(EventId = 2024, Level = LogLevel.Debug, Message = "Disposing SocketCAN bus")]
     private static partial void LogDisposingSocketCanBus(ILogger logger);
 
     [LoggerMessage(EventId = 2025, Level = LogLevel.Warning, Message = "Error waiting for background reader shutdown during disposal")]
     private static partial void LogErrorWaitingForReaderShutdown(ILogger logger, Exception exception);
 
-    [LoggerMessage(EventId = 2026, Level = LogLevel.Warning, Message = "Error closing CAN socket during disposal")]
-    private static partial void LogErrorClosingSocket(ILogger logger, Exception exception);
-
     [LoggerMessage(EventId = 2027, Level = LogLevel.Warning, Message = "Error disposing CAN socket during disposal")]
     private static partial void LogErrorDisposingSocket(ILogger logger, Exception exception);
 
     [LoggerMessage(EventId = 2028, Level = LogLevel.Information, Message = "SocketCAN bus disposed successfully")]
     private static partial void LogSocketCanBusDisposed(ILogger logger);
-
-    [LoggerMessage(EventId = 2029, Level = LogLevel.Information, Message = "Attempting to initialize CAN interface {InterfaceName} (attempt {Attempt}/{MaxAttempts})")]
-    private static partial void LogInitializationAttempt(ILogger logger, int attempt, int maxAttempts, string interfaceName);
-
-    [LoggerMessage(EventId = 2030, Level = LogLevel.Warning, Message = "Failed to initialize CAN interface {InterfaceName} on attempt {Attempt}/{MaxAttempts}")]
-    private static partial void LogInitializationAttemptFailed(ILogger logger, Exception exception, int attempt, int maxAttempts, string interfaceName);
-
-    [LoggerMessage(EventId = 2031, Level = LogLevel.Information, Message = "Retrying CAN interface {InterfaceName} initialization in {DelayMs}ms")]
-    private static partial void LogRetryingInitialization(ILogger logger, int delayMs, string interfaceName);
 
     [LoggerMessage(EventId = 2032, Level = LogLevel.Warning, Message = "Error disposing CancellationTokenSource during disposal")]
     private static partial void LogErrorDisposingCancellationTokenSource(ILogger logger, Exception exception);
