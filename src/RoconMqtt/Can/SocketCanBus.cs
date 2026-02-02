@@ -71,6 +71,11 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                         _socket?.Dispose();
                         _socket = new RawCanSocket();
                         
+                        // Set receive timeout to allow responsive cancellation checking
+                        // Without this, Read() blocks indefinitely until a frame arrives
+                        // 20ms provides good balance: responsive to cancellation, minimal CPU overhead
+                        _socket.ReceiveTimeout = 20; // milliseconds
+                        
                         _socket.Bind(iface);
                     }
                 }
@@ -129,6 +134,7 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                 var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
                 lock (_socketLock)
                 {
+                    _socket.ReceiveTimeout = 20; // milliseconds
                     _socket.Bind(iface);
                 }
             }
@@ -155,11 +161,28 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
         {
             while (!_readerCts.Token.IsCancellationRequested)
             {
+                // If no subscribers are listening, don't block on socket Read()
+                // This allows the reader to be responsive when new subscribers arrive
+                if (_subscribers.IsEmpty)
+                {
+                    try
+                    {
+                        await Task.Delay(10, _readerCts.Token); // Wait for subscribers
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
+                    continue;
+                }
+                
                 SocketCANSharp.CanFrame frame;
+                bool frameReceived = false;
+                
                 try
                 {
-                    // Read frame from socket (blocking call)
-                    // Note: We don't use timeout here because abandoned tasks can cause lock contention
+                    // Read frame from socket with timeout
+                    // Reduced timeout for faster query cycles between subscribers
                     frame = await Task.Run(() =>
                     {
                         SocketCANSharp.CanFrame f;
@@ -170,6 +193,7 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                         return f;
                     }, _readerCts.Token);
                     
+                    frameReceived = true;
                     _consecutiveErrors = 0; // Reset on successful read
                 }
                 catch (OperationCanceledException)
@@ -182,6 +206,12 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                     // Expected during shutdown
                     LogCanFrameReadingCancelled(_logger);
                     break;
+                }
+                catch (TimeoutException)
+                {
+                    // Socket read timeout - this is expected and allows cancellation checking
+                    // Continue to next iteration to check cancellation token
+                    continue;
                 }
                 catch (Exception ex)
                 {
@@ -222,6 +252,10 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                     }
                     continue;
                 }
+                
+                // Only process frame if we actually received one
+                if (!frameReceived)
+                    continue;
 
                 // Format candump command for logging
                 var dataHex = BitConverter.ToString(frame.Data).Replace("-", " ");
