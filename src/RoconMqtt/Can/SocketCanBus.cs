@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using RoconMqtt.Can.Models;
 using RoconMqtt.Can.Options;
+using SocketCANSharp;
 using SocketCANSharp.Network;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
@@ -14,7 +17,7 @@ namespace RoconMqtt.Can;
 public partial class SocketCanBus : ICanBus, IDisposable
 {
     private RawCanSocket _socket;
-    private readonly Lock _socketLock = new();
+    private readonly object _socketLock = new();
     private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
     private bool _disposed;
@@ -27,6 +30,8 @@ public partial class SocketCanBus : ICanBus, IDisposable
     // Reconnection state
     private int _consecutiveErrors = 0;
     private const int MaxConsecutiveErrors = 10;
+    private const int MaxInitRetries = 5;
+    private const int InitRetryDelayMs = 1000;
 
     public SocketCanBus(ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
     {
@@ -39,43 +44,66 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     private void Init()
     {
-        try
+        Exception? lastException = null;
+        
+        for (int attempt = 1; attempt <= MaxInitRetries; attempt++)
         {
-            // Dynamically look up the interface index by name
-            // This is necessary because the interface index varies based on system configuration
-            using (var tempSocket = new RawCanSocket())
+            try
             {
-                var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
-                lock (_socketLock)
+                LogInitializationAttempt(_logger, attempt, MaxInitRetries, _options.CanInterfaceName);
+                
+                // Dynamically look up the interface index by name
+                // This is necessary because the interface index varies based on system configuration
+                using (var tempSocket = new RawCanSocket())
                 {
-                    // Ensure socket is in a clean state before binding
-                    // This helps recover from previous unclean shutdowns
-                    try
+                    var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
+                    lock (_socketLock)
                     {
-                        _socket.Close();
+                        // Ensure socket is in a clean state before binding
+                        // This helps recover from previous unclean shutdowns
+                        try
+                        {
+                            _socket?.Close();
+                        }
+                        catch
+                        {
+                            // Ignore errors during close - socket might already be closed
+                        }
+                        
+                        // Recreate socket to ensure clean state
+                        _socket?.Dispose();
+                        _socket = new RawCanSocket();
+                        
+                        _socket.Bind(iface);
                     }
-                    catch
-                    {
-                        // Ignore errors during close - socket might already be closed
-                    }
-                    
-                    // Recreate socket to ensure clean state
-                    _socket?.Dispose();
-                    _socket = new RawCanSocket();
-                    
-                    _socket.Bind(iface);
+                }
+                
+                LogSocketCanInitialized(_logger, _options.CanInterfaceName);
+
+                // Start the background reader task
+                _readerTask = Task.Run(BackgroundReaderAsync, _readerCts.Token);
+                
+                // Success - exit retry loop
+                return;
+            }
+            catch (Exception ex)
+            {
+                lastException = ex;
+                LogInitializationAttemptFailed(_logger, ex, attempt, MaxInitRetries, _options.CanInterfaceName);
+                
+                if (attempt < MaxInitRetries)
+                {
+                    // Calculate exponential backoff delay
+                    var delayMs = InitRetryDelayMs * (int)Math.Pow(2, attempt - 1);
+                    LogRetryingInitialization(_logger, delayMs, _options.CanInterfaceName);
+                    Thread.Sleep(delayMs);
                 }
             }
-            LogSocketCanInitialized(_logger, _options.CanInterfaceName);
-
-            // Start the background reader task
-            _readerTask = Task.Run(BackgroundReaderAsync, _readerCts.Token);
         }
-        catch (Exception ex)
-        {
-            LogSocketCanInitializationFailed(_logger, ex, _options.CanInterfaceName);
-            throw;
-        }
+        
+        // All retries failed
+        LogSocketCanInitializationFailed(_logger, lastException!, _options.CanInterfaceName);
+        throw new InvalidOperationException($"Failed to initialize SocketCAN bus on interface {_options.CanInterfaceName} after {MaxInitRetries} attempts", lastException);
     }
     
     /// <summary>
@@ -472,5 +500,15 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2028, Level = LogLevel.Information, Message = "SocketCAN bus disposed successfully")]
     private static partial void LogSocketCanBusDisposed(ILogger logger);
+
+    [LoggerMessage(EventId = 2029, Level = LogLevel.Information, Message = "Attempting to initialize CAN interface {InterfaceName} (attempt {Attempt}/{MaxAttempts})")]
+    private static partial void LogInitializationAttempt(ILogger logger, int attempt, int maxAttempts, string interfaceName);
+
+    [LoggerMessage(EventId = 2030, Level = LogLevel.Warning, Message = "Failed to initialize CAN interface {InterfaceName} on attempt {Attempt}/{MaxAttempts}")]
+    private static partial void LogInitializationAttemptFailed(ILogger logger, Exception exception, int attempt, int maxAttempts, string interfaceName);
+
+    [LoggerMessage(EventId = 2031, Level = LogLevel.Information, Message = "Retrying CAN interface {InterfaceName} initialization in {DelayMs}ms")]
+    private static partial void LogRetryingInitialization(ILogger logger, int delayMs, string interfaceName);
 }
+
 
