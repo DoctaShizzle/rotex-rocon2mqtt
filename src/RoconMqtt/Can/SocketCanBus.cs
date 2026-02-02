@@ -245,8 +245,6 @@ public partial class SocketCanBus : ICanBus, IDisposable
                     // Try to write to subscriber channel (non-blocking)
                     subscriber.Channel.Writer.TryWrite(canFrameModel);
                 }
-
-                await Task.Yield();
             }
         }
         catch (OperationCanceledException)
