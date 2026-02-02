@@ -1,8 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using RoconMqtt.Can.Models;
+﻿using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Options;
-using SocketCANSharp;
 using SocketCANSharp.Network;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
@@ -292,9 +289,18 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
         try
         {
             // Read from subscriber's channel until cancelled
-            await foreach (var frame in subscriber.Channel.Reader.ReadAllAsync(token))
+            // Use WaitToReadAsync to allow responsive cancellation
+            while (!token.IsCancellationRequested && await subscriber.Channel.Reader.WaitToReadAsync(token))
             {
-                yield return frame;
+                // Try to read all available items without blocking
+                while (subscriber.Channel.Reader.TryRead(out var frame))
+                {
+                    yield return frame;
+                    
+                    // Check cancellation between frames for responsiveness
+                    if (token.IsCancellationRequested)
+                        yield break;
+                }
             }
         }
         finally
