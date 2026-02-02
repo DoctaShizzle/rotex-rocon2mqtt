@@ -427,6 +427,129 @@ Round-trip consistency is maintained between encoding and decoding:
 - Bool: true → encode → decode → true
 - Int: 25 → encode → decode → 25
 
+## CAN Bus Recording
+
+The system provides a CAN bus recording feature for reverse engineering parameter mappings on different Rocon hardware variants.
+
+### Purpose
+
+- **Reverse Engineering:** Capture raw CAN traffic to identify unknown parameters
+- **Parameter Discovery:** Map InfoNumbers to physical thermostat actions
+- **Value Encoding Analysis:** Determine encoding schemes for different parameter types
+- **Device Identification:** Match CAN IDs to device instances
+
+### Recording Service
+
+**CanRecordingService** is a background service that continuously monitors CAN bus traffic and stores frames when recording is active.
+
+**Features:**
+- Start/stop recording via REST API
+- Optional CAN ID filtering
+- Timestamp each captured frame
+- Export in candump format
+- Non-invasive (does not interfere with normal operation)
+
+### Workflow
+
+1. **Disable MQTT Publishing** (optional, to reduce bus traffic)
+   ```bash
+   curl -X PUT "http://localhost:5000/api/mqtt/status" \
+     -H "Content-Type: application/json" \
+     -d '{"enabled": false}'
+   ```
+
+2. **Start Recording**
+   ```bash
+   curl -X POST "http://localhost:5000/api/can/recording/start" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "canIdFilter": ["0x180", "0x300", "0x600"],
+       "description": "Testing temperature setpoint"
+     }'
+   ```
+
+3. **Manipulate Thermostat**
+   - Change temperature setpoint
+   - Switch operating modes
+   - Adjust schedules
+   - Enable/disable features
+
+4. **Stop Recording & Export**
+   ```bash
+   curl -X POST "http://localhost:5000/api/can/recording/stop/export" > recording.log
+   ```
+
+5. **Analyze Output**
+   - Look for ANSWER frames (header: `D2 1D FA`)
+   - Identify InfoNumber patterns (bytes 3-4)
+   - Compare before/after values
+   - Document encoding schemes
+
+### Output Format
+
+**Candump Format:**
+```
+# CAN Recording Session
+# Started: 2024-12-20 14:30:00.000 UTC
+# Stopped: 2024-12-20 14:35:00.000 UTC
+# Duration: 300.000 seconds
+# Frame Count: 1523
+# Description: Testing temperature setpoint
+# Filter: 0x180, 0x300, 0x600
+#
+(2024-12-20 14:30:00.123) 0x180#D2 1D FA 00 0C 01 E0
+(2024-12-20 14:30:01.456) 0x300#D2 1D FA 01 12 00 FA
+(2024-12-20 14:30:02.789) 0x180#D2 1D FA 00 0D 02 A0
+```
+
+### Analysis Tips
+
+**Identifying Parameters:**
+1. Record baseline state (no changes)
+2. Make single thermostat change
+3. Compare recordings to find changed InfoNumber
+4. Repeat for different values to determine encoding
+
+**Decoding Values:**
+- **Temperature:** Usually factor 10 (e.g., 480 = 48.0°C)
+- **Boolean:** Byte 5: 0x00 (false) or 0x01 (true)
+- **TimeRange:** Quarter-hour indices (0-95)
+- **Enum:** Integer values mapped to named states
+
+**CAN ID Mapping:**
+- `0x180-0x187` → Heat Generators (HG1-HG8)
+- `0x300-0x30F` → Heating Circuits (HC1-HC16)
+- `0x600-0x60F` → Heating Circuit Modules (HCM1-HCM16)
+
+**InfoNumber Ranges:**
+- `0x00-0x0F` → Heat Generator parameters
+- `0x14-0x1F` → Heating Circuit parameters
+- `0x17-0x1B` → Heating Circuit Module parameters (subset of HC)
+
+### REST API Endpoints
+
+See **[API.md](API.md#10-start-can-bus-recording)** for complete API documentation.
+
+- `POST /api/can/recording/start` - Start recording
+- `POST /api/can/recording/stop` - Stop and get JSON
+- `POST /api/can/recording/stop/export` - Stop and export as candump format
+- `GET /api/can/recording/status` - Check recording status
+
+### Best Practices
+
+✅ **Do:**
+- Disable MQTT publishing during recording to reduce noise
+- Use CAN ID filters to focus on specific devices
+- Make isolated changes (one parameter at a time)
+- Document each recording session with descriptions
+- Compare multiple recordings for consistency
+
+❌ **Don't:**
+- Leave recording running indefinitely (memory usage)
+- Make multiple thermostat changes simultaneously
+- Forget to stop recording before analysis
+- Ignore baseline recordings
+
 ## Why InfoNumber Ranges Map to Subsystems
 
 ### Subsystem Detection Uses InfoNumber.High

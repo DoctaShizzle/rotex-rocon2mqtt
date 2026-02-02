@@ -44,6 +44,10 @@ public static class CanServiceExtensions
         services.AddSingleton<ICanDecoder, CanDecoder>();
         services.AddSingleton<ICanEncoder, CanEncoder>();
 
+        // Register CAN recording service as singleton and hosted service
+        services.AddSingleton<CanRecordingService>();
+        services.AddHostedService(sp => sp.GetRequiredService<CanRecordingService>());
+
         return new CanServiceBuilder(services, configuration);
     }
 

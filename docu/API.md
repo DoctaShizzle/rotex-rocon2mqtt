@@ -395,7 +395,180 @@ curl -X PUT "http://localhost:5000/api/mqtt/status" \
 
 ---
 
-### 10. Health Check
+### 10. Start CAN Bus Recording
+
+**`POST /api/can/recording/start`**
+
+Start recording all CAN bus traffic for reverse engineering and analysis.
+
+**Request Body:**
+
+```json
+{
+  "canIdFilter": ["0x180", "0x300"],
+  "description": "Testing thermostat temperature changes"
+}
+```
+
+**Parameters:**
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `canIdFilter` | string[] | No | Optional filter: only record frames with these CAN IDs (hex format). If null/empty, all frames recorded |
+| `description` | string | No | Optional description/label for this recording session |
+
+**Response (200 OK):**
+
+```json
+{
+  "status": "recording_started",
+  "message": "CAN bus recording started successfully",
+  "filter": "0x180, 0x300",
+  "description": "Testing thermostat temperature changes"
+}
+```
+
+**Error Response (400 Bad Request):**
+
+```json
+{
+  "error": "Recording already in progress. Stop the current recording before starting a new one."
+}
+```
+
+**Example - Record All Frames:**
+
+```bash
+curl -X POST "http://localhost:5000/api/can/recording/start" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+
+**Example - Record Specific CAN IDs:**
+
+```bash
+curl -X POST "http://localhost:5000/api/can/recording/start" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "canIdFilter": ["0x180", "0x300", "0x600"],
+    "description": "Recording HG1, HC1, and HCM1 responses"
+  }'
+```
+
+---
+
+### 11. Stop CAN Bus Recording (JSON)
+
+**`POST /api/can/recording/stop`**
+
+Stop the active CAN bus recording and retrieve all captured frames as JSON.
+
+**Response (200 OK):**
+
+```json
+{
+  "startedAt": "2024-12-20T14:30:00.000Z",
+  "stoppedAt": "2024-12-20T14:35:00.000Z",
+  "duration": "00:05:00",
+  "frameCount": 1523,
+  "description": "Testing thermostat temperature changes",
+  "canIdFilter": ["0x180", "0x300"],
+  "frames": [
+    {
+      "timestamp": "2024-12-20T14:30:00.123Z",
+      "canId": "0x180",
+      "data": "D2 1D FA 00 0C 01 E0",
+      "dataLength": 7
+    },
+    {
+      "timestamp": "2024-12-20T14:30:01.456Z",
+      "canId": "0x300",
+      "data": "D2 1D FA 01 12 00 FA",
+      "dataLength": 7
+    }
+  ]
+}
+```
+
+**Error Response (400 Bad Request):**
+
+```json
+{
+  "error": "No active recording to stop"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST "http://localhost:5000/api/can/recording/stop"
+```
+
+---
+
+### 12. Stop CAN Bus Recording & Export (candump format)
+
+**`POST /api/can/recording/stop/export`**
+
+Stop the active CAN bus recording and export all captured frames in candump text format.
+
+**Response (200 OK):**
+
+```
+# CAN Recording Session
+# Started: 2024-12-20 14:30:00.000 UTC
+# Stopped: 2024-12-20 14:35:00.000 UTC
+# Duration: 300.000 seconds
+# Frame Count: 1523
+# Description: Testing thermostat temperature changes
+# Filter: 0x180, 0x300
+#
+(2024-12-20 14:30:00.123) 0x180#D2 1D FA 00 0C 01 E0
+(2024-12-20 14:30:01.456) 0x300#D2 1D FA 01 12 00 FA
+(2024-12-20 14:30:02.789) 0x180#D2 1D FA 00 0D 02 A0
+...
+```
+
+**Error Response (400 Bad Request):**
+
+```json
+{
+  "error": "No active recording to stop"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST "http://localhost:5000/api/can/recording/stop/export" > recording.log
+```
+
+---
+
+### 13. Get CAN Recording Status
+
+**`GET /api/can/recording/status`**
+
+Check if CAN bus recording is currently active.
+
+**Response (200 OK):**
+
+```json
+{
+  "isRecording": true,
+  "status": "recording"
+}
+```
+
+**Example:**
+
+```bash
+curl "http://localhost:5000/api/can/recording/status"
+```
+
+---
+
+### 14. Health Check
 
 **`GET /health`**
 
@@ -480,6 +653,40 @@ Returns health status of the API and its dependencies.
 ```typescript
 {
   enabled: boolean
+}
+```
+
+### CanRecordingOptions
+
+```typescript
+{
+  canIdFilter?: string[],  // Optional: filter by CAN IDs (e.g., ["0x180", "0x300"])
+  description?: string     // Optional: description for this recording
+}
+```
+
+### CanRecordingResult
+
+```typescript
+{
+  startedAt: string,        // ISO 8601 timestamp (UTC)
+  stoppedAt: string,        // ISO 8601 timestamp (UTC)
+  duration: string,         // TimeSpan format (HH:MM:SS)
+  frameCount: number,       // Total frames captured
+  description?: string,     // Recording description (if provided)
+  canIdFilter?: string[],   // Applied filter (if any)
+  frames: RecordedCanFrame[]
+}
+```
+
+### RecordedCanFrame
+
+```typescript
+{
+  timestamp: string,  // ISO 8601 timestamp (UTC)
+  canId: string,      // Hex format (e.g., "0x180")
+  data: string,       // Hex bytes (e.g., "D2 1D FA 00 0C 01 E0")
+  dataLength: number  // Number of data bytes
 }
 ```
 
@@ -617,6 +824,60 @@ curl -X PUT "http://localhost:5000/api/mqtt/status" \
   -H "Content-Type: application/json" \
   -d '{"enabled": true}'
 ```
+
+### Recording CAN Bus Traffic
+
+**Use Case:** Reverse engineering parameters for different Rotex Rocon hardware variants.
+
+**Workflow:**
+
+1. **Disable MQTT publishing to avoid interference:**
+   ```bash
+   curl -X PUT "http://localhost:5000/api/mqtt/status" \
+     -H "Content-Type: application/json" \
+     -d '{"enabled": false}'
+   ```
+
+2. **Start recording (with optional filtering):**
+   ```bash
+   curl -X POST "http://localhost:5000/api/can/recording/start" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "canIdFilter": ["0x180", "0x300"],
+       "description": "Testing temperature setpoint changes"
+     }'
+   ```
+
+3. **Manipulate the thermostat** (change temperature, mode, etc.)
+
+4. **Check recording status:**
+   ```bash
+   curl "http://localhost:5000/api/can/recording/status"
+   ```
+
+5. **Stop recording and save to file:**
+   ```bash
+   curl -X POST "http://localhost:5000/api/can/recording/stop/export" > recording.log
+   ```
+
+6. **Analyze the recording** to identify:
+   - InfoNumber patterns (bytes 3-4 in ANSWER frames)
+   - Value encoding (bytes 5-6)
+   - CAN ID mapping to devices
+   - Parameter types and ranges
+
+7. **Re-enable MQTT publishing:**
+   ```bash
+   curl -X PUT "http://localhost:5000/api/mqtt/status" \
+     -H "Content-Type: application/json" \
+     -d '{"enabled": true}'
+   ```
+
+**Analysis Tips:**
+- Look for ANSWER frames (header: `D2 1D FA`)
+- Compare before/after values when changing thermostat settings
+- Track which CAN IDs respond to specific parameter changes
+- Document InfoNumber patterns for new parameter types
 
 ---
 

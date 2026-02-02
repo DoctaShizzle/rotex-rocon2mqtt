@@ -17,5 +17,9 @@ public static class MinimalApiEndpoints
         api.MapRawParameterEndpoint();
         api.MapGetMqttPublishingStatusEndpoint();
         api.MapUpdateMqttPublishingStatus();
+        api.MapStartRecordingEndpoint();
+        api.MapStopRecordingEndpoint();
+        api.MapGetRecordingStatusEndpoint();
+        api.MapStopRecordingExportEndpoint();
     }
 }
