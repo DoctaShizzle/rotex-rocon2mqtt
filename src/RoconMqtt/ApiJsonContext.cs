@@ -26,6 +26,7 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(MqttPublishingStatusResponse))]
 [JsonSerializable(typeof(CanRecordingOptions))]
 [JsonSerializable(typeof(CanRecordingResult))]
+[JsonSerializable(typeof(CanRecordingStatusResponse))]
 [JsonSerializable(typeof(RecordedCanFrame))]
 [JsonSerializable(typeof(List<RecordedCanFrame>))]
 [JsonSerializable(typeof(Microsoft.AspNetCore.Mvc.ProblemDetails))]

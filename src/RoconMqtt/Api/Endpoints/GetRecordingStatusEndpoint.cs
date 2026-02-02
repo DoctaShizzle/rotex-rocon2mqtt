@@ -13,15 +13,17 @@ public static class GetRecordingStatusEndpoint
         {
             var isRecording = recordingService.IsRecording;
 
-            return Results.Ok(new
+            var response = new CanRecordingStatusResponse
             {
-                isRecording,
-                status = isRecording ? "recording" : "idle"
-            });
+                IsRecording = isRecording,
+                Status = isRecording ? "recording" : "idle"
+            };
+
+            return Results.Ok(response);
         })
         .WithName("GetCanRecordingStatus")
         .WithSummary("Get CAN recording status")
         .WithDescription("Check if CAN bus recording is currently active")
-        .Produces(200);
+        .Produces<CanRecordingStatusResponse>(200);
     }
 }
