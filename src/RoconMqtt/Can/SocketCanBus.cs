@@ -72,7 +72,27 @@ public partial class SocketCanBus : ICanBus, IDisposable
                 try
                 {
                     // Read frame from socket (blocking call)
-                    _socket.Read(out frame);
+                    // Note: This is a synchronous blocking call. We run it in a Task to allow cancellation checking.
+                    var readTask = Task.Run(() =>
+                    {
+                        SocketCANSharp.CanFrame f;
+                        _socket.Read(out f);
+                        return f;
+                    }, _readerCts.Token);
+
+                    // Wait for read with periodic cancellation checks (timeout allows graceful cancellation)
+                    using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(_readerCts.Token);
+                    timeoutCts.CancelAfter(TimeSpan.FromSeconds(1));
+                    
+                    try
+                    {
+                        frame = await readTask.WaitAsync(timeoutCts.Token);
+                    }
+                    catch (TimeoutException)
+                    {
+                        // Timeout is expected when no frames arrive - just loop and check cancellation
+                        continue;
+                    }
                 }
                 catch (OperationCanceledException)
                 {
@@ -88,7 +108,14 @@ public partial class SocketCanBus : ICanBus, IDisposable
                 {
                     LogErrorReadingCanFrame(_logger, ex);
                     // Brief delay before retry to avoid tight error loop
-                    await Task.Delay(100, _readerCts.Token);
+                    try
+                    {
+                        await Task.Delay(100, _readerCts.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        break;
+                    }
                     continue;
                 }
 
@@ -114,6 +141,11 @@ public partial class SocketCanBus : ICanBus, IDisposable
         catch (OperationCanceledException)
         {
             // Expected during shutdown
+        }
+        catch (Exception ex)
+        {
+            // Unexpected error that caused reader to stop
+            LogUnexpectedErrorInBackgroundReader(_logger, ex);
         }
         finally
         {
@@ -275,4 +307,7 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2018, Level = LogLevel.Debug, Message = "Subscriber {SubscriberId} unregistered")]
     private static partial void LogSubscriberUnregistered(ILogger logger, Guid subscriberId);
+
+    [LoggerMessage(EventId = 2019, Level = LogLevel.Error, Message = "Unexpected error in background CAN reader caused reader to stop")]
+    private static partial void LogUnexpectedErrorInBackgroundReader(ILogger logger, Exception exception);
 }
