@@ -70,6 +70,13 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 // Loop over all configured devices and parameters
                 foreach (var deviceName in _options.Devices)
                 {
+                    // Skip devices without valid identifiers
+                    if (!_deviceIdentifiers.ContainsKey(deviceName))
+                    {
+                        LogSkippingDeviceWithoutIdentifier(_logger, deviceName);
+                        continue;
+                    }
+                    
                     // Query regular parameters
                     await QueryParametersAsync(deviceName, _options.Parameters, resiliencePipeline, stoppingToken);
                     
@@ -98,8 +105,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// Queries device identifiers for all configured devices asynchronously and updates the internal mapping with the
     /// results.
     /// </summary>
-    /// <remarks>If a device identifier cannot be retrieved for a device, the device name is used as a
-    /// fallback identifier. The internal mapping is updated for each device regardless of success or failure.</remarks>
+    /// <remarks>Only devices with successfully retrieved identifiers are added to the internal mapping.
+    /// Devices that fail to return a valid identifier are excluded from all subsequent operations.</remarks>
     /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
     private async Task QueryDeviceIdentifiersAsync(CancellationToken token)
@@ -118,23 +125,38 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                     (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds,
                     token);
 
-                if (result != null)
+                if (result != null && result.Value != null)
                 {
-                    var deviceId = result.Value.ToString() ?? "unknown";
-                    _deviceIdentifiers[deviceName] = deviceId;
-                    LogDeviceIdentifierFound(_logger, deviceName, deviceId);
+                    var deviceId = result.Value.ToString();
+                    if (!string.IsNullOrWhiteSpace(deviceId))
+                    {
+                        _deviceIdentifiers[deviceName] = deviceId;
+                        LogDeviceIdentifierFound(_logger, deviceName, deviceId);
+                    }
+                    else
+                    {
+                        LogDeviceIdentifierInvalid(_logger, deviceName);
+                    }
                 }
                 else
                 {
-                    _deviceIdentifiers[deviceName] = deviceName;
                     LogDeviceIdentifierNotFound(_logger, deviceName);
                 }
             }
             catch (Exception ex)
             {
-                _deviceIdentifiers[deviceName] = deviceName;
                 LogErrorQueryingDeviceIdentifier(_logger, ex, deviceName);
             }
+        }
+        
+        // Log summary of successfully initialized devices
+        if (_deviceIdentifiers.Count == 0)
+        {
+            LogNoValidDeviceIdentifiers(_logger);
+        }
+        else
+        {
+            LogDeviceIdentifiersInitialized(_logger, _deviceIdentifiers.Count, _options.Devices.Count);
         }
     }
 
@@ -195,6 +217,13 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         foreach (var deviceName in _options.Devices)
         {
+            // Skip devices without valid identifiers
+            if (!_deviceIdentifiers.ContainsKey(deviceName))
+            {
+                LogSkippingDiscoveryForDevice(_logger, deviceName);
+                continue;
+            }
+            
             // Publish discovery for regular parameters
             await PublishDiscoveryForParametersAsync(deviceName, _options.Parameters, token);
             
@@ -674,11 +703,20 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     [LoggerMessage(EventId = 4016, Level = LogLevel.Information, Message = "Device identifier found for {DeviceName}: {DeviceId}")]
     private static partial void LogDeviceIdentifierFound(ILogger logger, string deviceName, string deviceId);
 
-    [LoggerMessage(EventId = 4017, Level = LogLevel.Warning, Message = "Device identifier not found for {DeviceName}, using device name as fallback")]
+    [LoggerMessage(EventId = 4017, Level = LogLevel.Error, Message = "Device identifier not found for {DeviceName}, device will be excluded from operations")]
     private static partial void LogDeviceIdentifierNotFound(ILogger logger, string deviceName);
 
-    [LoggerMessage(EventId = 4018, Level = LogLevel.Error, Message = "Error querying device identifier for {DeviceName}")]
+    [LoggerMessage(EventId = 4018, Level = LogLevel.Error, Message = "Error querying device identifier for {DeviceName}, device will be excluded from operations")]
     private static partial void LogErrorQueryingDeviceIdentifier(ILogger logger, Exception exception, string deviceName);
+
+    [LoggerMessage(EventId = 4019, Level = LogLevel.Error, Message = "Device identifier for {DeviceName} is invalid (null or empty), device will be excluded from operations")]
+    private static partial void LogDeviceIdentifierInvalid(ILogger logger, string deviceName);
+
+    [LoggerMessage(EventId = 4020, Level = LogLevel.Error, Message = "No valid device identifiers could be retrieved. Publisher will not query any devices.")]
+    private static partial void LogNoValidDeviceIdentifiers(ILogger logger);
+
+    [LoggerMessage(EventId = 4021, Level = LogLevel.Information, Message = "Successfully retrieved {ValidCount} of {TotalCount} device identifiers")]
+    private static partial void LogDeviceIdentifiersInitialized(ILogger logger, int validCount, int totalCount);
 
     [LoggerMessage(EventId = 4022, Level = LogLevel.Error, Message = "Parameter '{ParameterName}' not found in registry. Ensure it is configured in can-registry.json")]
     private static partial void LogParameterNotFoundInRegistry(ILogger logger, string parameterName);
@@ -692,5 +730,12 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     [LoggerMessage(EventId = 4025, Level = LogLevel.Debug, Message = "Using synthetic metadata for compound parameter '{ParameterName}'")]
     private static partial void LogUsingCompoundParameterMetadata(ILogger logger, string parameterName);
 
+    [LoggerMessage(EventId = 4026, Level = LogLevel.Warning, Message = "Skipping device {DeviceName} - no valid device identifier available")]
+    private static partial void LogSkippingDeviceWithoutIdentifier(ILogger logger, string deviceName);
+
+    [LoggerMessage(EventId = 4027, Level = LogLevel.Warning, Message = "Skipping Home Assistant discovery for device {DeviceName} - no valid device identifier available")]
+    private static partial void LogSkippingDiscoveryForDevice(ILogger logger, string deviceName);
+
     #endregion
 }
+

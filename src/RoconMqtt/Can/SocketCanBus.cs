@@ -16,7 +16,8 @@ namespace RoconMqtt.Can;
 /// </summary>
 public partial class SocketCanBus : ICanBus, IDisposable
 {
-    private readonly RawCanSocket _socket = new();
+    private RawCanSocket _socket;
+    private readonly Lock _socketLock = new();
     private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
     private bool _disposed;
@@ -25,11 +26,16 @@ public partial class SocketCanBus : ICanBus, IDisposable
     private readonly ConcurrentDictionary<Guid, FrameSubscriber> _subscribers = new();
     private readonly CancellationTokenSource _readerCts = new();
     private Task? _readerTask;
+    
+    // Reconnection state
+    private int _consecutiveErrors = 0;
+    private const int MaxConsecutiveErrors = 10;
 
     public SocketCanBus(ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
     {
         _logger = logger;
         _options = options.Value;
+        _socket = new RawCanSocket();
 
         Init();
     }
@@ -43,7 +49,10 @@ public partial class SocketCanBus : ICanBus, IDisposable
             using (var tempSocket = new RawCanSocket())
             {
                 var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
-                _socket.Bind(iface);
+                lock (_socketLock)
+                {
+                    _socket.Bind(iface);
+                }
             }
             LogSocketCanInitialized(_logger, _options.CanInterfaceName);
 
@@ -54,6 +63,47 @@ public partial class SocketCanBus : ICanBus, IDisposable
         {
             LogSocketCanInitializationFailed(_logger, ex, _options.CanInterfaceName);
             throw;
+        }
+    }
+    
+    /// <summary>
+    /// Attempts to reconnect the CAN socket after a fatal error.
+    /// </summary>
+    private async Task<bool> TryReconnectSocketAsync(CancellationToken token)
+    {
+        LogAttemptingSocketReconnection(_logger, _options.CanInterfaceName);
+        
+        try
+        {
+            // Dispose old socket
+            lock (_socketLock)
+            {
+                _socket?.Dispose();
+                _socket = new RawCanSocket();
+            }
+            
+            // Delay before reconnection attempt (exponential backoff)
+            var delayMs = Math.Min(1000 * Math.Pow(2, Math.Min(_consecutiveErrors, 5)), 30000);
+            await Task.Delay((int)delayMs, token);
+            
+            // Try to rebind
+            using (var tempSocket = new RawCanSocket())
+            {
+                var iface = CanNetworkInterface.GetInterfaceByName(tempSocket.SafeHandle, _options.CanInterfaceName);
+                lock (_socketLock)
+                {
+                    _socket.Bind(iface);
+                }
+            }
+            
+            LogSocketReconnected(_logger, _options.CanInterfaceName);
+            _consecutiveErrors = 0; // Reset error counter on success
+            return true;
+        }
+        catch (Exception ex)
+        {
+            LogSocketReconnectionFailed(_logger, ex, _options.CanInterfaceName);
+            return false;
         }
     }
 
@@ -76,7 +126,10 @@ public partial class SocketCanBus : ICanBus, IDisposable
                     var readTask = Task.Run(() =>
                     {
                         SocketCANSharp.CanFrame f;
-                        _socket.Read(out f);
+                        lock (_socketLock)
+                        {
+                            _socket.Read(out f);
+                        }
                         return f;
                     }, _readerCts.Token);
 
@@ -87,6 +140,7 @@ public partial class SocketCanBus : ICanBus, IDisposable
                     try
                     {
                         frame = await readTask.WaitAsync(timeoutCts.Token);
+                        _consecutiveErrors = 0; // Reset on successful read
                     }
                     catch (TimeoutException)
                     {
@@ -99,22 +153,48 @@ public partial class SocketCanBus : ICanBus, IDisposable
                     LogCanFrameReadingCancelled(_logger);
                     break;
                 }
-                catch (Exception ex) when (_disposed || _readerCts.Token.IsCancellationRequested)
+                catch (Exception)
+                when (_disposed || _readerCts.Token.IsCancellationRequested)
                 {
                     // Expected during shutdown
                     break;
                 }
                 catch (Exception ex)
                 {
+                    _consecutiveErrors++;
                     LogErrorReadingCanFrame(_logger, ex);
-                    // Brief delay before retry to avoid tight error loop
-                    try
+                    
+                    // If too many consecutive errors, attempt reconnection
+                    if (_consecutiveErrors >= MaxConsecutiveErrors)
                     {
-                        await Task.Delay(100, _readerCts.Token);
+                        LogTooManyConsecutiveErrors(_logger, _consecutiveErrors);
+                        
+                        var reconnected = await TryReconnectSocketAsync(_readerCts.Token);
+                        if (!reconnected)
+                        {
+                            // Failed to reconnect, continue with exponential backoff
+                            var delayMs = Math.Min(1000 * Math.Pow(2, Math.Min(_consecutiveErrors - MaxConsecutiveErrors, 5)), 30000);
+                            try
+                            {
+                                await Task.Delay((int)delayMs, _readerCts.Token);
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                break;
+                            }
+                        }
                     }
-                    catch (OperationCanceledException)
+                    else
                     {
-                        break;
+                        // Brief delay before retry to avoid tight error loop
+                        try
+                        {
+                            await Task.Delay(100, _readerCts.Token);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            break;
+                        }
                     }
                     continue;
                 }
@@ -207,7 +287,10 @@ public partial class SocketCanBus : ICanBus, IDisposable
         {
             var frame = new SocketCANSharp.CanFrame(canId, data);
             LogSendingCanFrame(_logger, canId, data.Length);
-            _socket.Write(frame);
+            lock (_socketLock)
+            {
+                _socket.Write(frame);
+            }
             LogCanFrameSentSuccessfully(_logger);
             return Task.CompletedTask;
         }
@@ -247,7 +330,10 @@ public partial class SocketCanBus : ICanBus, IDisposable
         _subscribers.Clear();
 
         _readerCts.Dispose();
-        _socket.Dispose();
+        lock (_socketLock)
+        {
+            _socket?.Dispose();
+        }
         GC.SuppressFinalize(this);
     }
 
@@ -310,4 +396,16 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2019, Level = LogLevel.Error, Message = "Unexpected error in background CAN reader caused reader to stop")]
     private static partial void LogUnexpectedErrorInBackgroundReader(ILogger logger, Exception exception);
+
+    [LoggerMessage(EventId = 2020, Level = LogLevel.Warning, Message = "Too many consecutive errors ({ErrorCount}) reading CAN frames, attempting socket reconnection")]
+    private static partial void LogTooManyConsecutiveErrors(ILogger logger, int errorCount);
+
+    [LoggerMessage(EventId = 2021, Level = LogLevel.Information, Message = "Attempting to reconnect CAN socket on interface {InterfaceName}")]
+    private static partial void LogAttemptingSocketReconnection(ILogger logger, string interfaceName);
+
+    [LoggerMessage(EventId = 2022, Level = LogLevel.Information, Message = "Successfully reconnected CAN socket on interface {InterfaceName}")]
+    private static partial void LogSocketReconnected(ILogger logger, string interfaceName);
+
+    [LoggerMessage(EventId = 2023, Level = LogLevel.Error, Message = "Failed to reconnect CAN socket on interface {InterfaceName}")]
+    private static partial void LogSocketReconnectionFailed(ILogger logger, Exception exception, string interfaceName);
 }
