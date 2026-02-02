@@ -10,7 +10,7 @@ public static class StartRecordingEndpoint
     public static void MapStartRecordingEndpoint(this IEndpointRouteBuilder app)
     {
         app.MapPost("/can/recording/start", async (
-            [FromBody] CanRecordingOptions? options,
+            [FromBody] CanRecordingOptions options,
             [FromServices] CanRecordingService recordingService) =>
         {
             var started = await recordingService.StartRecordingAsync(options);
