@@ -4,7 +4,9 @@ using RoconMqtt.Can.Models;
 using RoconMqtt.Can.Options;
 using SocketCANSharp;
 using SocketCANSharp.Network;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
+using System.Threading.Channels;
 using CanFrameModel = RoconMqtt.Can.Models.CanFrame;
 
 namespace RoconMqtt.Can;
@@ -18,6 +20,11 @@ public partial class SocketCanBus : ICanBus, IDisposable
     private readonly ILogger<SocketCanBus> _logger;
     private readonly CanOptions _options;
     private bool _disposed;
+
+    // Broadcast infrastructure
+    private readonly ConcurrentDictionary<Guid, FrameSubscriber> _subscribers = new();
+    private readonly CancellationTokenSource _readerCts = new();
+    private Task? _readerTask;
 
     public SocketCanBus(ILogger<SocketCanBus> logger, IOptions<CanOptions> options)
     {
@@ -39,11 +46,78 @@ public partial class SocketCanBus : ICanBus, IDisposable
                 _socket.Bind(iface);
             }
             LogSocketCanInitialized(_logger, _options.CanInterfaceName);
+
+            // Start the background reader task
+            _readerTask = Task.Run(BackgroundReaderAsync, _readerCts.Token);
         }
         catch (Exception ex)
         {
             LogSocketCanInitializationFailed(_logger, ex, _options.CanInterfaceName);
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Background task that continuously reads from the CAN socket and broadcasts frames to all subscribers
+    /// </summary>
+    private async Task BackgroundReaderAsync()
+    {
+        LogBackgroundReaderStarted(_logger);
+
+        try
+        {
+            while (!_readerCts.Token.IsCancellationRequested)
+            {
+                SocketCANSharp.CanFrame frame;
+                try
+                {
+                    // Read frame from socket (blocking call)
+                    _socket.Read(out frame);
+                }
+                catch (OperationCanceledException)
+                {
+                    LogCanFrameReadingCancelled(_logger);
+                    break;
+                }
+                catch (Exception ex) when (_disposed || _readerCts.Token.IsCancellationRequested)
+                {
+                    // Expected during shutdown
+                    break;
+                }
+                catch (Exception ex)
+                {
+                    LogErrorReadingCanFrame(_logger, ex);
+                    // Brief delay before retry to avoid tight error loop
+                    await Task.Delay(100, _readerCts.Token);
+                    continue;
+                }
+
+                LogReceivedCanFrame(_logger, frame.CanId, frame.Data.Length);
+
+                // Broadcast to all subscribers
+                var canFrameModel = new CanFrameModel(frame.CanId, frame.Data);
+                foreach (var subscriber in _subscribers.Values)
+                {
+                    // Apply per-subscriber filter
+                    if (subscriber.CanIdFilter.HasValue && subscriber.CanIdFilter.Value != frame.CanId)
+                    {
+                        continue;
+                    }
+
+                    // Try to write to subscriber channel (non-blocking)
+                    subscriber.Channel.Writer.TryWrite(canFrameModel);
+                }
+
+                await Task.Yield();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected during shutdown
+        }
+        finally
+        {
+            LogBackgroundReaderStopped(_logger);
         }
     }
 
@@ -53,63 +127,43 @@ public partial class SocketCanBus : ICanBus, IDisposable
         
         LogStartReadingCanFrames(_logger);
 
-        // Apply hardware-level CAN filter if specified
+        // Create a new subscriber
+        var subscriber = new FrameSubscriber
+        {
+            CanIdFilter = canId
+        };
+
+        // Register subscriber
+        if (!_subscribers.TryAdd(subscriber.Id, subscriber))
+        {
+            throw new InvalidOperationException("Failed to register frame subscriber");
+        }
+
         if (canId.HasValue)
         {
-            try
-            {
-                var filter = new CanFilter(canId.Value, 0x7FF);
-                _socket.CanFilters = [filter];
-                LogCanFilterApplied(_logger, canId.Value);
-            }
-            catch (Exception ex)
-            {
-                LogCanFilterFailed(_logger, ex, canId.Value);
-                // Fall back to software filtering if hardware filtering fails
-            }
+            LogSubscriberRegisteredWithFilter(_logger, subscriber.Id, canId.Value);
         }
         else
         {
-            // Clear any existing filters to receive all frames
-            try
+            LogSubscriberRegistered(_logger, subscriber.Id);
+        }
+
+        try
+        {
+            // Read from subscriber's channel until cancelled
+            await foreach (var frame in subscriber.Channel.Reader.ReadAllAsync(token))
             {
-                _socket.CanFilters = [];
-                LogCanFiltersCleared(_logger);
-            }
-            catch (Exception ex)
-            {
-                LogCanFilterClearFailed(_logger, ex);
+                yield return frame;
             }
         }
-        
-        while (!token.IsCancellationRequested)
+        finally
         {
-            SocketCANSharp.CanFrame frame;
-            try
+            // Unregister subscriber on completion/cancellation
+            if (_subscribers.TryRemove(subscriber.Id, out _))
             {
-                _socket.Read(out frame);
+                subscriber.Channel.Writer.Complete();
+                LogSubscriberUnregistered(_logger, subscriber.Id);
             }
-            catch (OperationCanceledException)
-            {
-                LogCanFrameReadingCancelled(_logger);
-                break;
-            }
-            catch (Exception ex)
-            {
-                LogErrorReadingCanFrame(_logger, ex);
-                throw;
-            }
-
-            // Additional software filter as fallback (in case hardware filter not supported)
-            if (canId.HasValue && frame.CanId != canId.Value)
-            {
-                await Task.Yield();
-                continue;
-            }
-
-            LogReceivedCanFrame(_logger, frame.CanId, frame.Data.Length);
-            yield return new CanFrameModel(frame.CanId, frame.Data);
-            await Task.Yield();
         }
     }
 
@@ -139,8 +193,45 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
         _disposed = true;
 
+        // Stop the background reader
+        _readerCts.Cancel();
+        if (_readerTask != null)
+        {
+            try
+            {
+                _readerTask.Wait(TimeSpan.FromSeconds(5));
+            }
+            catch
+            {
+                // Ignore exceptions during shutdown
+            }
+        }
+
+        // Close all subscriber channels
+        foreach (var subscriber in _subscribers.Values)
+        {
+            subscriber.Channel.Writer.Complete();
+        }
+        _subscribers.Clear();
+
+        _readerCts.Dispose();
         _socket.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Represents a subscriber to the CAN frame broadcast
+    /// </summary>
+    private sealed class FrameSubscriber
+    {
+        public Guid Id { get; } = Guid.NewGuid();
+        public Channel<CanFrameModel> Channel { get; }
+        public uint? CanIdFilter { get; set; }
+
+        public FrameSubscriber()
+        {
+            Channel = System.Threading.Channels.Channel.CreateUnbounded<CanFrameModel>();
+        }
     }
 
     [LoggerMessage(EventId = 2001, Level = LogLevel.Information, Message = "SocketCAN bus initialized on interface {InterfaceName}")]
@@ -170,15 +261,18 @@ public partial class SocketCanBus : ICanBus, IDisposable
     [LoggerMessage(EventId = 2009, Level = LogLevel.Error, Message = "Failed to send CAN frame with ID 0x{CanId:X8}")]
     private static partial void LogFailedToSendCanFrame(ILogger logger, Exception exception, uint canId);
 
-    [LoggerMessage(EventId = 2010, Level = LogLevel.Debug, Message = "Applied CAN hardware filter for ID 0x{CanId:X}")]
-    private static partial void LogCanFilterApplied(ILogger logger, uint canId);
+    [LoggerMessage(EventId = 2014, Level = LogLevel.Information, Message = "Background CAN frame reader started")]
+    private static partial void LogBackgroundReaderStarted(ILogger logger);
 
-    [LoggerMessage(EventId = 2011, Level = LogLevel.Warning, Message = "Failed to apply CAN hardware filter for ID 0x{CanId:X}, falling back to software filtering")]
-    private static partial void LogCanFilterFailed(ILogger logger, Exception exception, uint canId);
+    [LoggerMessage(EventId = 2015, Level = LogLevel.Information, Message = "Background CAN frame reader stopped")]
+    private static partial void LogBackgroundReaderStopped(ILogger logger);
 
-    [LoggerMessage(EventId = 2012, Level = LogLevel.Debug, Message = "Cleared CAN hardware filters to receive all frames")]
-    private static partial void LogCanFiltersCleared(ILogger logger);
+    [LoggerMessage(EventId = 2016, Level = LogLevel.Debug, Message = "Subscriber {SubscriberId} registered")]
+    private static partial void LogSubscriberRegistered(ILogger logger, Guid subscriberId);
 
-    [LoggerMessage(EventId = 2013, Level = LogLevel.Warning, Message = "Failed to clear CAN hardware filters")]
-    private static partial void LogCanFilterClearFailed(ILogger logger, Exception exception);
+    [LoggerMessage(EventId = 2017, Level = LogLevel.Debug, Message = "Subscriber {SubscriberId} registered with CAN ID filter 0x{CanId:X}")]
+    private static partial void LogSubscriberRegisteredWithFilter(ILogger logger, Guid subscriberId, uint canId);
+
+    [LoggerMessage(EventId = 2018, Level = LogLevel.Debug, Message = "Subscriber {SubscriberId} unregistered")]
+    private static partial void LogSubscriberUnregistered(ILogger logger, Guid subscriberId);
 }
