@@ -239,7 +239,11 @@ public partial class SocketCanBus : ICanBus, IDisposable
                     continue;
                 }
 
-                LogReceivedCanFrame(_logger, frame.CanId, frame.Data.Length);
+                // Format candump command for logging
+                var dataHex = BitConverter.ToString(frame.Data).Replace("-", " ");
+                var candumpOutput = $"{_options.CanInterfaceName}  {frame.CanId:X3}   [{frame.Data.Length}]  {dataHex}";
+                
+                LogReceivedCanFrame(_logger, frame.CanId, frame.Data.Length, candumpOutput);
 
                 // Broadcast to all subscribers
                 var canFrameModel = new CanFrameModel(frame.CanId, frame.Data);
@@ -326,7 +330,12 @@ public partial class SocketCanBus : ICanBus, IDisposable
         try
         {
             var frame = new SocketCANSharp.CanFrame(canId, data);
-            LogSendingCanFrame(_logger, canId, data.Length);
+            
+            // Format cansend command for logging
+            var dataHex = Convert.ToHexString(data);
+            var cansendCommand = $"cansend {_options.CanInterfaceName} {canId:X3}#{dataHex}";
+            
+            LogSendingCanFrame(_logger, canId, data.Length, cansendCommand);
             lock (_socketLock)
             {
                 _socket.Write(frame);
@@ -444,11 +453,11 @@ public partial class SocketCanBus : ICanBus, IDisposable
     [LoggerMessage(EventId = 2005, Level = LogLevel.Error, Message = "Error reading CAN frame")]
     private static partial void LogErrorReadingCanFrame(ILogger logger, Exception exception);
 
-    [LoggerMessage(EventId = 2006, Level = LogLevel.Debug, Message = "Received CAN frame: ID=0x{CanId:X8}, DataLength={DataLength}")]
-    private static partial void LogReceivedCanFrame(ILogger logger, uint canId, int dataLength);
+    [LoggerMessage(EventId = 2006, Level = LogLevel.Debug, Message = "Received CAN frame: ID=0x{CanId:X3}, DataLength={DataLength} | {CandumpOutput}")]
+    private static partial void LogReceivedCanFrame(ILogger logger, uint canId, int dataLength, string candumpOutput);
 
-    [LoggerMessage(EventId = 2007, Level = LogLevel.Debug, Message = "Sending CAN frame: ID=0x{CanId:X8}, DataLength={DataLength}")]
-    private static partial void LogSendingCanFrame(ILogger logger, uint canId, int dataLength);
+    [LoggerMessage(EventId = 2007, Level = LogLevel.Debug, Message = "Sending CAN frame: ID=0x{CanId:X3}, DataLength={DataLength} | Command: {CansendCommand}")]
+    private static partial void LogSendingCanFrame(ILogger logger, uint canId, int dataLength, string cansendCommand);
 
     [LoggerMessage(EventId = 2008, Level = LogLevel.Debug, Message = "CAN frame sent successfully")]
     private static partial void LogCanFrameSentSuccessfully(ILogger logger);
