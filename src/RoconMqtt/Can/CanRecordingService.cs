@@ -6,25 +6,16 @@ namespace RoconMqtt.Can;
 /// <summary>
 /// Background service for recording CAN bus traffic
 /// </summary>
-public sealed class CanRecordingService : BackgroundService
+public sealed class CanRecordingService(
+    ICanBus canBus,
+    ILogger<CanRecordingService> logger) : BackgroundService
 {
-    private readonly ICanBus _canBus;
-    private readonly ILogger<CanRecordingService> _logger;
-
-    private readonly ConcurrentBag<RecordedCanFrame> _recordedFrames = new();
+    private readonly ConcurrentBag<RecordedCanFrame> _recordedFrames = [];
     private DateTime? _recordingStartedAt;
     private CanRecordingOptions? _currentOptions;
     private bool _isRecording = false;
     private readonly SemaphoreSlim _recordingLock = new(1, 1);
     private CancellationTokenSource? _recordingCts;
-
-    public CanRecordingService(
-        ICanBus canBus,
-        ILogger<CanRecordingService> logger)
-    {
-        _canBus = canBus;
-        _logger = logger;
-    }
 
     /// <summary>
     /// Check if recording is currently active
@@ -43,7 +34,7 @@ public sealed class CanRecordingService : BackgroundService
         {
             if (_isRecording)
             {
-                _logger.LogWarning("CAN recording already in progress");
+                logger.LogWarning("CAN recording already in progress");
                 return false;
             }
 
@@ -60,7 +51,7 @@ public sealed class CanRecordingService : BackgroundService
                 ? $" with filter: {string.Join(", ", options.CanIdFilter)}"
                 : " (all frames)";
 
-            _logger.LogInformation("CAN recording started at {StartTime}{Filter}",
+            logger.LogInformation("CAN recording started at {StartTime}{Filter}",
                 _recordingStartedAt.Value.ToString("yyyy-MM-dd HH:mm:ss.fff"),
                 filterInfo);
 
@@ -83,14 +74,17 @@ public sealed class CanRecordingService : BackgroundService
         {
             if (!_isRecording || _recordingStartedAt == null)
             {
-                _logger.LogWarning("No active CAN recording to stop");
+                logger.LogWarning("No active CAN recording to stop");
                 return null;
             }
 
             // Cancel the recording loop
-            _recordingCts?.Cancel();
-            _recordingCts?.Dispose();
-            _recordingCts = null;
+            if(_recordingCts != null)
+            {
+                await _recordingCts.CancelAsync();
+                _recordingCts.Dispose();
+                _recordingCts = null;
+            }
 
             var stoppedAt = DateTime.UtcNow;
             var frames = _recordedFrames.ToList();
@@ -110,7 +104,7 @@ public sealed class CanRecordingService : BackgroundService
             _currentOptions = null;
             _recordedFrames.Clear();
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "CAN recording stopped. Captured {FrameCount} frames in {Duration:F3} seconds",
                 result.FrameCount,
                 result.Duration.TotalSeconds);
@@ -125,7 +119,7 @@ public sealed class CanRecordingService : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("CAN Recording Service started (passive mode - will activate on StartRecordingAsync)");
+        logger.LogInformation("CAN Recording Service started (passive mode - will activate on StartRecordingAsync)");
 
         // No longer starts reading immediately - waits for explicit StartRecordingAsync call
         // This prevents interference with RoconMqttPublisher's QueryDeviceIdentifiersAsync
@@ -138,11 +132,11 @@ public sealed class CanRecordingService : BackgroundService
     /// </summary>
     private async Task RecordFramesAsync(CancellationToken cancellationToken)
     {
-        _logger.LogDebug("Starting CAN frame recording loop");
+        logger.LogDebug("Starting CAN frame recording loop");
 
         try
         {
-            await foreach (var frame in _canBus.ReadFramesAsync(cancellationToken))
+            await foreach (var frame in canBus.ReadFramesAsync(cancellationToken))
             {
                 // Apply CAN ID filter if configured
                 if (_currentOptions?.CanIdFilter != null && _currentOptions.CanIdFilter.Count > 0)
@@ -165,19 +159,19 @@ public sealed class CanRecordingService : BackgroundService
 
                 _recordedFrames.Add(recordedFrame);
 
-                _logger.LogDebug(
+                logger.LogDebug(
                     "Recorded frame: {CanId}#{Data}",
                     recordedFrame.CanId,
                     recordedFrame.Data);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException ex)
         {
-            _logger.LogDebug("CAN frame recording loop cancelled");
+            logger.LogDebug(ex, "CAN frame recording loop cancelled");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in CAN frame recording loop");
+            logger.LogError(ex, "Error in CAN frame recording loop");
         }
     }
 
