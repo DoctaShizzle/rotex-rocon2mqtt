@@ -162,8 +162,8 @@ public partial class SocketCanBus : ICanBus, IDisposable
                 try
                 {
                     // Read frame from socket (blocking call)
-                    // Note: This is a synchronous blocking call. We run it in a Task to allow cancellation checking.
-                    var readTask = Task.Run(() =>
+                    // Note: We don't use timeout here because abandoned tasks can cause lock contention
+                    frame = await Task.Run(() =>
                     {
                         SocketCANSharp.CanFrame f;
                         lock (_socketLock)
@@ -172,29 +172,15 @@ public partial class SocketCanBus : ICanBus, IDisposable
                         }
                         return f;
                     }, _readerCts.Token);
-
-                    // Wait for read with periodic cancellation checks (timeout allows graceful cancellation)
-                    using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(_readerCts.Token);
-                    timeoutCts.CancelAfter(TimeSpan.FromSeconds(1));
                     
-                    try
-                    {
-                        frame = await readTask.WaitAsync(timeoutCts.Token);
-                        _consecutiveErrors = 0; // Reset on successful read
-                    }
-                    catch (TimeoutException)
-                    {
-                        // Timeout is expected when no frames arrive - just loop and check cancellation
-                        continue;
-                    }
+                    _consecutiveErrors = 0; // Reset on successful read
                 }
                 catch (OperationCanceledException)
                 {
                     LogCanFrameReadingCancelled(_logger);
                     break;
                 }
-                catch (Exception)
-                when (_disposed || _readerCts.Token.IsCancellationRequested)
+                catch (Exception ex) when (_disposed || _readerCts.Token.IsCancellationRequested)
                 {
                     // Expected during shutdown
                     break;
