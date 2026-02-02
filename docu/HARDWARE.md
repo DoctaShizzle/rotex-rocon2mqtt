@@ -205,3 +205,120 @@ Go to `3 Interface Options`, and enable SSH and VNC.
 - Enable SPI + MCP2515 overlays.
 - Bring up `can0` and `can1` with the correct bitrate.
 - Use SocketCAN tools (`candump`, `cansend`, python-can, etc.).
+
+---
+
+## 9. Troubleshooting
+
+### Error: "Address family not supported by protocol" (EAFNOSUPPORT, errno 97)
+
+This error occurs when the application cannot create an AF_CAN socket.
+
+**Diagnostics:**
+
+```bash
+# 1. Check if CAN kernel modules are loaded
+lsmod | grep can
+```
+
+Expected output:
+```
+can_raw                20480  0
+can                    24576  1 can_raw
+can_dev                49152  2 mcp251x,gs_usb
+```
+
+If empty, load the modules:
+```bash
+sudo modprobe can
+sudo modprobe can_raw
+sudo modprobe can_dev
+```
+
+```bash
+# 2. Check if CAN interface exists and is UP
+ip link show can0
+```
+
+Expected output:
+```
+3: can0: <NOARP,UP,LOWER_UP,ECHO> mtu 16 qdisc pfifo_fast state UP mode DEFAULT qlen 10
+    link/can
+```
+
+If interface doesn't exist or is DOWN, check device tree overlays and run:
+```bash
+sudo ip link set can0 up type can bitrate 20000
+```
+
+```bash
+# 3. Check kernel logs for CAN initialization errors
+dmesg | grep -i can
+dmesg | grep -i mcp
+```
+
+### MCP2515 Probe Failed
+
+If you see:
+```
+mcp251x spi0.0: MCP251x didn't enter in conf mode after reset
+mcp251x spi0.0: Probe failed, err=110
+```
+
+**Possible causes:**
+- Wrong interrupt GPIO pin in `/boot/firmware/config.txt`
+- SPI not enabled (`dtparam=spi=on`)
+- Hardware connection issue
+- Incorrect oscillator frequency
+
+**If using USB CAN adapter instead:**
+The MCP2515 error is expected and harmless if you're using a USB CAN adapter (like gs_usb/canable). The `can0` interface from the USB adapter will work normally.
+
+### Interface State BUS-OFF or ERROR-PASSIVE
+
+```bash
+ip -details link show can0
+```
+
+If you see `BUS-OFF` or `ERROR-PASSIVE`:
+- Check CAN bus termination (120Ω at both ends only)
+- Verify CANH/CANL wiring (not swapped)
+- Check bitrate matches all devices (20000 for Rotex/Daikin)
+- Ensure linear topology (no star/branch connections)
+
+### Permission Denied Errors
+
+If the application runs but cannot send/receive CAN frames:
+
+```bash
+# Add user to 'can' group (replace 'rocon' with your username)
+sudo usermod -a -G can rocon
+
+# Create udev rule for automatic CAN group assignment
+sudo nano /etc/udev/rules.d/90-can.rules
+```
+
+Add:
+```
+KERNEL=="can*", SUBSYSTEM=="net", GROUP="can", MODE="0660"
+```
+
+Reload udev:
+```bash
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+### Testing CAN Communication
+
+Before running the application, verify CAN is working:
+
+```bash
+# Terminal 1: Monitor all CAN traffic
+candump can0
+
+# Terminal 2: Send a test frame
+cansend can0 123#DEADBEEF
+```
+
+If you see the frame in Terminal 1, SocketCAN is working correctly.

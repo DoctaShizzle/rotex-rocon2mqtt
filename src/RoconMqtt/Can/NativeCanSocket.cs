@@ -46,14 +46,37 @@ public sealed partial class NativeCanSocket : ICanSocket
                 // Ignore errors during close
             }
             
-            // Create CAN socket using native Socket API
-            _socket = new Socket((AddressFamily)AF_CAN, SocketType.Raw, (ProtocolType)CAN_RAW);
+            // Create CAN socket using native socket() syscall
+            // .NET Socket constructor doesn't support AF_CAN, so we must use P/Invoke
+            const int SOCK_RAW = 3;
+            var socketFd = socket(AF_CAN, SOCK_RAW, CAN_RAW);
+            
+            if (socketFd < 0)
+            {
+                var errno = Marshal.GetLastPInvokeError();
+                throw new SocketException(errno, $"Failed to create AF_CAN socket. Error code: {errno}");
+            }
             
             // Get interface index by name
             var ifIndex = GetInterfaceIndex(_interfaceName);
             
-            // Bind to CAN interface
-            BindToCanInterface(_socket, ifIndex);
+            // Bind to CAN interface using native bind() syscall
+            var addr = new SockAddrCan
+            {
+                can_family = AF_CAN,
+                can_ifindex = ifIndex
+            };
+            
+            var result = bind(socketFd, ref addr, Marshal.SizeOf<SockAddrCan>());
+            if (result < 0)
+            {
+                var errno = Marshal.GetLastPInvokeError();
+                throw new SocketException(errno, $"Failed to bind to CAN interface '{_interfaceName}'. Error code: {errno}");
+            }
+            
+            // Wrap the file descriptor in a SafeSocketHandle and create a .NET Socket
+            var handle = new SafeSocketHandle((IntPtr)socketFd, ownsHandle: true);
+            _socket = new Socket(handle);
             
             // Set socket to non-blocking mode (async I/O)
             _socket.Blocking = false;
@@ -147,6 +170,18 @@ public sealed partial class NativeCanSocket : ICanSocket
     #region P/Invoke and Native Structures
 
     /// <summary>
+    /// Creates a socket using the native socket() syscall.
+    /// </summary>
+    [DllImport("libc", SetLastError = true)]
+    private static extern int socket(int domain, int type, int protocol);
+
+    /// <summary>
+    /// Binds a socket to an address using the native bind() syscall.
+    /// </summary>
+    [DllImport("libc", SetLastError = true)]
+    private static extern int bind(int sockfd, ref SockAddrCan addr, int addrlen);
+
+    /// <summary>
     /// Gets the network interface index by name using if_nametoindex.
     /// </summary>
     [DllImport("libc", SetLastError = true)]
@@ -172,64 +207,10 @@ public sealed partial class NativeCanSocket : ICanSocket
         var index = if_nametoindex(interfaceName);
         if (index == 0)
         {
-            var errno = Marshal.GetLastWin32Error();
+            var errno = Marshal.GetLastPInvokeError();
             throw new InvalidOperationException($"Failed to get interface index for '{interfaceName}'. Error code: {errno}");
         }
         return (int)index;
-    }
-    
-    /// <summary>
-    /// Binds the socket to the specified CAN interface.
-    /// </summary>
-    private static void BindToCanInterface(Socket socket, int ifIndex)
-    {
-        var addr = new SockAddrCan
-        {
-            can_family = AF_CAN,
-            can_ifindex = ifIndex
-        };
-        
-        // Convert struct to byte array
-        var size = Marshal.SizeOf(addr);
-        var buffer = new byte[size];
-        var ptr = Marshal.AllocHGlobal(size);
-        try
-        {
-            Marshal.StructureToPtr(addr, ptr, false);
-            Marshal.Copy(ptr, buffer, 0, size);
-        }
-        finally
-        {
-            Marshal.FreeHGlobal(ptr);
-        }
-        
-        // Bind using raw socket address
-        var sockAddr = new SocketAddress((AddressFamily)AF_CAN, size);
-        for (int i = 0; i < size; i++)
-        {
-            sockAddr[i] = buffer[i];
-        }
-        
-        socket.Bind(new RawSocketAddress(sockAddr));
-    }
-    
-    /// <summary>
-    /// Wrapper for SocketAddress to use with Socket.Bind().
-    /// </summary>
-    private class RawSocketAddress : EndPoint
-    {
-        private readonly SocketAddress _address;
-        
-        public RawSocketAddress(SocketAddress address)
-        {
-            _address = address;
-        }
-        
-        public override AddressFamily AddressFamily => _address.Family;
-        
-        public override SocketAddress Serialize() => _address;
-        
-        public override EndPoint Create(SocketAddress socketAddress) => new RawSocketAddress(socketAddress);
     }
 
     #endregion
