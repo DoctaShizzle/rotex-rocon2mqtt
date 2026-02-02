@@ -373,16 +373,6 @@ public partial class SocketCanBus : ICanBus, IDisposable
         }
         _subscribers.Clear();
 
-        // Clean up resources
-        try
-        {
-            _readerCts.Dispose();
-        }
-        catch
-        {
-            // Ignore
-        }
-
         // Ensure socket is properly closed and disposed
         lock (_socketLock)
         {
@@ -403,6 +393,17 @@ public partial class SocketCanBus : ICanBus, IDisposable
             {
                 LogErrorDisposingSocket(_logger, ex);
             }
+        }
+
+        // Dispose CancellationTokenSource LAST - after background task is guaranteed to be stopped
+        // This prevents ObjectDisposedException when the task is still accessing the token
+        try
+        {
+            _readerCts.Dispose();
+        }
+        catch (Exception ex)
+        {
+            LogErrorDisposingCancellationTokenSource(_logger, ex);
         }
 
         LogSocketCanBusDisposed(_logger);
@@ -504,6 +505,10 @@ public partial class SocketCanBus : ICanBus, IDisposable
 
     [LoggerMessage(EventId = 2031, Level = LogLevel.Information, Message = "Retrying CAN interface {InterfaceName} initialization in {DelayMs}ms")]
     private static partial void LogRetryingInitialization(ILogger logger, int delayMs, string interfaceName);
+
+    [LoggerMessage(EventId = 2032, Level = LogLevel.Warning, Message = "Error disposing CancellationTokenSource during disposal")]
+    private static partial void LogErrorDisposingCancellationTokenSource(ILogger logger, Exception exception);
 }
+
 
 
