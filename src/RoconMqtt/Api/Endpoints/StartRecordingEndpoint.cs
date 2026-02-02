@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
 using RoconMqtt.Can.Models;
 
@@ -16,30 +17,34 @@ public static class StartRecordingEndpoint
 
             if (!started)
             {
-                return Results.BadRequest(new
+                var errorResponse = new ApiErrorResponse
                 {
-                    error = "Recording already in progress. Stop the current recording before starting a new one."
-                });
+                    Error = "Recording already in progress. Stop the current recording before starting a new one."
+                };
+                return Results.BadRequest(errorResponse);
             }
 
             var filterInfo = options?.CanIdFilter != null && options.CanIdFilter.Count > 0
                 ? string.Join(", ", options.CanIdFilter)
                 : "all frames";
 
-            return Results.Ok(new
+            var response = new CanRecordingStartResponse
             {
-                status = "recording_started",
-                message = "CAN bus recording started successfully",
-                filter = filterInfo,
-                description = options?.Description
-            });
+                Status = "recording_started",
+                Message = "CAN bus recording started successfully",
+                Filter = filterInfo,
+                Description = options?.Description
+            };
+
+            return Results.Ok(response);
         })
         .WithName("StartCanRecording")
         .WithSummary("Start CAN bus recording")
         .WithDescription(
             "Starts recording all CAN bus traffic. Optionally filter by CAN IDs. " +
             "Only one recording can be active at a time.")
-        .Produces(200)
+        .Produces<CanRecordingStartResponse>(200)
+        .Produces<ApiErrorResponse>(400)
         .Produces(400);
     }
 }

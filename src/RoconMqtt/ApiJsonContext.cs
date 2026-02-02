@@ -27,6 +27,8 @@ using System.Text.Json.Serialization;
 [JsonSerializable(typeof(CanRecordingOptions))]
 [JsonSerializable(typeof(CanRecordingResult))]
 [JsonSerializable(typeof(CanRecordingStatusResponse))]
+[JsonSerializable(typeof(CanRecordingStartResponse))]
+[JsonSerializable(typeof(ApiErrorResponse))]
 [JsonSerializable(typeof(RecordedCanFrame))]
 [JsonSerializable(typeof(List<RecordedCanFrame>))]
 [JsonSerializable(typeof(Microsoft.AspNetCore.Mvc.ProblemDetails))]

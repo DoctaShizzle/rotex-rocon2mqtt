@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using RoconMqtt.Api.Models;
 using RoconMqtt.Can;
-using RoconMqtt.Can.Models;
 
 namespace RoconMqtt.Api.Endpoints;
 
@@ -15,10 +15,11 @@ public static class StopRecordingExportEndpoint
 
             if (result == null)
             {
-                return Results.BadRequest(new
+                var errorResponse = new ApiErrorResponse
                 {
-                    error = "No active recording to stop"
-                });
+                    Error = "No active recording to stop"
+                };
+                return Results.BadRequest(errorResponse);
             }
 
             var candumpOutput = result.ToCandumpFormat();
@@ -31,6 +32,6 @@ public static class StopRecordingExportEndpoint
             "Stops the active CAN bus recording and returns captured frames in candump text format. " +
             "Returns error if no recording is active.")
         .Produces<string>(200, "text/plain")
-        .Produces(400);
+        .Produces<ApiErrorResponse>(400);
     }
 }
