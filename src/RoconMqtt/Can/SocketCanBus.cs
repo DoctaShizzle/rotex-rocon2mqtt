@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using RoconMqtt.Can.Options;
+using SocketCANSharp;
 using SocketCANSharp.Network;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
@@ -207,9 +208,16 @@ public partial class SocketCanBus : ICanBus, IAsyncDisposable, IDisposable
                     LogCanFrameReadingCancelled(_logger);
                     break;
                 }
-                catch (TimeoutException)
+                catch (SocketCanException ex) when (ex.Message.Contains("temporarily unavailable", StringComparison.OrdinalIgnoreCase))
                 {
                     // Socket read timeout - this is expected and allows cancellation checking
+                    // EAGAIN/EWOULDBLOCK from the socket when ReceiveTimeout expires with no data
+                    // Continue to next iteration to check cancellation token
+                    continue;
+                }
+                catch (TimeoutException)
+                {
+                    // .NET timeout exception - also expected with socket timeouts
                     // Continue to next iteration to check cancellation token
                     continue;
                 }
