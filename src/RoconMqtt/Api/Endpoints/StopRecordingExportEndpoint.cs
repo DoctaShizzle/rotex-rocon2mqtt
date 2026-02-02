@@ -31,7 +31,7 @@ public static class StopRecordingExportEndpoint
         .WithDescription(
             "Stops the active CAN bus recording and returns captured frames in candump text format. " +
             "Returns error if no recording is active.")
-        .Produces<string>(200, "text/plain")
+        .Produces(200, contentType: "text/plain")
         .Produces<ApiErrorResponse>(400);
     }
 }

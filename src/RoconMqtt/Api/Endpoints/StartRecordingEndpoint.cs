@@ -43,8 +43,8 @@ public static class StartRecordingEndpoint
         .WithDescription(
             "Starts recording all CAN bus traffic. Optionally filter by CAN IDs. " +
             "Only one recording can be active at a time.")
+        .Accepts<CanRecordingOptions>("application/json")
         .Produces<CanRecordingStartResponse>(200)
-        .Produces<ApiErrorResponse>(400)
-        .Produces(400);
+        .Produces<ApiErrorResponse>(400);
     }
 }

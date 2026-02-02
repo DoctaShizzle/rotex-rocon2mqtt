@@ -31,6 +31,6 @@ public static class StopRecordingEndpoint
             "Stops the active CAN bus recording and returns all captured frames in JSON format. " +
             "Returns error if no recording is active.")
         .Produces<CanRecordingResult>(200)
-        .Produces(400);
+        .Produces<ApiErrorResponse>(400);
     }
 }
