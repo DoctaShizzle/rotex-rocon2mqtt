@@ -537,6 +537,125 @@ public class RoconMqttPublisherTests
 
         // Should continue running despite exception
     }
+
+    [Fact]
+    public async Task HomeAssistantDiscovery_ShouldNotPublishDuplicates_WhenParameterRestrictedByDeviceType()
+    {
+        // Arrange: Setup parameter registry FIRST with OutdoorTemperature restricted to HeatGenerator
+        var parameters = new Dictionary<InfoNumber, ParameterDefinition>
+        {
+            [new InfoNumber(0x00, 0x0C)] = new ParameterDefinition(
+                OriginalName: "cAUSSENTEMP",
+                InfoNumber: new InfoNumber(0x00, 0x0C),
+                Type: ParameterType.Float,
+                NameEnglish: "OutdoorTemperature",
+                DeviceType: DeviceType.HeatGenerator, // Restricted to HeatGenerator only
+                HomeAssistantComponent: "sensor",
+                UnitOfMeasurement: "°C",
+                DeviceClass: "temperature",
+                StateClass: "measurement"),
+            [new InfoNumber(0x01, 0x48)] = new ParameterDefinition(
+                OriginalName: "cGERAETE_KENNUNG",
+                InfoNumber: new InfoNumber(0x01, 0x48),
+                Type: ParameterType.Enum,
+                NameEnglish: "DeviceIdentifier",
+                DeviceType: null, // Universal parameter
+                HomeAssistantComponent: "sensor")
+        };
+        _parameterRegistryMock.Setup(x => x.Parameters).Returns(parameters.AsReadOnly());
+        
+        // Setup two devices (HG1 and HC1) and a parameter that only works with HeatGenerator
+        _mqttOptions.Devices.Clear();
+        _mqttOptions.Devices.Add("HG1");
+        _mqttOptions.Devices.Add("HC1");
+        _mqttOptions.Parameters.Clear();
+        _mqttOptions.Parameters.Add("OutdoorTemperature");
+        _mqttOptions.HomeAssistant.Discovery = true;
+        _mqttOptions.PollingIntervalSeconds = 3600; // Long interval to prevent multiple polls
+        
+        // Setup device identifier responses for both devices
+        _canServiceMock
+            .Setup(x => x.SendRequestAndWaitForResponseAsync(
+                "HG1",
+                "DeviceIdentifier",
+                CommandType.Get,
+                null,
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateDecodedParameter("DeviceIdentifier", "12345678"));
+        
+        _canServiceMock
+            .Setup(x => x.SendRequestAndWaitForResponseAsync(
+                "HC1",
+                "DeviceIdentifier",
+                CommandType.Get,
+                null,
+                It.IsAny<int>(),
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateDecodedParameter("DeviceIdentifier", "87654321"));
+        
+        // Track all MQTT publish calls
+        var publishedTopics = new List<string>();
+        _mqttServiceMock
+            .Setup(x => x.PublishAsync(
+                It.IsAny<string>(),
+                It.IsAny<string>(),
+                It.IsAny<CancellationToken>(),
+                It.IsAny<bool>()))
+            .Callback<string, string, CancellationToken, bool>((topic, payload, ct, retain) =>
+            {
+                publishedTopics.Add(topic);
+            })
+            .Returns(Task.CompletedTask);
+
+        var publisher = new RoconMqttPublisher(
+            _canServiceMock.Object,
+            _mqttServiceMock.Object,
+            _options,
+            _parameterRegistryMock.Object,
+            _resilienceFactory,
+            _loggerMock.Object
+        );
+
+        using var cts = new CancellationTokenSource();
+        
+        // Act: Start publisher and wait for discovery to complete
+        await publisher.StartAsync(cts.Token);
+        await Task.Delay(TimeSpan.FromSeconds(4)); // Wait for discovery phase (2s delay + identifier query + discovery)
+        await cts.CancelAsync();
+        await publisher.StopAsync(CancellationToken.None);
+
+        // Assert: Verify discovery config was published only once for OutdoorTemperature (for HG1 only)
+        var discoveryTopics = publishedTopics
+            .Where(t => t.Contains("/config") && t.Contains("outdoor_temperature"))
+            .ToList();
+        
+        // Debug output if test fails
+        if (discoveryTopics.Count != 1)
+        {
+            var allTopics = string.Join("\n", publishedTopics);
+            Assert.Fail($"Expected 1 discovery topic for OutdoorTemperature, but found {discoveryTopics.Count}.\nAll published topics:\n{allTopics}");
+        }
+        
+        // Should have exactly 1 discovery topic for OutdoorTemperature (for HG1 with deviceId 12345678)
+        Assert.Single(discoveryTopics);
+        
+        // Verify the topic contains HG1's device ID (heatgenerator + 12345678)
+        var discoveryTopic = discoveryTopics[0];
+        Assert.Contains("heatgenerator", discoveryTopic);
+        Assert.Contains("12345678", discoveryTopic);
+        
+        // Verify the topic does NOT contain HC1's device ID (87654321)
+        Assert.DoesNotContain("heatingcircuit", discoveryTopic);
+        Assert.All(publishedTopics, topic => 
+        {
+            // If topic mentions outdoor_temperature, it should NOT mention HC1's device
+            if (topic.Contains("outdoor_temperature"))
+            {
+                Assert.DoesNotContain("87654321", topic);
+            }
+        });
+    }
 }
 
 

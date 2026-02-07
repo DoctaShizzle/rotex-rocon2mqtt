@@ -471,16 +471,16 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     private string GetHomeAssistantDiscoveryTopic(string deviceName, DeviceType deviceType, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
-        var deviceTypeStr = deviceType.ToString().ToLowerInvariant();
+        var deviceTypeStrLower = deviceType.ToString().ToLowerInvariant();
         var (component, _, _, _) = GetParameterMetadata(parameterName);
-        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
+        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceTypeKey, deviceTypeStrLower }, { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
     }
 
     private string GetStateTopic(string deviceName, DeviceType deviceType, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
-        var deviceTypeStr = deviceType.ToString().ToLowerInvariant();
-        return $"{_options.Topic}/{deviceTypeStr}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
+        var deviceTypeStrLower = deviceType.ToString().ToLowerInvariant();
+        return $"{_options.Topic}/{deviceTypeStrLower}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
     }
 
     /// <summary>
