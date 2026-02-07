@@ -11,6 +11,7 @@
       "waterCircuit": false,
       "bigEndian": false,
       "nameEnglish": "DeviceIdentifier",
+      "deviceType": null,
       "homeAssistantComponent": "sensor",
       "unitOfMeasurement": null,
       "deviceClass": null,
