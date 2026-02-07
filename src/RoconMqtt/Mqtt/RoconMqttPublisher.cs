@@ -67,6 +67,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                     await PublishHomeAssistantDiscoveryAsync(stoppingToken);
                 }
 
+
                 // Loop over all configured devices and parameters
                 foreach (var deviceName in _options.Devices)
                 {
@@ -77,11 +78,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                         continue;
                     }
                     
+                    // Determine device type from registry
+                    var deviceType = GetDeviceTypeFromRegistry(deviceName);
+                    
                     // Query regular parameters
-                    await QueryParametersAsync(deviceName, _options.Parameters, resiliencePipeline, stoppingToken);
+                    await QueryParametersAsync(deviceName, deviceType, _options.Parameters, resiliencePipeline, stoppingToken);
                     
                     // Query compound parameters (handled transparently by CanService)
-                    await QueryParametersAsync(deviceName, _options.CompoundParameters, resiliencePipeline, stoppingToken);
+                    await QueryParametersAsync(deviceName, deviceType, _options.CompoundParameters, resiliencePipeline, stoppingToken);
                 }
 
                 // Wait before next polling cycle
@@ -167,23 +171,35 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// <remarks>If the cancellation token is signaled, the operation stops processing further parameters.
     /// Exceptions such as circuit breaker and timeout are handled and logged for each parameter individually.</remarks>
     /// <param name="deviceName">The name of the device from which to query parameters. Cannot be null or empty.</param>
+    /// <param name="deviceType">The type of the device (determined from registry).</param>
     /// <param name="parameterNames">A collection of parameter names to query from the device. Cannot be null or contain null or empty elements.</param>
     /// <param name="resiliencePipeline">The resilience pipeline used to execute each parameter query with fault-handling and retry logic. Cannot be
     /// null.</param>
     /// <param name="stoppingToken">A cancellation token that can be used to cancel the operation before completion.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    private async Task QueryParametersAsync(string deviceName, ICollection<string> parameterNames, Polly.ResiliencePipeline resiliencePipeline, CancellationToken stoppingToken)
+    private async Task QueryParametersAsync(string deviceName, DeviceType deviceType, ICollection<string> parameterNames, Polly.ResiliencePipeline resiliencePipeline, CancellationToken stoppingToken)
     {
         foreach (var parameterName in parameterNames)
         {
             if (stoppingToken.IsCancellationRequested)
                 break;
 
+            // Skip if parameter has a device type restriction and it doesn't match this device
+            if (!IsCompoundParameter(parameterName))
+            {
+                var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
+                if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
+                {
+                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                    continue;
+                }
+            }
+
             try
             {
                 await resiliencePipeline.ExecuteAsync(async ct =>
                 {
-                    await SendGetAndWaitForAnswer(deviceName, parameterName, ct);
+                    await SendGetAndWaitForAnswer(deviceName, deviceType, parameterName, ct);
                 }, stoppingToken);
             }
             catch (BrokenCircuitException)
@@ -224,11 +240,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 continue;
             }
             
+            // Determine device type from registry
+            var deviceType = GetDeviceTypeFromRegistry(deviceName);
+            
             // Publish discovery for regular parameters
-            await PublishDiscoveryForParametersAsync(deviceName, _options.Parameters, token);
+            await PublishDiscoveryForParametersAsync(deviceName, deviceType, _options.Parameters, token);
             
             // Publish discovery for compound parameters
-            await PublishDiscoveryForParametersAsync(deviceName, _options.CompoundParameters, token);
+            await PublishDiscoveryForParametersAsync(deviceName, deviceType, _options.CompoundParameters, token);
         }
 
         _discoveryPublished = true;
@@ -240,17 +259,18 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// <remarks>Parameters that are not found in the registry or lack required Home Assistant metadata are skipped
     /// with a warning log. This is common for compound parameters that may not have Home Assistant component definitions.</remarks>
     /// <param name="deviceName">The name of the device for which discovery configuration will be published.</param>
+    /// <param name="deviceType">The type of the device (determined from registry).</param>
     /// <param name="parameterNames">A collection of parameter names to include in the discovery configuration messages. Cannot be null or empty.</param>
     /// <param name="token">A cancellation token that can be used to cancel the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous publish operation.</returns>
-    private async Task PublishDiscoveryForParametersAsync(string deviceName, ICollection<string> parameterNames, CancellationToken token)
+    private async Task PublishDiscoveryForParametersAsync(string deviceName, DeviceType deviceType, ICollection<string> parameterNames, CancellationToken token)
     {
         foreach (var parameterName in parameterNames)
         {
             try
             {
-                var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, parameterName);
-                var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, parameterName);
+                var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, deviceType, parameterName);
+                var discoveryTopic = GetHomeAssistantDiscoveryTopic(deviceName, deviceType, parameterName);
                 var configJson = JsonSerializer.Serialize(discoveryConfig, _unIndentedJsonSerializerOptions);
 
                 await _mqtt.PublishAsync(discoveryTopic, configJson, token, retain: true);
@@ -266,7 +286,34 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() { WriteIndented = false, TypeInfoResolver = ApiJsonContext.Default };
 
     private const string deviceIdKey = "deviceId";
+    private const string deviceTypeKey = "deviceType";
     private const string objectIdKey = "objectId";
+
+    /// <summary>
+    /// Determines the DeviceType by looking up the device in the CAN registry.
+    /// </summary>
+    /// <param name="deviceName">The device name (e.g., HG1, HC1, HCM1).</param>
+    /// <returns>The corresponding DeviceType from the registry.</returns>
+    /// <exception cref="ArgumentException">Thrown when the device is not found in any registry collection.</exception>
+    private DeviceType GetDeviceTypeFromRegistry(string deviceName)
+    {
+        // Check heat generators
+        var heatGenerator = _parameterRegistry.HeatGenerators.FirstOrDefault(d => d.Name == deviceName);
+        if (heatGenerator != null)
+            return heatGenerator.Type;
+
+        // Check heating circuits
+        var heatingCircuit = _parameterRegistry.HeatingCircuits.FirstOrDefault(d => d.Name == deviceName);
+        if (heatingCircuit != null)
+            return heatingCircuit.Type;
+
+        // Check heating circuit modules
+        var heatingCircuitModule = _parameterRegistry.HeatingCircuitModules.FirstOrDefault(d => d.Name == deviceName);
+        if (heatingCircuitModule != null)
+            return heatingCircuitModule.Type;
+
+        throw new ArgumentException($"Device '{deviceName}' not found in CAN registry", nameof(deviceName));
+    }
 
     /// <summary>
     /// Creates a Home Assistant MQTT discovery configuration for a specified device parameter.
@@ -276,15 +323,17 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// and metadata. This configuration can be serialized to JSON and published to Home Assistant's MQTT discovery
     /// topic to enable automatic entity creation.</remarks>
     /// <param name="deviceName">The name of the device for which to generate the discovery configuration. Cannot be null or empty.</param>
+    /// <param name="deviceType">The type of the device (determined from registry).</param>
     /// <param name="parameterName">The name of the parameter to include in the discovery configuration. Cannot be null or empty.</param>
     /// <returns>A Home Assistant MQTT discovery configuration for the specified device parameter.</returns>
-    private HomeAssistantDiscoveryConfig CreateHomeAssistantDiscoveryConfig(string deviceName, string parameterName)
+    private HomeAssistantDiscoveryConfig CreateHomeAssistantDiscoveryConfig(string deviceName, DeviceType deviceType, string parameterName)
     {
-        var stateTopic = GetStateTopic(deviceName, parameterName);
+        var stateTopic = GetStateTopic(deviceName, deviceType, parameterName);
         var deviceId = _deviceIdentifiers[deviceName];
+        var deviceTypeStr = deviceType.ToString().ToLowerInvariant();
         var parameterNameSnakeCase = ToSnakeCase(parameterName);
-        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
-        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
@@ -303,8 +352,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             StateClass = stateClass,
             Device = new HomeAssistantDeviceInfo
             {
-                Identifiers = [FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceIdKey, deviceId } })],
-                Name = FormatTemplate(_options.HomeAssistant.DeviceNameFormat, new() { { deviceIdKey, deviceId } }),
+                Identifiers = [FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId } })],
+                Name = FormatTemplate(_options.HomeAssistant.DeviceNameFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId } }),
                 Manufacturer = _options.HomeAssistant.DeviceManufacturer,
                 Model = _options.HomeAssistant.DeviceModel,
                 SwVersion = _options.HomeAssistant.DeviceSoftwareVersion
@@ -352,17 +401,19 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         return (paramDef.HomeAssistantComponent, paramDef.UnitOfMeasurement, paramDef.DeviceClass, paramDef.StateClass);
     }
 
-    private string GetHomeAssistantDiscoveryTopic(string deviceName, string parameterName)
+    private string GetHomeAssistantDiscoveryTopic(string deviceName, DeviceType deviceType, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
+        var deviceTypeStr = deviceType.ToString().ToLowerInvariant();
         var (component, _, _, _) = GetParameterMetadata(parameterName);
-        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
+        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
     }
 
-    private string GetStateTopic(string deviceName, string parameterName)
+    private string GetStateTopic(string deviceName, DeviceType deviceType, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
-        return $"{_options.Topic}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
+        var deviceTypeStr = deviceType.ToString().ToLowerInvariant();
+        return $"{_options.Topic}/{deviceTypeStr}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
     }
 
     /// <summary>
@@ -460,10 +511,11 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// <remarks>If the retrieved value differs from the last published value, the result is serialized and
     /// published to the corresponding MQTT topic. If the value has not changed, publishing is skipped.</remarks>
     /// <param name="deviceName">The name of the device to which the 'Get' command is sent. Cannot be null or empty.</param>
+    /// <param name="deviceType">The type of the device (determined from registry).</param>
     /// <param name="parameterName">The name of the parameter to retrieve from the device. Cannot be null or empty.</param>
     /// <param name="token">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    private async Task SendGetAndWaitForAnswer(string deviceName, string parameterName, CancellationToken token)
+    private async Task SendGetAndWaitForAnswer(string deviceName, DeviceType deviceType, string parameterName, CancellationToken token)
     {
         // Use CanService to coordinate request and response (handles compound parameters transparently)
         var result = await _roconService.SendRequestAndWaitForResponseAsync(
@@ -479,7 +531,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         var key = $"{deviceId}/{parameterName}";
         if (ShouldPublish(key, result))
         {
-            var stateTopic = GetStateTopic(deviceName, parameterName);
+            var stateTopic = GetStateTopic(deviceName, deviceType, parameterName);
             
             // Translate values based on parameter type and Home Assistant component
             var publishValue = TranslateParameterValue(parameterName, result.Value);
@@ -735,6 +787,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4027, Level = LogLevel.Warning, Message = "Skipping Home Assistant discovery for device {DeviceName} - no valid device identifier available")]
     private static partial void LogSkippingDiscoveryForDevice(ILogger logger, string deviceName);
+
+    [LoggerMessage(EventId = 4028, Level = LogLevel.Debug, Message = "Skipping parameter '{ParameterName}' for device {DeviceName} (type: {DeviceType}) - parameter not available for this device type")]
+    private static partial void LogSkippingParameterForDeviceType(ILogger logger, string parameterName, string deviceName, string deviceType);
 
     #endregion
 }

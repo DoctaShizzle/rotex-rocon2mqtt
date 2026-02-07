@@ -18,6 +18,7 @@ public record ParameterDefinition(
     IReadOnlyDictionary<int, string>? EnumValues = null,
     string? DefaultTimeRange = null,
     string? NameEnglish = null,
+    DeviceType? DeviceType = null,
     string? HomeAssistantComponent = null,
     string? UnitOfMeasurement = null,
     string? DeviceClass = null,

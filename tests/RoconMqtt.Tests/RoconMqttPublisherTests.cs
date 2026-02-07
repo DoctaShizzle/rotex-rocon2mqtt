@@ -36,6 +36,44 @@ public class RoconMqttPublisherTests
         _mqttServiceMock = new Mock<IMqttService>();
         _parameterRegistryMock = new Mock<ICanParameterRegistry>();
         
+        // Setup registry device collections for GetDeviceTypeFromRegistry
+        var heatGenerators = new List<CanDevice>
+        {
+            new() 
+            { 
+                Name = "HG1", 
+                Type = DeviceType.HeatGenerator, 
+                Profile = CreateTestProfile("HG1") 
+            }
+        };
+        var heatingCircuits = new List<CanDevice>
+        {
+            new() 
+            { 
+                Name = "HC1", 
+                Type = DeviceType.HeatingCircuit, 
+                Profile = CreateTestProfile("HC1") 
+            }
+        };
+        var heatingCircuitModules = new List<CanDevice>
+        {
+            new() 
+            { 
+                Name = "HCM1", 
+                Type = DeviceType.HeatingCircuitModule, 
+                Profile = CreateTestProfile("HCM1") 
+            }
+        };
+
+        // Add test devices that match the test configurations
+        heatGenerators.Add(new() { Name = "Device1", Type = DeviceType.HeatGenerator, Profile = CreateTestProfile("Device1") });
+        heatGenerators.Add(new() { Name = "Device2", Type = DeviceType.HeatGenerator, Profile = CreateTestProfile("Device2") });
+
+        _parameterRegistryMock.Setup(x => x.HeatGenerators).Returns(heatGenerators.AsReadOnly());
+        _parameterRegistryMock.Setup(x => x.HeatingCircuits).Returns(heatingCircuits.AsReadOnly());
+        _parameterRegistryMock.Setup(x => x.HeatingCircuitModules).Returns(heatingCircuitModules.AsReadOnly());
+        _parameterRegistryMock.Setup(x => x.Parameters).Returns(new Dictionary<InfoNumber, ParameterDefinition>().AsReadOnly());
+        
         // Create real ResiliencePipelineFactory with disabled resilience for testing
         var resilienceOptions = Options.Create(new ResilienceOptions { Enabled = false });
         var resilienceLogger = new Mock<ILogger<ResiliencePipelineFactory>>();
@@ -60,10 +98,10 @@ public class RoconMqttPublisherTests
             {
                 Discovery = false,
                 DiscoveryPrefix = "homeassistant",
-                UniqueIdFormat = "{deviceId}_{parameterName}",
-                ObjectIdFormat = "{deviceId}_{parameterName}",
-                DeviceIdentifierFormat = "{deviceId}",
-                DeviceNameFormat = "Device {deviceId}",
+                UniqueIdFormat = "{deviceType}_{deviceId}_{parameterName}",
+                ObjectIdFormat = "{deviceType}_{deviceId}_{parameterName}",
+                DeviceIdentifierFormat = "{deviceType}_{deviceId}",
+                DeviceNameFormat = "Device {deviceType} {deviceId}",
                 DeviceManufacturer = "Test",
                 DeviceModel = "Test Model",
                 DeviceSoftwareVersion = "1.0",
@@ -71,6 +109,17 @@ public class RoconMqttPublisherTests
             }
         };
         _options = Options.Create(_mqttOptions);
+    }
+
+    private static CommunicationProfile CreateTestProfile(string name)
+    {
+        return new CommunicationProfile
+        {
+            Name = name,
+            Get = new CommunicationCommand { CanId = 0x100, Bytes = [0x00, 0x00, 0x00] },
+            Set = new CommunicationCommand { CanId = 0x100, Bytes = [0x00, 0x00, 0x00] },
+            Answer = new CommunicationCommand { CanId = 0x200, Bytes = [0x00, 0x00, 0x00] }
+        };
     }
 
     [Fact]

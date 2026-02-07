@@ -84,12 +84,13 @@ sequenceDiagram
 
 ### State Topics
 
-Format: `{Topic}/{DeviceId}/{ParameterName}/state`
+Format: `{Topic}/{DeviceType}/{DeviceId}/{ParameterName}/state`
 
 **Example:**
 ```
-rocon/12345678/cAUSSENTEMP/state
-rocon/12345678/Timestamp/state
+rocon/heatgenerator/12345678/outdoor_temperature/state
+rocon/heatingcircuit/12345678/room_temperature_actual/state
+rocon/heatgenerator/12345678/timestamp/state
 ```
 
 **Payload:**
@@ -99,27 +100,28 @@ rocon/12345678/Timestamp/state
 
 ### Home Assistant Discovery Topics
 
-Format: `{DiscoveryPrefix}/{Component}/rocon_{DeviceId}_{ParameterName}/config`
+Format: `{DiscoveryPrefix}/{Component}/rocon_{DeviceType}_{DeviceId}_{ParameterName}/config`
 
 **Example:**
 ```
-homeassistant/sensor/rocon_12345678_caussententp/config
+homeassistant/sensor/rocon_heatgenerator_12345678_outdoor_temperature/config
+homeassistant/sensor/rocon_heatingcircuit_12345678_room_temperature_actual/config
 ```
 
 **Payload:**
 ```json
 {
-  "name": "c_aussentemp",
-  "unique_id": "rocon_12345678_cAUSSENTEMP",
-  "object_id": "rocon_12345678_caussententp",
-  "state_topic": "rocon/12345678/cAUSSENTEMP/state",
+  "name": "Outdoor Temperature",
+  "unique_id": "rocon_heatgenerator_12345678_outdoor_temperature",
+  "object_id": "rocon_heatgenerator_12345678_outdoor_temperature",
+  "state_topic": "rocon/heatgenerator/12345678/outdoor_temperature/state",
   "value_template": "{{ value }}",
   "unit_of_measurement": "°C",
   "device_class": "temperature",
   "state_class": "measurement",
   "device": {
-    "identifiers": ["rocon_12345678"],
-    "name": "Rotex Rocon 12345678",
+    "identifiers": ["rocon_heatgenerator_12345678"],
+    "name": "Rotex HeatGenerator 12345678",
     "manufacturer": "Daikin / Rotex",
     "model": "ROCON G1",
     "sw_version": "unknown"
@@ -187,13 +189,14 @@ homeassistant/sensor/rocon_12345678_caussententp/config
     "HomeAssistant": {
       "Discovery": true,
       "DiscoveryPrefix": "homeassistant",
-      "DeviceIdentifierFormat": "rocon_{deviceId}",
-      "DeviceNameFormat": "Rotex Rocon {deviceId}",
+      "DeviceIdentifierFormat": "rocon_{deviceType}_{deviceId}",
+      "ObjectIdentifierFormat": "rocon_{deviceType}_{deviceId}_{objectId}",
+      "DeviceNameFormat": "Rotex {deviceType} {deviceId}",
       "DeviceManufacturer": "Daikin / Rotex",
       "DeviceModel": "ROCON G1",
       "DeviceSoftwareVersion": "unknown",
-      "UniqueIdFormat": "rocon_{deviceId}_{parameterName}",
-      "ObjectIdFormat": "rocon_{deviceId}_{parameterName}",
+      "UniqueIdFormat": "rocon_{deviceType}_{deviceId}_{parameterName}",
+      "ObjectIdFormat": "rocon_{deviceType}_{deviceId}_{parameterName}",
       "ValueTemplate": "{{ value }}"
     }
   }
@@ -206,13 +209,14 @@ homeassistant/sensor/rocon_12345678_caussententp/config
 |--------|------|---------|-------------|
 | `Discovery` | bool | `true` | Enable Home Assistant MQTT Discovery |
 | `DiscoveryPrefix` | string | `homeassistant` | Discovery topic prefix |
-| `DeviceIdentifierFormat` | string | - | Template for device identifier |
-| `DeviceNameFormat` | string | - | Template for device display name |
+| `DeviceIdentifierFormat` | string | - | Template for device identifier (supports `{deviceType}`, `{deviceId}`) |
+| `ObjectIdentifierFormat` | string | - | Template for object identifier (supports `{deviceType}`, `{deviceId}`, `{objectId}`) |
+| `DeviceNameFormat` | string | - | Template for device display name (supports `{deviceType}`, `{deviceId}`) |
 | `DeviceManufacturer` | string | - | Device manufacturer name |
 | `DeviceModel` | string | - | Device model name |
 | `DeviceSoftwareVersion` | string | - | Device software version |
-| `UniqueIdFormat` | string | - | Template for entity unique ID |
-| `ObjectIdFormat` | string | - | Template for entity object ID |
+| `UniqueIdFormat` | string | - | Template for entity unique ID (supports `{deviceType}`, `{deviceId}`, `{parameterName}`) |
+| `ObjectIdFormat` | string | - | Template for entity object ID (supports `{deviceType}`, `{deviceId}`, `{parameterName}`) |
 | `ValueTemplate` | string | `{{ value }}` | Jinja2 template to extract value |
 
 ## Change Detection & Publishing Logic
@@ -322,6 +326,66 @@ return parameterName switch
 }
 ```
 
+## Device Type Filtering
+
+### Overview
+
+Parameters in the CAN registry can optionally specify a `deviceType` to restrict which devices they can be queried from. This prevents invalid parameter queries and properly namespaces entities in Home Assistant by device type.
+
+### How It Works
+
+When querying parameters, the system:
+1. Determines the device type from the CAN registry (HeatGenerator, HeatingCircuit, or HeatingCircuitModule)
+2. For each configured parameter, checks if it has a `deviceType` restriction
+3. If the parameter's `deviceType` doesn't match the device's type, the parameter is skipped
+4. If the parameter has no `deviceType` specified, it can be queried from any device
+
+### Registry Configuration
+
+**Example in can-registry.json:**
+```json
+{
+  "originalName": "cAUSSENTEMP",
+  "infoNumberHigh": "0x00",
+  "infoNumberLow": "0x0C",
+  "type": "Float",
+  "nameEnglish": "OutdoorTemperature",
+  "deviceType": "HeatGenerator",
+  "homeAssistantComponent": "sensor",
+  "unitOfMeasurement": "°C",
+  "deviceClass": "temperature",
+  "stateClass": "measurement"
+}
+```
+
+### Benefits
+
+- **Prevents Invalid Queries**: Parameters specific to heat generators won't be queried from heating circuits
+- **Proper Namespacing**: Home Assistant entities are grouped by device type (e.g., `sensor.rocon_heatgenerator_12345678_outdoor_temperature`)
+- **Clear Organization**: Different device types can have their own parameter sets without conflicts
+- **Better Discovery**: Each device type appears as a separate device in Home Assistant
+
+### Example Configuration
+
+```json
+{
+  "Mqtt": {
+    "Devices": ["HG1", "HC1"],
+    "Parameters": [
+      "OutdoorTemperature",           // HeatGenerator only
+      "BufferTemperatureActual",      // HeatGenerator only
+      "RoomTemperatureActual",        // HeatingCircuit only
+      "LeavingWaterTemperatureActual" // HeatingCircuit only
+    ]
+  }
+}
+```
+
+In this example:
+- When querying **HG1**, only `OutdoorTemperature` and `BufferTemperatureActual` are queried
+- When querying **HC1**, only `RoomTemperatureActual` and `LeavingWaterTemperatureActual` are queried
+- Parameters without `deviceType` in the registry would be queried from all devices
+
 ## Resilience & Error Handling
 
 ### Resilience Pipeline
@@ -395,28 +459,28 @@ Each entity is configured with:
 **Configuration:**
 ```yaml
 sensor:
-  - unique_id: rocon_12345678_cAUSSENTEMP
-    name: c_aussentemp
-    state_topic: rocon/12345678/cAUSSENTEMP/state
-    unit_of_measurement: "°C"
-    device_class: temperature
-    state_class: measurement
-    device:
-      identifiers: [rocon_12345678]
-      name: Rotex Rocon 12345678
-      manufacturer: Daikin / Rotex
-      model: ROCON G1
+- unique_id: rocon_heatgenerator_12345678_outdoor_temperature
+  name: Outdoor Temperature
+  state_topic: rocon/heatgenerator/12345678/outdoor_temperature/state
+  unit_of_measurement: "°C"
+  device_class: temperature
+  state_class: measurement
+  device:
+    identifiers: [rocon_heatgenerator_12345678]
+    name: Rotex HeatGenerator 12345678
+    manufacturer: Daikin / Rotex
+    model: ROCON G1
 ```
 
 **Result in Home Assistant:**
-- Entity: `sensor.rocon_12345678_caussententp`
-- Display: "c_aussentemp"
+- Entity: `sensor.rocon_heatgenerator_12345678_outdoor_temperature`
+- Display: "Outdoor Temperature"
 - Value: `15.5 °C`
-- Device: "Rotex Rocon 12345678"
+- Device: "Rotex HeatGenerator 12345678"
 
 ### Device Grouping
 
-All parameters from the same device are grouped under a single device in Home Assistant:
+All parameters from the same device type and device ID are grouped under a single device in Home Assistant:
 
 ```
 Device: Rotex Rocon 12345678
@@ -583,11 +647,14 @@ Device: Rotex Rocon 12345678
     "HomeAssistant": {
       "Discovery": true,
       "DiscoveryPrefix": "homeassistant",
-      "DeviceIdentifierFormat": "rocon_{deviceId}",
-      "DeviceNameFormat": "Heating Controller {deviceId}",
+      "DeviceIdentifierFormat": "rocon_{deviceType}_{deviceId}",
+      "ObjectIdentifierFormat": "rocon_{deviceType}_{deviceId}_{objectId}",
+      "DeviceNameFormat": "Rotex {deviceType} {deviceId}",
       "DeviceManufacturer": "Daikin / Rotex",
       "DeviceModel": "ROCON G1",
-      "DeviceSoftwareVersion": "1.0"
+      "DeviceSoftwareVersion": "1.0",
+      "UniqueIdFormat": "rocon_{deviceType}_{deviceId}_{parameterName}",
+      "ObjectIdFormat": "rocon_{deviceType}_{deviceId}_{parameterName}"
     }
   }
 }
@@ -600,13 +667,13 @@ automation:
   - alias: "Heating Alert - Low Outside Temperature"
     trigger:
       - platform: numeric_state
-        entity_id: sensor.rocon_12345678_caussententp
+        entity_id: sensor.rocon_heatgenerator_12345678_outdoor_temperature
         below: -5
     action:
       - service: notify.mobile_app
         data:
           title: "Heating Alert"
-          message: "Outside temperature dropped to {{ states('sensor.rocon_12345678_caussententp') }}°C"
+          message: "Outside temperature dropped to {{ states('sensor.rocon_heatgenerator_12345678_outdoor_temperature') }}°C"
 ```
 
 ## See Also
