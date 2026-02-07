@@ -364,6 +364,26 @@ When querying parameters, the system:
 - **Proper Namespacing**: Home Assistant entities are grouped by device type (e.g., `sensor.rocon_heatgenerator_12345678_outdoor_temperature`)
 - **Clear Organization**: Different device types can have their own parameter sets without conflicts
 - **Better Discovery**: Each device type appears as a separate device in Home Assistant
+- **Startup Validation**: The system validates at startup that all configured parameters have a `deviceType` defined (except universal parameters)
+
+### Universal Parameters
+
+The following parameters can be queried from any device type and don't require a `deviceType` in the registry:
+- **DeviceIdentifier**: Must be queryable from all devices for identification purposes
+- **Compound Parameters**: Synthetic parameters (e.g., Timestamp) that combine multiple values
+
+### Validation
+
+At startup, the publisher validates that all configured parameters have a `deviceType` defined in the registry. If validation fails:
+- An error is logged with the list of parameters missing `deviceType`
+- The application throws an `InvalidOperationException` with a clear message
+- The publisher will not start until the configuration is corrected
+
+**Example error:**
+```
+Configuration validation failed: Parameters missing deviceType in registry: OutdoorTemperature, BufferTemperatureActual
+Please add 'deviceType' property (HeatGenerator, HeatingCircuit, or HeatingCircuitModule) to each parameter definition in can-registry.json.
+```
 
 ### Example Configuration
 
