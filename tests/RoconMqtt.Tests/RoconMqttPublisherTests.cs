@@ -72,7 +72,29 @@ public class RoconMqttPublisherTests
         _parameterRegistryMock.Setup(x => x.HeatGenerators).Returns(heatGenerators.AsReadOnly());
         _parameterRegistryMock.Setup(x => x.HeatingCircuits).Returns(heatingCircuits.AsReadOnly());
         _parameterRegistryMock.Setup(x => x.HeatingCircuitModules).Returns(heatingCircuitModules.AsReadOnly());
-        _parameterRegistryMock.Setup(x => x.Parameters).Returns(new Dictionary<InfoNumber, ParameterDefinition>().AsReadOnly());
+        
+        // Setup parameter registry with test parameters that have deviceType defined
+        var parameters = new Dictionary<InfoNumber, ParameterDefinition>
+        {
+            [new InfoNumber(0x00, 0x01)] = new ParameterDefinition(
+                OriginalName: "Temperature",
+                InfoNumber: new InfoNumber(0x00, 0x01),
+                Type: ParameterType.Float,
+                NameEnglish: "Temperature",
+                DeviceType: DeviceType.HeatGenerator,
+                HomeAssistantComponent: "sensor",
+                UnitOfMeasurement: "°C",
+                DeviceClass: "temperature",
+                StateClass: "measurement"),
+            [new InfoNumber(0x01, 0x48)] = new ParameterDefinition(
+                OriginalName: "cGERAETE_KENNUNG",
+                InfoNumber: new InfoNumber(0x01, 0x48),
+                Type: ParameterType.Enum,
+                NameEnglish: "DeviceIdentifier",
+                DeviceType: null, // Universal parameter
+                HomeAssistantComponent: "sensor")
+        };
+        _parameterRegistryMock.Setup(x => x.Parameters).Returns(parameters.AsReadOnly());
         
         // Create real ResiliencePipelineFactory with disabled resilience for testing
         var resilienceOptions = Options.Create(new ResilienceOptions { Enabled = false });

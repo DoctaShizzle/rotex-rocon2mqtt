@@ -39,6 +39,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             LogNoParametersConfigured(_logger);
         }
 
+        // Validate that all configured parameters have deviceType defined (except universal ones)
+        ValidateParameterDeviceTypes();
+
         // small delay before discovery
         await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
 
@@ -288,6 +291,58 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     private const string deviceIdKey = "deviceId";
     private const string deviceTypeKey = "deviceType";
     private const string objectIdKey = "objectId";
+
+    /// <summary>
+    /// Parameters that are allowed to be queried from any device type (no deviceType restriction required).
+    /// </summary>
+    private static readonly HashSet<string> UniversalParameters = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "DeviceIdentifier"  // Must be queryable from all devices for identification
+    };
+
+    /// <summary>
+    /// Validates that all configured parameters have a deviceType defined in the registry,
+    /// except for universal parameters that can be queried from any device.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">Thrown when a parameter is missing deviceType.</exception>
+    private void ValidateParameterDeviceTypes()
+    {
+        var parametersWithoutDeviceType = new List<string>();
+
+        foreach (var parameterName in _options.Parameters)
+        {
+            // Skip compound parameters (they're synthetic and don't exist in registry)
+            if (IsCompoundParameter(parameterName))
+                continue;
+
+            // Skip universal parameters
+            if (UniversalParameters.Contains(parameterName))
+                continue;
+
+            // Find parameter in registry
+            var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
+            
+            if (paramDef == null)
+            {
+                LogParameterNotFoundInRegistry(_logger, parameterName);
+                throw new InvalidOperationException($"Parameter '{parameterName}' not found in CAN registry");
+            }
+
+            if (paramDef.DeviceType == null)
+            {
+                parametersWithoutDeviceType.Add(parameterName);
+            }
+        }
+
+        if (parametersWithoutDeviceType.Count > 0)
+        {
+            var parameterList = string.Join(", ", parametersWithoutDeviceType);
+            LogParametersMissingDeviceType(_logger, parameterList);
+            throw new InvalidOperationException(
+                $"The following parameters are missing 'deviceType' in can-registry.json: {parameterList}. " +
+                "Please add 'deviceType' property (HeatGenerator, HeatingCircuit, or HeatingCircuitModule) to each parameter definition.");
+        }
+    }
 
     /// <summary>
     /// Determines the DeviceType by looking up the device in the CAN registry.
@@ -790,6 +845,9 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
     [LoggerMessage(EventId = 4028, Level = LogLevel.Debug, Message = "Skipping parameter '{ParameterName}' for device {DeviceName} (type: {DeviceType}) - parameter not available for this device type")]
     private static partial void LogSkippingParameterForDeviceType(ILogger logger, string parameterName, string deviceName, string deviceType);
+
+    [LoggerMessage(EventId = 4029, Level = LogLevel.Error, Message = "Configuration validation failed: Parameters missing deviceType in registry: {ParameterList}")]
+    private static partial void LogParametersMissingDeviceType(ILogger logger, string parameterList);
 
     #endregion
 }
