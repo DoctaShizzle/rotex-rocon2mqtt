@@ -187,25 +187,31 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             if (stoppingToken.IsCancellationRequested)
                 break;
 
+            // Skip device type check for universal parameters
+            bool skipDeviceTypeCheck = UniversalParameters.Contains(parameterName);
+            
             // Skip if parameter has a device type restriction and it doesn't match this device
-            if (IsCompoundParameter(parameterName))
+            if (!skipDeviceTypeCheck)
             {
-                // Check device type for compound parameters
-                var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
-                if (compound.DeviceType != null && compound.DeviceType != deviceType)
+                if (IsCompoundParameter(parameterName))
                 {
-                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
-                    continue;
+                    // Check device type for compound parameters
+                    var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+                    if (compound.DeviceType != null && compound.DeviceType != deviceType)
+                    {
+                        LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                        continue;
+                    }
                 }
-            }
-            else
-            {
-                // Check device type for regular parameters
-                var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
-                if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
+                else
                 {
-                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
-                    continue;
+                    // Check device type for regular parameters
+                    var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
+                    if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
+                    {
+                        LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                        continue;
+                    }
                 }
             }
 
@@ -282,25 +288,31 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         foreach (var parameterName in parameterNames)
         {
+            // Skip device type check for universal parameters
+            bool skipDeviceTypeCheck = UniversalParameters.Contains(parameterName);
+            
             // Skip if parameter has a device type restriction and it doesn't match this device
-            if (IsCompoundParameter(parameterName))
+            if (!skipDeviceTypeCheck)
             {
-                // Check device type for compound parameters
-                var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
-                if (compound.DeviceType != null && compound.DeviceType != deviceType)
+                if (IsCompoundParameter(parameterName))
                 {
-                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
-                    continue;
+                    // Check device type for compound parameters
+                    var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+                    if (compound.DeviceType != null && compound.DeviceType != deviceType)
+                    {
+                        LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                        continue;
+                    }
                 }
-            }
-            else
-            {
-                // Check device type for regular parameters
-                var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
-                if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
+                else
                 {
-                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
-                    continue;
+                    // Check device type for regular parameters
+                    var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
+                    if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
+                    {
+                        LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                        continue;
+                    }
                 }
             }
 
