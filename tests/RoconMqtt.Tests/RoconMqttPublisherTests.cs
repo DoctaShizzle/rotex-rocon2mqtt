@@ -659,6 +659,95 @@ public class RoconMqttPublisherTests
             }
         });
     }
+    
+    [Fact]
+    public async Task HomeAssistantDiscovery_UniversalParameter_ShouldPublishForAllDeviceTypes()
+    {
+        // Arrange: Setup DeviceIdentifier as universal parameter (no deviceType restriction)
+        var parameters = new Dictionary<InfoNumber, ParameterDefinition>
+        {
+            [new InfoNumber(0x01, 0x48)] = new ParameterDefinition(
+                OriginalName: "cGERAETE_KENNUNG",
+                InfoNumber: new InfoNumber(0x01, 0x48),
+                Type: ParameterType.Enum,
+                NameEnglish: "DeviceIdentifier",
+                DeviceType: null, // Universal parameter - no restriction
+                HomeAssistantComponent: "sensor")
+        };
+        _parameterRegistryMock.Setup(x => x.Parameters).Returns(parameters.AsReadOnly());
+        
+        // Setup three different device types
+        _mqttOptions.Devices.Clear();
+        _mqttOptions.Devices.Add("HG1");
+        _mqttOptions.Devices.Add("HC1");
+        _mqttOptions.Devices.Add("HCM1");
+        _mqttOptions.Parameters.Clear();
+        _mqttOptions.Parameters.Add("DeviceIdentifier");
+        _mqttOptions.HomeAssistant.Discovery = true;
+        _mqttOptions.PollingIntervalSeconds = 3600;
+        
+        // Setup device identifier responses for all three devices
+        _canServiceMock
+            .Setup(x => x.SendRequestAndWaitForResponseAsync(
+                "HG1", "DeviceIdentifier", CommandType.Get, null,
+                It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateDecodedParameter("DeviceIdentifier", "ID-HG1"));
+        
+        _canServiceMock
+            .Setup(x => x.SendRequestAndWaitForResponseAsync(
+                "HC1", "DeviceIdentifier", CommandType.Get, null,
+                It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateDecodedParameter("DeviceIdentifier", "ID-HC1"));
+        
+        _canServiceMock
+            .Setup(x => x.SendRequestAndWaitForResponseAsync(
+                "HCM1", "DeviceIdentifier", CommandType.Get, null,
+                It.IsAny<int>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CreateDecodedParameter("DeviceIdentifier", "ID-HCM1"));
+        
+        // Track all MQTT publish calls
+        var publishedTopics = new List<string>();
+        _mqttServiceMock
+            .Setup(x => x.PublishAsync(
+                It.IsAny<string>(), It.IsAny<string>(),
+                It.IsAny<CancellationToken>(), It.IsAny<bool>()))
+            .Callback<string, string, CancellationToken, bool>((topic, payload, ct, retain) =>
+            {
+                publishedTopics.Add(topic);
+            })
+            .Returns(Task.CompletedTask);
+
+        var publisher = new RoconMqttPublisher(
+            _canServiceMock.Object, _mqttServiceMock.Object, _options,
+            _parameterRegistryMock.Object, _resilienceFactory, _loggerMock.Object);
+
+        using var cts = new CancellationTokenSource();
+        
+        // Act
+        await publisher.StartAsync(cts.Token);
+        await Task.Delay(TimeSpan.FromSeconds(4));
+        await cts.CancelAsync();
+        await publisher.StopAsync(CancellationToken.None);
+
+        // Assert: DeviceIdentifier discovery should be published for ALL three device types
+        var discoveryTopics = publishedTopics
+            .Where(t => t.Contains("/config") && t.Contains("device_identifier"))
+            .ToList();
+        
+        if (discoveryTopics.Count != 3)
+        {
+            var allTopics = string.Join("\n", publishedTopics);
+            Assert.Fail($"Expected 3 discovery topics for DeviceIdentifier (one per device type), but found {discoveryTopics.Count}.\nAll topics:\n{allTopics}");
+        }
+        
+        Assert.Equal(3, discoveryTopics.Count);
+        
+        // Verify one topic for each device type
+        Assert.Contains(discoveryTopics, t => t.Contains("heatgenerator") && t.Contains("id-hg1"));
+        Assert.Contains(discoveryTopics, t => t.Contains("heatingcircuit") && t.Contains("id-hc1"));
+        Assert.Contains(discoveryTopics, t => t.Contains("heatingcircuitmodule") && t.Contains("id-hcm1"));
+    }
 }
+
 
 
