@@ -633,8 +633,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             token);
 
         // Publish to MQTT using resolved device identifier
-        var deviceId = _deviceIdentifiers[deviceName];
-        var key = $"{deviceId}/{parameterName}";
+        var key = $"{deviceName}/{parameterName}";
         if (ShouldPublish(key, result))
         {
             var stateTopic = GetStateTopic(deviceName, deviceType, parameterName);
