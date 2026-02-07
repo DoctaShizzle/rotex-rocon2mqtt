@@ -260,7 +260,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     /// Publishes Home Assistant discovery configuration messages for the specified parameters of a device using MQTT.
     /// </summary>
     /// <remarks>Parameters that are not found in the registry or lack required Home Assistant metadata are skipped
-    /// with a warning log. This is common for compound parameters that may not have Home Assistant component definitions.</remarks>
+    /// with a warning log. This is common for compound parameters that may not have Home Assistant component definitions.
+    /// Parameters with device type restrictions that don't match the device type are also skipped.</remarks>
     /// <param name="deviceName">The name of the device for which discovery configuration will be published.</param>
     /// <param name="deviceType">The type of the device (determined from registry).</param>
     /// <param name="parameterNames">A collection of parameter names to include in the discovery configuration messages. Cannot be null or empty.</param>
@@ -270,6 +271,17 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         foreach (var parameterName in parameterNames)
         {
+            // Skip if parameter has a device type restriction and it doesn't match this device
+            if (!IsCompoundParameter(parameterName))
+            {
+                var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
+                if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
+                {
+                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                    continue;
+                }
+            }
+
             try
             {
                 var discoveryConfig = CreateHomeAssistantDiscoveryConfig(deviceName, deviceType, parameterName);
