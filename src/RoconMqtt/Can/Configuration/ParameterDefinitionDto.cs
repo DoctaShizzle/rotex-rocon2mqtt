@@ -32,6 +32,7 @@ public class ParameterDefinitionDto
     public Dictionary<int, string>? EnumValues { get; set; }
     public string? DefaultTimeRange { get; set; }
     public string? NameEnglish { get; set; }
+    public DeviceType? DeviceType { get; set; }
 
     /// <summary>
     /// Home Assistant component type (sensor, binary_sensor, etc.)
@@ -80,6 +81,7 @@ public class ParameterDefinitionDto
             EnumValues: EnumValues,
             DefaultTimeRange: DefaultTimeRange,
             NameEnglish: NameEnglish,
+            DeviceType: DeviceType,
             HomeAssistantComponent: HomeAssistantComponent,
             UnitOfMeasurement: UnitOfMeasurement,
             DeviceClass: DeviceClass,

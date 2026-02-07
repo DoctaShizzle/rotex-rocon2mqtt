@@ -1,4 +1,5 @@
 ﻿using RoconMqtt.Can.Models;
+using System.Text.Json.Serialization;
 
 namespace RoconMqtt.Can;
 
