@@ -436,10 +436,10 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var stateTopic = GetStateTopic(deviceName, deviceType, parameterName);
         var deviceId = _deviceIdentifiers[deviceName];
-        var deviceTypeStr = deviceType.ToString().ToLowerInvariant();
+        var deviceTypeLowerInvariantStr = deviceType.ToString().ToLowerInvariant();
         var parameterNameSnakeCase = ToSnakeCase(parameterName);
-        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
-        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
@@ -458,8 +458,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             StateClass = stateClass,
             Device = new HomeAssistantDeviceInfo
             {
-                Identifiers = [FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId } })],
-                Name = FormatTemplate(_options.HomeAssistant.DeviceNameFormat, new() { { deviceTypeKey, deviceTypeStr }, { deviceIdKey, deviceId } }),
+                Identifiers = [FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId } })],
+                Name = FormatTemplate(_options.HomeAssistant.DeviceNameFormat, new() { { deviceTypeKey, deviceType.ToString() }, { deviceIdKey, deviceId } }),
                 Manufacturer = _options.HomeAssistant.DeviceManufacturer,
                 Model = _options.HomeAssistant.DeviceModel,
                 SwVersion = _options.HomeAssistant.DeviceSoftwareVersion
