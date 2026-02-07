@@ -320,7 +320,12 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         }
     }
 
-    private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() { WriteIndented = false, TypeInfoResolver = ApiJsonContext.Default };
+    private static readonly JsonSerializerOptions _unIndentedJsonSerializerOptions = new() 
+    { 
+        WriteIndented = false, 
+        TypeInfoResolver = (System.Text.Json.Serialization.Metadata.IJsonTypeInfoResolver?)ApiJsonContext.Default 
+            ?? new System.Text.Json.Serialization.Metadata.DefaultJsonTypeInfoResolver()
+    };
 
     private const string deviceIdKey = "deviceId";
     private const string deviceTypeKey = "deviceType";
