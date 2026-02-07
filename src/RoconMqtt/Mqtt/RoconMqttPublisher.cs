@@ -188,8 +188,19 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 break;
 
             // Skip if parameter has a device type restriction and it doesn't match this device
-            if (!IsCompoundParameter(parameterName))
+            if (IsCompoundParameter(parameterName))
             {
+                // Check device type for compound parameters
+                var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+                if (compound.DeviceType != null && compound.DeviceType != deviceType)
+                {
+                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                    continue;
+                }
+            }
+            else
+            {
+                // Check device type for regular parameters
                 var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
                 if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
                 {
@@ -272,8 +283,19 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         foreach (var parameterName in parameterNames)
         {
             // Skip if parameter has a device type restriction and it doesn't match this device
-            if (!IsCompoundParameter(parameterName))
+            if (IsCompoundParameter(parameterName))
             {
+                // Check device type for compound parameters
+                var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+                if (compound.DeviceType != null && compound.DeviceType != deviceType)
+                {
+                    LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
+                    continue;
+                }
+            }
+            else
+            {
+                // Check device type for regular parameters
                 var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
                 if (paramDef?.DeviceType != null && paramDef.DeviceType != deviceType)
                 {

@@ -130,4 +130,14 @@ public class CompoundParameterTests
             CompoundParameterFactory.Create("InvalidParameter"));
         Assert.Contains("Unknown compound parameter", exception.Message);
     }
+    
+    [Fact]
+    public void TimestampCompoundParameter_ShouldHaveHeatGeneratorDeviceType()
+    {
+        // Arrange
+        var timestamp = new TimestampCompoundParameter();
+        
+        // Assert
+        Assert.Equal(RoconMqtt.Can.DeviceType.HeatGenerator, timestamp.DeviceType);
+    }
 }

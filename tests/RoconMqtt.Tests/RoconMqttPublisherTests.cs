@@ -102,6 +102,14 @@ public class RoconMqttPublisherTests
         _resilienceFactory = new ResiliencePipelineFactory(resilienceOptions, resilienceLogger.Object);
         
         _loggerMock = new Mock<ILogger<RoconMqttPublisher>>();
+        
+        // Capture all log messages for debugging
+        _loggerMock.Setup(x => x.Log(
+            It.IsAny<LogLevel>(),
+            It.IsAny<EventId>(),
+            It.IsAny<It.IsAnyType>(),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()));
 
         _mqttOptions = new MqttOptions
         {
@@ -596,6 +604,25 @@ public class RoconMqttPublisherTests
         
         // Track all MQTT publish calls
         var publishedTopics = new List<string>();
+        var publishedPayloads = new List<string>();
+        var logMessages = new List<string>();
+        
+        // Capture log messages
+        _loggerMock.Setup(x => x.Log(
+            It.IsAny<LogLevel>(),
+            It.IsAny<EventId>(),
+            It.IsAny<It.IsAnyType>(),
+            It.IsAny<Exception>(),
+            It.IsAny<Func<It.IsAnyType, Exception?, string>>()))
+            .Callback(new InvocationAction(invocation =>
+            {
+                var logLevel = (LogLevel)invocation.Arguments[0];
+                var eventId = (EventId)invocation.Arguments[1];
+                var formatter = invocation.Arguments[4];
+                var message = formatter?.ToString() ?? "";
+                logMessages.Add($"[{logLevel}] EventId:{eventId.Id} {message}");
+            }));
+        
         _mqttServiceMock
             .Setup(x => x.PublishAsync(
                 It.IsAny<string>(),
@@ -605,6 +632,7 @@ public class RoconMqttPublisherTests
             .Callback<string, string, CancellationToken, bool>((topic, payload, ct, retain) =>
             {
                 publishedTopics.Add(topic);
+                publishedPayloads.Add(payload);
             })
             .Returns(Task.CompletedTask);
 
@@ -620,7 +648,19 @@ public class RoconMqttPublisherTests
         using var cts = new CancellationTokenSource();
         
         // Act: Start publisher and wait for discovery to complete
-        await publisher.StartAsync(cts.Token);
+        Exception? startException = null;
+        try
+        {
+            await publisher.StartAsync(cts.Token);
+        }
+        catch (Exception ex)
+        {
+            startException = ex;
+        }
+        
+        // Assert that publisher started successfully
+        Assert.Null(startException);
+        
         await Task.Delay(TimeSpan.FromSeconds(4)); // Wait for discovery phase (2s delay + identifier query + discovery)
         await cts.CancelAsync();
         await publisher.StopAsync(CancellationToken.None);
@@ -634,7 +674,9 @@ public class RoconMqttPublisherTests
         if (discoveryTopics.Count != 1)
         {
             var allTopics = string.Join("\n", publishedTopics);
-            Assert.Fail($"Expected 1 discovery topic for OutdoorTemperature, but found {discoveryTopics.Count}.\nAll published topics:\n{allTopics}");
+            var allPayloads = string.Join("\n---\n", publishedPayloads);
+            var allLogs = string.Join("\n", logMessages);
+            Assert.Fail($"Expected 1 discovery topic for OutdoorTemperature, but found {discoveryTopics.Count}.\n\nAll published topics:\n{allTopics}\n\nAll payloads:\n{allPayloads}\n\nLog messages:\n{allLogs}");
         }
         
         // Should have exactly 1 discovery topic for OutdoorTemperature (for HG1 with deviceId 12345678)

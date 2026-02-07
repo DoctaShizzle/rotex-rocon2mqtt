@@ -1,3 +1,5 @@
+using RoconMqtt.Can;
+
 namespace RoconMqtt.Mqtt.Compound;
 
 /// <summary>
@@ -14,6 +16,12 @@ public interface ICompoundParameter
     /// The list of individual parameter names that make up this compound parameter.
     /// </summary>
     IReadOnlyList<string> ComponentParameters { get; }
+
+    /// <summary>
+    /// The device type restriction for this compound parameter (e.g., HeatGenerator, HeatingCircuit).
+    /// If null, the parameter can be queried from any device type.
+    /// </summary>
+    DeviceType? DeviceType { get; }
 
     /// <summary>
     /// The Home Assistant component type (e.g., "sensor", "binary_sensor").

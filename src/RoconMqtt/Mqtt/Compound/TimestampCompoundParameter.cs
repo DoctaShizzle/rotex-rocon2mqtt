@@ -1,3 +1,5 @@
+using RoconMqtt.Can;
+
 namespace RoconMqtt.Mqtt.Compound;
 
 /// <summary>
@@ -23,6 +25,8 @@ public class TimestampCompoundParameter : ICompoundParameter
     public string Name => "Timestamp";
 
     public IReadOnlyList<string> ComponentParameters => ["Hour", "Minute"];
+
+    public DeviceType? DeviceType => Can.DeviceType.HeatGenerator;
 
     public string HomeAssistantComponent => "sensor";
 

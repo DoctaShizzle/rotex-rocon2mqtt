@@ -92,8 +92,14 @@ public static partial class ApiModelsMapper
     /// <summary>
     /// Maps a CanDevice to DeviceInfo
     /// </summary>
-    [MapperIgnoreSource(nameof(CanDevice.Profile))]
-    public static partial DeviceInfo ToDeviceInfo(this CanDevice source);
+    public static DeviceInfo ToDeviceInfo(this CanDevice source)
+    {
+        return new DeviceInfo
+        {
+            Name = source.Name,
+            Type = MapDeviceTypeToString(source.Type)
+        };
+    }
 
     /// <summary>
     /// Maps ParameterDefinition.Type (enum) to string for ParameterMetadata
