@@ -58,7 +58,7 @@ graph LR
     SOCKET --> BUS[SocketCanBus]
     BUS --> NATIVE[.NET Socket API]
     NATIVE --> KERNEL[Linux Kernel<br/>SocketCAN]
-    KERNEL --> HW[CAN Hardware<br/>can0/can1]
+    KERNEL --> HW[CAN Hardware<br/>can0]
 ```
 
 **Characteristics:**
