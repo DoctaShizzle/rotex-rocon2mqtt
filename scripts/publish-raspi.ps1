@@ -16,15 +16,37 @@ try {
     if ($LASTEXITCODE -eq 0) {
         Write-Host "`nPublish successful!" -ForegroundColor Green
         Write-Host "Output location: bin\publish\linux-arm64\" -ForegroundColor Yellow
-        Write-Host "`nTo deploy to Raspberry Pi, copy the contents to your device and run:" -ForegroundColor Cyan
-        Write-Host "  chmod +x RoconMqtt (to allow execution)" -ForegroundColor White
-        Write-Host "  sudo ufw allow 5000 (to expose the web app publicly)" -ForegroundColor White
-        Write-Host "`nRun in Production mode (default):" -ForegroundColor Cyan
-        Write-Host "  ./RoconMqtt" -ForegroundColor White
-        Write-Host "`nRun in Development mode (more logging):" -ForegroundColor Cyan
-        Write-Host "  ASPNETCORE_ENVIRONMENT=Development ./RoconMqtt" -ForegroundColor White
-        Write-Host "`nFor systemd service installation, see: docu\DEPLOYMENT.md" -ForegroundColor Yellow
-        Write-Host "Service file available at: scripts\roconmqtt.service" -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "==============================================" -ForegroundColor Cyan
+        Write-Host "  Deployment Options" -ForegroundColor Cyan
+        Write-Host "==============================================" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "1. Balena (Containerized):" -ForegroundColor Green
+        Write-Host "   balena push <fleet-name>" -ForegroundColor White
+        Write-Host "   See: docu\BALENA_DEPLOYMENT.md" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "2. Bare Metal (Raspberry Pi):" -ForegroundColor Green
+        Write-Host "   Transfer files: rsync -avz bin/publish/linux-arm64/ pi@<ip>:/opt/roconmqtt/" -ForegroundColor White
+        Write-Host "   Configure: Edit environment variables (see DEPLOYMENT.md)" -ForegroundColor White
+        Write-Host "   See: docu\DEPLOYMENT.md" -ForegroundColor Gray
+        Write-Host ""
+        Write-Host "3. Development Testing:" -ForegroundColor Green
+        Write-Host "   Quick Start: .\scripts\run-dev.ps1 (edit settings first)" -ForegroundColor White
+        Write-Host "   Manual: Set environment variables and run ./RoconMqtt" -ForegroundColor White
+        Write-Host ""
+        Write-Host "==============================================" -ForegroundColor Cyan
+        Write-Host "  Configuration" -ForegroundColor Cyan
+        Write-Host "==============================================" -ForegroundColor Cyan
+        Write-Host ""
+        Write-Host "Required environment variables:" -ForegroundColor Yellow
+        Write-Host "  Can__MachineType=EHSHXXPXXA" -ForegroundColor White
+        Write-Host "  Mqtt__Host=<broker-ip>" -ForegroundColor White
+        Write-Host "  Mqtt__Username=<username>" -ForegroundColor White
+        Write-Host "  Mqtt__Password=<password>" -ForegroundColor White
+        Write-Host ""
+        Write-Host "For complete configuration reference:" -ForegroundColor Yellow
+        Write-Host "  docu\CONFIGURATION.md" -ForegroundColor Gray
+        Write-Host ""
     } else {
         Write-Host "`nPublish failed!" -ForegroundColor Red
         exit $LASTEXITCODE
