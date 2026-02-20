@@ -49,21 +49,17 @@ Excludes build artifacts, user files, and IDE files from the Docker build contex
 
 ### 3. **docker-compose.yml** (repo root)
 
-Defines two services:
+Defines the **roconmqtt** service:
 
 - **roconmqtt** service: Runs the .NET application with:
   - `network_mode: "host"` – Required to access host SocketCAN (`can0`)
+  - `cap_add: [NET_ADMIN]` – Allows the container to configure network interfaces (CAN bitrate setup)
+  - `entrypoint` – Runs `ip link set can0 up type can bitrate 20000` before starting the app
   - `restart: always` – Auto-restart on crash
   - Environment variables for runtime config (ASPNETCORE_ENVIRONMENT, MQTT credentials, CAN settings)
   - Healthcheck endpoint
 
-- **setup-can** service: Minimal Alpine container that:
-  - Runs with `network_mode: "host"` and `privileged: true`
-  - Brings up `can0` with bitrate 20000
-  - Runs once (`restart: "no"`)
-  - Executes before the main app starts
-
-**Important**: Balena reads this file to orchestrate multi-service deployments.
+**Note**: CAN interface setup (`can0` bring-up) is handled by the container's entrypoint, not a separate service.
 
 ### 4. **.env.example** (repo root)
 
@@ -213,9 +209,9 @@ balena push <device-uuid>
 
 Balena builder (cloud) will:
 1. Detect `docker-compose.yml`
-2. Build both services (roconmqtt and setup-can) for ARM64
+2. Build the roconmqtt service for ARM64
 3. Deploy to the device(s)
-4. Start the containers
+4. Start the container with CAN setup in the entrypoint
 
 ### 4. Configure Fleet Environment Variables
 
@@ -227,14 +223,14 @@ In balenaCloud dashboard:
 
 2. **Environment Variables**:
    - Set MQTT credentials, CAN settings, polling intervals, etc.
-   - Containers will auto-restart and pick up new values
+   - The container will auto-restart and pick up new values
 
 ### 5. Monitor & Logs
 
 In balenaCloud dashboard:
 
-- **Device logs**: Real-time tail of all container logs
-- **Service status**: See if roconmqtt and setup-can are running
+- **Device logs**: Real-time tail of container logs
+- **Service status**: See if roconmqtt is running
 - **Device metrics**: CPU, memory, network usage
 - **Terminal access**: SSH directly into a container for debugging
 
@@ -281,7 +277,7 @@ balena ssh <device-uuid> -s roconmqtt
 
 ### CAN Interfaces Not Appearing
 
-1. Check device logs: "setup-can" service should log without errors
+1. Check device logs: "roconmqtt" service should start with CAN setup (or fail gracefully if can0 doesn't exist)
 2. Verify `BALENA_HOST_CONFIG_*` variables are set in balenaCloud
 3. Manually SSH into the device and run:
    ```bash
@@ -341,7 +337,7 @@ Before deploying to Balena, you can test the Docker setup locally:
    curl http://localhost:5000/health
    ```
 
-**Note:** Local testing requires Linux or WSL for full CAN support. The `setup-can` service will fail on non-Linux systems, but the main app will start.
+**Note:** CAN interface setup will run in the entrypoint (and may fail gracefully on non-Linux systems), but the app will start. On Linux/WSL with a CAN interface available, `can0` will be brought up automatically.
 
 ---
 
@@ -363,7 +359,7 @@ Before deploying to Balena, you can test the Docker setup locally:
 |-----------|---------|
 | **Dockerfile** | Multi-stage build: SDK stage publishes .NET app, runtime stage runs the binary |
 | **.dockerignore** | Excludes build artifacts for faster Docker builds |
-| **docker-compose.yml** | Defines roconmqtt and setup-can services; both deployed to device |
+| **docker-compose.yml** | Defines roconmqtt service with NET_ADMIN capabilities; entrypoint sets up CAN interface |
 | **.env.example** | Example environment variables for local Docker Compose testing |
 | **can-registry-{type}.json** | Machine-specific CAN parameters and MQTT config (per heat pump model) |
 | **BALENA_HOST_CONFIG_*** | Configure `/boot/firmware/config.txt` (SPI, MCP2515 overlays) at fleet level |

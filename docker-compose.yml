@@ -2,29 +2,6 @@ version: '3.8'
 
 services:
   # ===========================
-  # CAN Interface Setup Service
-  # ===========================
-  # Brings up the CAN interface (can0) before the main application starts.
-  # Runs once with host networking and privileged mode for hardware access.
-  setup-can:
-    image: alpine:latest
-    container_name: roconmqtt-setup-can
-    network_mode: host
-    privileged: true
-    restart: "no"
-    command: >
-      sh -c "
-      echo 'Setting up CAN interface...';
-      if ! ip link show can0 > /dev/null 2>&1; then
-        echo 'ERROR: can0 interface not found. Ensure the MCP2515 device tree overlay is loaded.';
-        exit 1;
-      fi;
-      ip link set can0 type can bitrate 20000;
-      ip link set can0 up;
-      echo 'CAN interface can0 is up with bitrate 20000';
-      "
-
-  # ===========================
   # RoconMqtt Application Service
   # ===========================
   roconmqtt:
@@ -33,9 +10,10 @@ services:
       dockerfile: Dockerfile
     container_name: roconmqtt
     network_mode: host
+    cap_add:
+      - NET_ADMIN
     restart: always
-    depends_on:
-      - setup-can
+    entrypoint: /bin/sh -c "ip link set can0 up type can bitrate 20000 || true && exec /app/RoconMqtt"
     environment:
       # Application environment
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
