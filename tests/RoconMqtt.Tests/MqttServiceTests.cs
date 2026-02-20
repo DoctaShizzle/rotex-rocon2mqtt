@@ -12,7 +12,7 @@ public class MqttServiceTests : IAsyncDisposable
 {
     private readonly Mock<ILogger<MqttService>> _loggerMock;
     private readonly MqttOptions _mqttOptions;
-    private readonly IOptions<MqttOptions> _options;
+    private readonly Mock<IOptionsMonitor<MqttOptions>> _optionsMonitorMock;
     private MqttService? _service;
 
     public MqttServiceTests()
@@ -25,13 +25,14 @@ public class MqttServiceTests : IAsyncDisposable
             ClientId = "test-client",
             Topic = "test/topic"
         };
-        _options = Options.Create(_mqttOptions);
+        _optionsMonitorMock = new Mock<IOptionsMonitor<MqttOptions>>();
+        _optionsMonitorMock.Setup(x => x.CurrentValue).Returns(_mqttOptions);
     }
 
     [Fact]
     public void Constructor_ShouldConfigureClientWithBasicOptions()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.NotNull(_service);
         Assert.False(_service.IsConnected);
@@ -43,7 +44,7 @@ public class MqttServiceTests : IAsyncDisposable
         _mqttOptions.Username = "testuser";
         _mqttOptions.Password = "testpass";
 
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.NotNull(_service);
         Assert.False(_service.IsConnected);
@@ -55,7 +56,7 @@ public class MqttServiceTests : IAsyncDisposable
         _mqttOptions.UseTls = true;
         _mqttOptions.ValidateCertificate = true;
 
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.NotNull(_service);
         Assert.False(_service.IsConnected);
@@ -67,7 +68,7 @@ public class MqttServiceTests : IAsyncDisposable
         _mqttOptions.UseTls = true;
         _mqttOptions.ValidateCertificate = false;
 
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.NotNull(_service);
         Assert.False(_service.IsConnected);
@@ -76,7 +77,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task IsConnected_ShouldReturnFalse_WhenNotConnected()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.False(_service.IsConnected);
 
@@ -86,7 +87,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task IsConnected_ShouldThrowObjectDisposedException_WhenDisposed()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
         await _service.DisposeAsync();
 
         Assert.Throws<ObjectDisposedException>(() => _service.IsConnected);
@@ -95,7 +96,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task ConnectAsync_ShouldThrowObjectDisposedException_WhenDisposed()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
         await _service.DisposeAsync();
 
         await Assert.ThrowsAsync<ObjectDisposedException>(() => _service.ConnectAsync());
@@ -104,7 +105,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task PublishAsync_ShouldThrowObjectDisposedException_WhenDisposed()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
         await _service.DisposeAsync();
 
         await Assert.ThrowsAsync<ObjectDisposedException>(() => 
@@ -114,7 +115,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task PublishAsync_ShouldAcceptCancellationToken()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
@@ -126,7 +127,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task PublishAsync_ShouldAcceptRetainFlag()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         // Should accept the retain flag, but will fail because broker is not available
         await Assert.ThrowsAnyAsync<Exception>(() => 
@@ -136,7 +137,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task DisposeAsync_ShouldBeIdempotent()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         await _service.DisposeAsync();
         await _service.DisposeAsync(); // Should not throw
@@ -151,7 +152,7 @@ public class MqttServiceTests : IAsyncDisposable
         _mqttOptions.Username = null;
         _mqttOptions.Password = null;
 
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.NotNull(_service);
         Assert.False(_service.IsConnected);
@@ -163,7 +164,7 @@ public class MqttServiceTests : IAsyncDisposable
         _mqttOptions.Username = string.Empty;
         _mqttOptions.Password = string.Empty;
 
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         Assert.NotNull(_service);
         Assert.False(_service.IsConnected);
@@ -174,7 +175,7 @@ public class MqttServiceTests : IAsyncDisposable
     {
         _mqttOptions.Host = "nonexistent.broker";
         _mqttOptions.Port = 1883;
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         await Assert.ThrowsAnyAsync<Exception>(() => _service.ConnectAsync());
     }
@@ -184,7 +185,7 @@ public class MqttServiceTests : IAsyncDisposable
     {
         _mqttOptions.Host = "nonexistent.broker";
         _mqttOptions.Port = 1883;
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         await Assert.ThrowsAnyAsync<Exception>(() => 
             _service.PublishAsync("test/topic", "test payload"));
@@ -193,7 +194,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task PublishAsync_ShouldHandleEmptyPayload()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         // Should accept empty payload, but will fail because broker is not available
         await Assert.ThrowsAnyAsync<Exception>(() => 
@@ -203,7 +204,7 @@ public class MqttServiceTests : IAsyncDisposable
     [Fact]
     public async Task PublishAsync_ShouldHandleLargePayload()
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
         var largePayload = new string('X', 10000);
 
         // Should accept large payload, but will fail because broker is not available
@@ -218,7 +219,7 @@ public class MqttServiceTests : IAsyncDisposable
     [InlineData("test_topic")]
     public async Task PublishAsync_ShouldAcceptVariousTopicFormats(string topic)
     {
-        _service = new MqttService(_options, _loggerMock.Object);
+        _service = new MqttService(_optionsMonitorMock.Object, _loggerMock.Object);
 
         // Should accept various topic formats, but will fail because broker is not available
         await Assert.ThrowsAnyAsync<Exception>(() => 

@@ -15,7 +15,7 @@ namespace RoconMqtt.Mqtt;
 public partial class MqttService : IAsyncDisposable, IMqttService
 {
     private readonly IMqttClient _client;
-    private readonly MqttClientOptions _options;
+    private readonly IOptionsMonitor<MqttOptions> _optionsMonitor;
     private readonly ILogger<MqttService> _logger;
     private bool _disposed;
     private readonly SemaphoreSlim _connectionLock = new SemaphoreSlim(1, 1);
@@ -38,42 +38,16 @@ public partial class MqttService : IAsyncDisposable, IMqttService
         }
     }
 
-    public MqttService(IOptions<MqttOptions> settings, ILogger<MqttService> logger)
+    public MqttService(IOptionsMonitor<MqttOptions> settings, ILogger<MqttService> logger)
     {
         _logger = logger;
-        
+        _optionsMonitor = settings;
+
         var factory = new MqttClientFactory();
         _client = factory.CreateMqttClient();
 
-        var cfg = settings.Value;
+        var cfg = _optionsMonitor.CurrentValue;
         LogConfiguringMqttClient(_logger, cfg.Host, cfg.Port);
-
-        var optionsBuilder = new MqttClientOptionsBuilder()
-            .WithTcpServer(cfg.Host, cfg.Port)
-            .WithClientId(cfg.ClientId)
-            .WithCleanSession()
-            .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
-
-        if (!string.IsNullOrEmpty(cfg.Username))
-        {
-            optionsBuilder.WithCredentials(cfg.Username, cfg.Password);
-            LogMqttClientConfiguredWithAuth(_logger);
-        }
-
-        if (cfg.UseTls)
-        {
-            var tlsOptions = new MqttClientTlsOptions
-            {
-                UseTls = true,
-                AllowUntrustedCertificates = !cfg.ValidateCertificate,
-                IgnoreCertificateChainErrors = !cfg.ValidateCertificate,
-                IgnoreCertificateRevocationErrors = !cfg.ValidateCertificate
-            };
-            optionsBuilder.WithTlsOptions(tlsOptions);
-            LogMqttClientConfiguredWithTls(_logger, cfg.ValidateCertificate);
-        }
-
-        _options = optionsBuilder.Build();
 
         _client.DisconnectedAsync += async e =>
         {
@@ -94,7 +68,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
             // Simple exponential backoff
             var delay = TimeSpan.FromSeconds(2);
             var attemptCount = 0;
-            
+
             while (!_client.IsConnected)
             {
                 try
@@ -102,7 +76,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                     attemptCount++;
                     LogMqttReconnectionAttempt(_logger, attemptCount, delay.TotalSeconds);
                     await Task.Delay(delay);
-                    
+
                     // Acquire lock to prevent concurrent connection attempts
                     await _connectionLock.WaitAsync();
                     try
@@ -120,7 +94,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                         if (!_client.IsConnected)
                         {
                             LogAttemptingReconnect(_logger, attemptCount);
-                            await _client.ConnectAsync(_options);
+                            await _client.ConnectAsync(GetMqttClientOptions());
                             LogMqttReconnectedSuccessfully(_logger, attemptCount);
                             LogConnectionStateAfterReconnect(_logger, _client.IsConnected);
                         }
@@ -171,7 +145,7 @@ public partial class MqttService : IAsyncDisposable, IMqttService
                 try
                 {
                     LogConnectingToMqttBroker(_logger);
-                    await _client.ConnectAsync(_options);
+                    await _client.ConnectAsync(GetMqttClientOptions());
                     LogConnectedToMqttBrokerSuccessfully(_logger);
                     LogConnectionStateAfterConnect(_logger, _client.IsConnected);
                 }
@@ -297,8 +271,38 @@ public partial class MqttService : IAsyncDisposable, IMqttService
             _connectionLock.Release();
             _disposedLock.Dispose();
         }
-        
+
         GC.SuppressFinalize(this);
+    }
+
+    private MqttClientOptions GetMqttClientOptions()
+    {
+        var cfg = _optionsMonitor.CurrentValue;
+
+        var optionsBuilder = new MqttClientOptionsBuilder()
+            .WithTcpServer(cfg.Host, cfg.Port)
+            .WithClientId(cfg.ClientId)
+            .WithCleanSession()
+            .WithKeepAlivePeriod(TimeSpan.FromSeconds(30));
+
+        if (!string.IsNullOrEmpty(cfg.Username))
+        {
+            optionsBuilder.WithCredentials(cfg.Username, cfg.Password);
+        }
+
+        if (cfg.UseTls)
+        {
+            var tlsOptions = new MqttClientTlsOptions
+            {
+                UseTls = true,
+                AllowUntrustedCertificates = !cfg.ValidateCertificate,
+                IgnoreCertificateChainErrors = !cfg.ValidateCertificate,
+                IgnoreCertificateRevocationErrors = !cfg.ValidateCertificate
+            };
+            optionsBuilder.WithTlsOptions(tlsOptions);
+        }
+
+        return optionsBuilder.Build();
     }
 
     [LoggerMessage(EventId = 4001, Level = LogLevel.Debug, Message = "Configuring MQTT client for {Host}:{Port}")]

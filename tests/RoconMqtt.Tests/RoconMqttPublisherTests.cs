@@ -28,7 +28,7 @@ public class RoconMqttPublisherTests
     private readonly ResiliencePipelineFactory _resilienceFactory;
     private readonly Mock<ILogger<RoconMqttPublisher>> _loggerMock;
     private readonly MqttOptions _mqttOptions;
-    private readonly IOptions<MqttOptions> _options;
+    private readonly Mock<IOptionsMonitor<MqttOptions>> _optionsMonitorMock;
 
     public RoconMqttPublisherTests()
     {
@@ -131,7 +131,8 @@ public class RoconMqttPublisherTests
                 ValueTemplate = "{{ value_json.value }}"
             }
         };
-        _options = Options.Create(_mqttOptions);
+        _optionsMonitorMock = new Mock<IOptionsMonitor<MqttOptions>>();
+        _optionsMonitorMock.Setup(x => x.CurrentValue).Returns(_mqttOptions);
     }
 
     private static CommunicationProfile CreateTestProfile(string name)
@@ -151,7 +152,7 @@ public class RoconMqttPublisherTests
         Assert.Throws<ArgumentNullException>(() => new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             null!,
             _resilienceFactory,
             _loggerMock.Object
@@ -164,7 +165,7 @@ public class RoconMqttPublisherTests
         Assert.Throws<ArgumentNullException>(() => new RoconMqttPublisher(
             null!,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -177,7 +178,7 @@ public class RoconMqttPublisherTests
         Assert.Throws<ArgumentNullException>(() => new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             null!,
             _loggerMock.Object
@@ -190,7 +191,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -206,7 +207,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -221,7 +222,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -244,7 +245,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -261,7 +262,7 @@ public class RoconMqttPublisherTests
     public async Task ExecuteAsync_ShouldQueryDeviceIdentifiers_OnStartup()
     {
         _mqttOptions.PollingIntervalSeconds = 3600; // Long interval to avoid second poll
-        
+
         _canServiceMock
             .Setup(x => x.SendRequestAndWaitForResponseAsync(
                 "Device1",
@@ -275,7 +276,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -304,7 +305,7 @@ public class RoconMqttPublisherTests
     public async Task ExecuteAsync_ShouldUseFallbackDeviceId_WhenDeviceIdentifierQueryFails()
     {
         _mqttOptions.PollingIntervalSeconds = 3600;
-        
+
         _canServiceMock
             .Setup(x => x.SendRequestAndWaitForResponseAsync(
                 "Device1",
@@ -318,7 +319,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -352,7 +353,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -387,7 +388,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -424,7 +425,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -469,7 +470,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -522,7 +523,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -614,7 +615,7 @@ public class RoconMqttPublisherTests
         var publisher = new RoconMqttPublisher(
             _canServiceMock.Object,
             _mqttServiceMock.Object,
-            _options,
+            _optionsMonitorMock.Object,
             _parameterRegistryMock.Object,
             _resilienceFactory,
             _loggerMock.Object
@@ -718,7 +719,7 @@ public class RoconMqttPublisherTests
             .Returns(Task.CompletedTask);
 
         var publisher = new RoconMqttPublisher(
-            _canServiceMock.Object, _mqttServiceMock.Object, _options,
+            _canServiceMock.Object, _mqttServiceMock.Object, _optionsMonitorMock.Object,
             _parameterRegistryMock.Object, _resilienceFactory, _loggerMock.Object);
 
         using var cts = new CancellationTokenSource();

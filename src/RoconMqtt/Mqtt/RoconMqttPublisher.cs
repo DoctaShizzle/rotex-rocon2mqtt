@@ -10,31 +10,31 @@ using System.Text.Json;
 
 namespace RoconMqtt.Mqtt;
 
-public partial class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptions<MqttOptions> options, ICanParameterRegistry parameterRegistry, ResiliencePipelineFactory resilienceFactory, ILogger<RoconMqttPublisher> logger) : BackgroundService
+public partial class RoconMqttPublisher(ICanService roconService, IMqttService mqtt, IOptionsMonitor<MqttOptions> optionsMonitor, ICanParameterRegistry parameterRegistry, ResiliencePipelineFactory resilienceFactory, ILogger<RoconMqttPublisher> logger) : BackgroundService
 {
-    private readonly MqttOptions _options = options.Value;
+    private readonly IOptionsMonitor<MqttOptions> _optionsMonitor = optionsMonitor;
     private readonly ICanParameterRegistry _parameterRegistry = parameterRegistry ?? throw new ArgumentNullException(nameof(parameterRegistry));
     private readonly ICanService _roconService = roconService ?? throw new ArgumentNullException(nameof(roconService));
     private readonly IMqttService _mqtt = mqtt;
     private readonly ILogger<RoconMqttPublisher> _logger = logger;
     private readonly ResiliencePipelineFactory _resilienceFactory = resilienceFactory ?? throw new ArgumentNullException(nameof(resilienceFactory));
-    
+
     private readonly ConcurrentDictionary<string, object?> _lastPublishedValues = new();
     private readonly ConcurrentDictionary<string, string> _deviceIdentifiers = new();
     private bool _discoveryPublished = false;
 
-    public bool Enabled { get; set; } = options.Value.Enabled;
+    public bool Enabled { get; set; } = optionsMonitor.CurrentValue.Enabled;
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         LogPublisherStarted(_logger);
 
         // Validate configuration
-        if (_options.Devices.Count == 0)
+        if (_optionsMonitor.CurrentValue.Devices.Count == 0)
         {
             LogNoDevicesConfigured(_logger);
         }
-        if (_options.Parameters.Count == 0)
+        if (_optionsMonitor.CurrentValue.Parameters.Count == 0)
         {
             LogNoParametersConfigured(_logger);
         }
@@ -60,19 +60,19 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 if (!Enabled)
                 {
                     LogPublisherDisabled(_logger);
-                    await Task.Delay(TimeSpan.FromSeconds(_options.PollingIntervalSeconds), stoppingToken);
+                    await Task.Delay(TimeSpan.FromSeconds(_optionsMonitor.CurrentValue.PollingIntervalSeconds), stoppingToken);
                     continue;
                 }
 
                 // trigger home assistant discovery (skips if it's already done)
-                if (_options.HomeAssistant.Discovery)
+                if (_optionsMonitor.CurrentValue.HomeAssistant.Discovery)
                 {
                     await PublishHomeAssistantDiscoveryAsync(stoppingToken);
                 }
 
 
                 // Loop over all configured devices and parameters
-                foreach (var deviceName in _options.Devices)
+                foreach (var deviceName in _optionsMonitor.CurrentValue.Devices)
                 {
                     // Skip devices without valid identifiers
                     if (!_deviceIdentifiers.ContainsKey(deviceName))
@@ -80,19 +80,19 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                         LogSkippingDeviceWithoutIdentifier(_logger, deviceName);
                         continue;
                     }
-                    
+
                     // Determine device type from registry
                     var deviceType = GetDeviceTypeFromRegistry(deviceName);
-                    
+
                     // Query regular parameters
-                    await QueryParametersAsync(deviceName, deviceType, _options.Parameters, resiliencePipeline, stoppingToken);
-                    
+                    await QueryParametersAsync(deviceName, deviceType, _optionsMonitor.CurrentValue.Parameters, resiliencePipeline, stoppingToken);
+
                     // Query compound parameters (handled transparently by CanService)
-                    await QueryParametersAsync(deviceName, deviceType, _options.CompoundParameters, resiliencePipeline, stoppingToken);
+                    await QueryParametersAsync(deviceName, deviceType, _optionsMonitor.CurrentValue.CompoundParameters, resiliencePipeline, stoppingToken);
                 }
 
                 // Wait before next polling cycle
-                await Task.Delay(TimeSpan.FromSeconds(_options.PollingIntervalSeconds), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(_optionsMonitor.CurrentValue.PollingIntervalSeconds), stoppingToken);
             }
             catch (OperationCanceledException)
             {
@@ -120,7 +120,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         LogQueryingDeviceIdentifiers(_logger);
 
-        foreach (var deviceName in _options.Devices)
+        foreach (var deviceName in _optionsMonitor.CurrentValue.Devices)
         {
             try
             {
@@ -129,7 +129,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                     "DeviceIdentifier",
                     CommandType.Get,
                     null,
-                    (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds,
+                    (int)TimeSpan.FromSeconds(_optionsMonitor.CurrentValue.ResponseTimeoutSeconds).TotalMilliseconds,
                     token);
 
                 if (result != null && result.Value != null)
@@ -155,7 +155,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 LogErrorQueryingDeviceIdentifier(_logger, ex, deviceName);
             }
         }
-        
+
         // Log summary of successfully initialized devices
         if (_deviceIdentifiers.Count == 0)
         {
@@ -163,7 +163,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         }
         else
         {
-            LogDeviceIdentifiersInitialized(_logger, _deviceIdentifiers.Count, _options.Devices.Count);
+            LogDeviceIdentifiersInitialized(_logger, _deviceIdentifiers.Count, _optionsMonitor.CurrentValue.Devices.Count);
         }
     }
 
@@ -189,14 +189,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
             // Skip device type check for universal parameters
             bool skipDeviceTypeCheck = UniversalParameters.Contains(parameterName);
-            
+
             // Skip if parameter has a device type restriction and it doesn't match this device
             if (!skipDeviceTypeCheck)
             {
                 if (IsCompoundParameter(parameterName))
                 {
                     // Check device type for compound parameters
-                    var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+                    var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _optionsMonitor.CurrentValue.TimeZoneId);
                     if (compound.DeviceType != null && compound.DeviceType != deviceType)
                     {
                         LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
@@ -251,7 +251,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         LogPublishingHomeAssistantDiscovery(_logger);
 
-        foreach (var deviceName in _options.Devices)
+        foreach (var deviceName in _optionsMonitor.CurrentValue.Devices)
         {
             // Skip devices without valid identifiers
             if (!_deviceIdentifiers.ContainsKey(deviceName))
@@ -259,15 +259,15 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
                 LogSkippingDiscoveryForDevice(_logger, deviceName);
                 continue;
             }
-            
+
             // Determine device type from registry
             var deviceType = GetDeviceTypeFromRegistry(deviceName);
-            
+
             // Publish discovery for regular parameters
-            await PublishDiscoveryForParametersAsync(deviceName, deviceType, _options.Parameters, token);
-            
+            await PublishDiscoveryForParametersAsync(deviceName, deviceType, _optionsMonitor.CurrentValue.Parameters, token);
+
             // Publish discovery for compound parameters
-            await PublishDiscoveryForParametersAsync(deviceName, deviceType, _options.CompoundParameters, token);
+            await PublishDiscoveryForParametersAsync(deviceName, deviceType, _optionsMonitor.CurrentValue.CompoundParameters, token);
         }
 
         _discoveryPublished = true;
@@ -290,14 +290,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         {
             // Skip device type check for universal parameters
             bool skipDeviceTypeCheck = UniversalParameters.Contains(parameterName);
-            
+
             // Skip if parameter has a device type restriction and it doesn't match this device
             if (!skipDeviceTypeCheck)
             {
                 if (IsCompoundParameter(parameterName))
                 {
                     // Check device type for compound parameters
-                    var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+                    var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _optionsMonitor.CurrentValue.TimeZoneId);
                     if (compound.DeviceType != null && compound.DeviceType != deviceType)
                     {
                         LogSkippingParameterForDeviceType(_logger, parameterName, deviceName, deviceType.ToString());
@@ -360,7 +360,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
     {
         var parametersWithoutDeviceType = new List<string>();
 
-        foreach (var parameterName in _options.Parameters)
+        foreach (var parameterName in _optionsMonitor.CurrentValue.Parameters)
         {
             // Skip compound parameters (they're synthetic and don't exist in registry)
             if (IsCompoundParameter(parameterName))
@@ -372,7 +372,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
             // Find parameter in registry
             var paramDef = _parameterRegistry.Parameters.Values.FirstOrDefault(p => p.NameEnglish == parameterName);
-            
+
             if (paramDef == null)
             {
                 LogParameterNotFoundInRegistry(_logger, parameterName);
@@ -438,8 +438,8 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         var deviceId = _deviceIdentifiers[deviceName];
         var deviceTypeLowerInvariantStr = deviceType.ToString().ToLowerInvariant();
         var parameterNameSnakeCase = ToSnakeCase(parameterName);
-        var uniqueId = FormatTemplate(_options.HomeAssistant.UniqueIdFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
-        var objectId = FormatTemplate(_options.HomeAssistant.ObjectIdFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var uniqueId = FormatTemplate(_optionsMonitor.CurrentValue.HomeAssistant.UniqueIdFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
+        var objectId = FormatTemplate(_optionsMonitor.CurrentValue.HomeAssistant.ObjectIdFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId }, { "parameterName", parameterNameSnakeCase } });
 
         var (component, unitOfMeasurement, deviceClass, stateClass) = GetParameterMetadata(parameterName);
 
@@ -452,17 +452,17 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             UniqueId = uniqueId,
             DefaultEntityId = defaultEntityId,
             StateTopic = stateTopic,
-            ValueTemplate = _options.HomeAssistant.ValueTemplate,
+            ValueTemplate = _optionsMonitor.CurrentValue.HomeAssistant.ValueTemplate,
             UnitOfMeasurement = unitOfMeasurement,
             DeviceClass = deviceClass,
             StateClass = stateClass,
             Device = new HomeAssistantDeviceInfo
             {
-                Identifiers = [FormatTemplate(_options.HomeAssistant.DeviceIdentifierFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId } })],
-                Name = FormatTemplate(_options.HomeAssistant.DeviceNameFormat, new() { { deviceTypeKey, deviceType.ToString() }, { deviceIdKey, deviceId } }),
-                Manufacturer = _options.HomeAssistant.DeviceManufacturer,
-                Model = _options.HomeAssistant.DeviceModel,
-                SwVersion = _options.HomeAssistant.DeviceSoftwareVersion
+                Identifiers = [FormatTemplate(_optionsMonitor.CurrentValue.HomeAssistant.DeviceIdentifierFormat, new() { { deviceTypeKey, deviceTypeLowerInvariantStr }, { deviceIdKey, deviceId } })],
+                Name = FormatTemplate(_optionsMonitor.CurrentValue.HomeAssistant.DeviceNameFormat, new() { { deviceTypeKey, deviceType.ToString() }, { deviceIdKey, deviceId } }),
+                Manufacturer = _optionsMonitor.CurrentValue.HomeAssistant.DeviceManufacturer,
+                Model = _optionsMonitor.CurrentValue.HomeAssistant.DeviceModel,
+                SwVersion = _optionsMonitor.CurrentValue.HomeAssistant.DeviceSoftwareVersion
             }
         };
     }
@@ -484,7 +484,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         // Check if this is a compound parameter (synthetic, not in registry)
         if (IsCompoundParameter(parameterName))
         {
-            var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _options.TimeZoneId);
+            var compound = RoconMqtt.Mqtt.Compound.CompoundParameterFactory.Create(parameterName, _optionsMonitor.CurrentValue.TimeZoneId);
             LogUsingCompoundParameterMetadata(_logger, parameterName);
             return (compound.HomeAssistantComponent, compound.UnitOfMeasurement, compound.DeviceClass, compound.StateClass);
         }
@@ -512,14 +512,14 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         var deviceId = _deviceIdentifiers[deviceName];
         var deviceTypeStrLower = deviceType.ToString().ToLowerInvariant();
         var (component, _, _, _) = GetParameterMetadata(parameterName);
-        return $"{_options.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_options.HomeAssistant.ObjectIdentifierFormat, new() { { deviceTypeKey, deviceTypeStrLower }, { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
+        return $"{_optionsMonitor.CurrentValue.HomeAssistant.DiscoveryPrefix}/{component}/{FormatTemplate(_optionsMonitor.CurrentValue.HomeAssistant.ObjectIdentifierFormat, new() { { deviceTypeKey, deviceTypeStrLower }, { deviceIdKey, deviceId.ToLowerInvariant() }, { objectIdKey, ToSnakeCase(parameterName) } })}/config";
     }
 
     private string GetStateTopic(string deviceName, DeviceType deviceType, string parameterName)
     {
         var deviceId = _deviceIdentifiers[deviceName];
         var deviceTypeStrLower = deviceType.ToString().ToLowerInvariant();
-        return $"{_options.Topic}/{deviceTypeStrLower}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
+        return $"{_optionsMonitor.CurrentValue.Topic}/{deviceTypeStrLower}/{deviceId.ToLowerInvariant()}/{ToSnakeCase(parameterName)}/state";
     }
 
     /// <summary>
@@ -629,7 +629,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
             parameterName, 
             CommandType.Get, 
             null, 
-            (int)TimeSpan.FromSeconds(_options.ResponseTimeoutSeconds).TotalMilliseconds, 
+            (int)TimeSpan.FromSeconds(_optionsMonitor.CurrentValue.ResponseTimeoutSeconds).TotalMilliseconds, 
             token);
 
         // Publish to MQTT using resolved device identifier
@@ -637,17 +637,17 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
         if (ShouldPublish(key, result))
         {
             var stateTopic = GetStateTopic(deviceName, deviceType, parameterName);
-            
+
             // Translate values based on parameter type and Home Assistant component
             var publishValue = TranslateParameterValue(parameterName, result.Value);
-            
+
             // Create a payload without the Definition for Home Assistant
             var statePayload = new MqttStatePayload(result.Name, publishValue);
             var json = JsonSerializer.Serialize(statePayload, _unIndentedJsonSerializerOptions);
-            
+
             LogPublishingToMqtt(_logger, stateTopic, json);
             await _mqtt.PublishAsync(stateTopic, json, token, retain: true);
-            
+
             _lastPublishedValues[key] = result;
         }
         else
@@ -682,7 +682,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         if (newValue is double newDouble && lastValue is double lastDouble)
         {
-            var threshold = _options.ChangeThresholdPercent / 100.0;
+            var threshold = _optionsMonitor.CurrentValue.ChangeThresholdPercent / 100.0;
             var change = Math.Abs(newDouble - lastDouble);
             var referenceValue = Math.Max(Math.Abs(lastDouble), 0.001);
             return (change / referenceValue) > threshold;
@@ -690,7 +690,7 @@ public partial class RoconMqttPublisher(ICanService roconService, IMqttService m
 
         if (newValue is int newInt && lastValue is int lastInt)
         {
-            var threshold = _options.ChangeThresholdPercent / 100.0;
+            var threshold = _optionsMonitor.CurrentValue.ChangeThresholdPercent / 100.0;
             var change = Math.Abs(newInt - lastInt);
             var referenceValue = Math.Max(Math.Abs(lastInt), 1);
             return (change / (double)referenceValue) > threshold;
