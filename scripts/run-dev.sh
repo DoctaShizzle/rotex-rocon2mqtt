@@ -67,8 +67,5 @@ echo "Press Ctrl+C to stop"
 echo "================================================"
 echo ""
 
-# Navigate to project directory
-cd "$(dirname "$0")/../src/RoconMqtt"
-
 # Run the application
-dotnet run --project RoconMqtt.csproj
+./RoconMqtt

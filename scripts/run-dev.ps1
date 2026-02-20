@@ -76,9 +76,5 @@ Write-Host "Press Ctrl+C to stop" -ForegroundColor Yellow
 Write-Host "================================================" -ForegroundColor Cyan
 Write-Host ""
 
-# Navigate to project directory
-$projectPath = Join-Path $PSScriptRoot "..\src\RoconMqtt"
-Set-Location $projectPath
-
 # Run the application
-dotnet run --project RoconMqtt.csproj
+./RoconMqtt
