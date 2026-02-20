@@ -51,32 +51,90 @@ src/RoconMqtt/bin/publish/linux-arm64/
 
 ---
 
-## Running in Development Mode (Command Line)
+## Development Testing (Bare Metal)
 
-For testing and debugging, you can run the application directly from the command line with verbose logging.
+For quick development testing on your local machine or Raspberry Pi, use the provided development scripts.
 
-### Prerequisites
+### Quick Start Scripts
 
-- The application must be run with `sudo` to access CAN interface
-- Ensure `can0` is properly configured (see [HARDWARE.md](HARDWARE.md))
+Two scripts are provided for easy development testing:
 
-### Running the Application
-
-Transfer the build output to your Raspberry Pi (as described in [Deployment Steps](#deployment-steps)), then:
-
-```bash
-cd /opt/roconmqtt
-sudo ASPNETCORE_ENVIRONMENT=Development ./RoconMqtt
+**Windows (PowerShell):**
+```powershell
+.\scripts\run-dev.ps1
 ```
 
-This will:
-- Run with **verbose Debug logging** to help diagnose issues
-- Output logs to both console and file (`/opt/roconmqtt/logs/rocon-mqtt-*.txt`)
-- Show detailed error messages and state transitions
+**Linux/macOS:**
+```bash
+chmod +x ./scripts/run-dev.sh
+./scripts/run-dev.sh
+```
 
-### Stopping the Application
+### Configuration
 
-Press `Ctrl+C` in the terminal to gracefully stop the application.
+Edit the script before running to set your environment variables:
+
+```powershell
+# Required settings
+$env:Can__MachineType = "EHSHXXPXXA"
+$env:Mqtt__Host = "192.168.0.254"
+$env:Mqtt__Username = "rocon"
+$env:Mqtt__Password = "your-mqtt-password"
+
+# Optional - SSH CAN (for remote CAN access)
+# $env:Can__Ssh__Host = "192.168.0.100"
+# $env:Can__Ssh__Username = "pi"
+# $env:Can__Ssh__Password = "raspberry"
+```
+
+**Features:**
+- Sets `ASPNETCORE_ENVIRONMENT=Development` for verbose logging
+- Runs `dotnet run` with all required environment variables
+- Shows configuration summary before starting
+- Press `Ctrl+C` to stop
+
+**SocketCAN vs SSH CAN:**
+- If `Can__Ssh__*` variables are NOT set → Uses local SocketCAN (`can0` on the machine)
+- If `Can__Ssh__*` variables ARE set → Connects to remote CAN device via SSH
+
+### Manual Command Line Testing
+
+Alternatively, run directly with environment variables:
+
+**Windows (PowerShell):**
+```powershell
+cd src\RoconMqtt
+$env:Can__MachineType = "EHSHXXPXXA"
+$env:Mqtt__Host = "192.168.0.254"
+$env:Mqtt__Username = "rocon"
+$env:Mqtt__Password = "your-password"
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+dotnet run
+```
+
+**Linux/macOS:**
+```bash
+cd src/RoconMqtt
+Can__MachineType="EHSHXXPXXA" \
+Mqtt__Host="192.168.0.254" \
+Mqtt__Username="rocon" \
+Mqtt__Password="your-password" \
+ASPNETCORE_ENVIRONMENT="Development" \
+dotnet run
+```
+
+**On Raspberry Pi with SocketCAN (requires sudo):**
+```bash
+cd /opt/roconmqtt
+sudo Can__MachineType="EHSHXXPXXA" \
+     Mqtt__Host="192.168.0.254" \
+     Mqtt__Username="rocon" \
+     Mqtt__Password="your-password" \
+     ASPNETCORE_ENVIRONMENT="Development" \
+     ./RoconMqtt
+```
+
+**Note:** Local SocketCAN requires root/sudo permissions to access the CAN interface.
 
 ---
 
@@ -161,48 +219,26 @@ sudo chmod +x /opt/roconmqtt
 
 ### 5. Configure the Application
 
-Edit the configuration file:
+**Important:** The application is designed to be configured via **environment variables** rather than editing `appsettings.json`. This keeps secrets out of configuration files and makes deployment consistent across environments.
 
-```bash
-sudo nano /opt/roconmqtt/appsettings.json
-```
+Configuration will be set up in the systemd service (see [Running as a systemd Service](#running-as-a-systemd-service-production)).
 
-Update the configuration with your specific values. Here's a minimal example:
+**Required configuration:**
+- `Can__MachineType` - Determines which CAN registry to load (e.g., `EHSHXXPXXA`)
+- `Mqtt__Host` - Your MQTT broker IP address
+- `Mqtt__Username` - MQTT broker username
+- `Mqtt__Password` - MQTT broker password
 
-```json
-{
-  "Mqtt": {
-    "Host": "192.168.0.254",  // Your MQTT broker IP
-    "ClientId": "rocon-mqtt",
-    "Topic": "rocon",
-    "Username": "your-username",
-    "Password": "your-password",
-    "Devices": ["HG1"],
-    "Parameters": ["cAUSSENTEMP", "cVORLAUFTEMP"],
-    "CompoundParameters": ["Timestamp"],
-    "PollingIntervalSeconds": 30,
-    "ResponseTimeoutSeconds": 1,
-    "ChangeThresholdPercent": 1.0
-  },
-  "Can": {
-    "Ssh": {
-      "Host": "192.168.0.250",  // Your CAN interface device IP
-      "Username": "root",
-      "Password": "your-password"
-    }
-  }
-}
-```
+**Note:** Devices and parameters are defined in the machine-specific CAN registry file (e.g., `can-registry-EHSHXXPXXA.json`) and do not need to be configured manually.
 
-**Configuration Notes:**
-- For complete MQTT options including Home Assistant auto-discovery, TLS, and more, see **[MQTT.md](MQTT.md)**
-- For CAN bus configuration (SocketCAN vs SSH), see **[SSH_CAN_BUS.md](SSH_CAN_BUS.md)**
-
-**?? Security Note**: For production, consider using environment variables or secrets management instead of storing passwords in plain text.
+**Configuration documentation:**
+- For complete configuration reference, see **[CONFIGURATION.md](CONFIGURATION.md)**
+- For MQTT-specific options (Home Assistant, TLS, etc.), see **[MQTT.md](MQTT.md)**
+- For CAN bus configuration (SocketCAN vs SSH), see **[CAN.md](CAN.md)**
 
 ---
 
-## Running as a systemd Service
+## Running as a systemd Service (Production)
 
 **Prerequisites:**
 - Ensure CAN interface is configured as described in **[HARDWARE.md](HARDWARE.md)**
@@ -224,7 +260,146 @@ sudo mv /tmp/roconmqtt.service /etc/systemd/system/
 sudo chmod 644 /etc/systemd/system/roconmqtt.service
 ```
 
-**Service Dependencies:**
+### 2. Configure Environment Variables
+
+**Option A: Environment File (Recommended for Production)**
+
+Create a secure environment file with all configuration:
+
+```bash
+sudo nano /opt/roconmqtt/.env
+```
+
+Add the following content (adjust values for your setup):
+
+```ini
+# Application Environment
+ASPNETCORE_ENVIRONMENT=Production
+
+# Machine Type (REQUIRED)
+Can__MachineType=EHSHXXPXXA
+
+# MQTT Configuration (REQUIRED)
+Mqtt__Host=192.168.0.254
+Mqtt__Username=rocon
+Mqtt__Password=your-secure-mqtt-password
+
+# MQTT Optional Settings
+Mqtt__Port=1883
+Mqtt__ClientId=rocon-mqtt
+Mqtt__Topic=rocon
+Mqtt__PollingIntervalSeconds=30
+Mqtt__ResponseTimeoutSeconds=5
+Mqtt__ChangeThresholdPercent=2.0
+Mqtt__TimeZoneId=Europe/Brussels
+
+# CAN Configuration
+Can__CanInterfaceName=can0
+Can__TimeZoneId=Europe/Brussels
+
+# SSH CAN (Optional - for remote CAN access)
+# Uncomment these if you need to access CAN via SSH:
+# Can__Ssh__Host=192.168.0.100
+# Can__Ssh__Port=22
+# Can__Ssh__Username=pi
+# Can__Ssh__Password=your-ssh-password
+
+# Kestrel Web Server (Optional)
+Kestrel__Endpoints__Http__Url=http://0.0.0.0:5000
+```
+
+Secure the file (important!):
+
+```bash
+sudo chmod 600 /opt/roconmqtt/.env
+sudo chown rocon:rocon /opt/roconmqtt/.env
+```
+
+Update the systemd service file to use the environment file:
+
+```bash
+sudo nano /etc/systemd/system/roconmqtt.service
+```
+
+Add the `EnvironmentFile` line in the `[Service]` section:
+
+```ini
+[Service]
+Type=notify
+EnvironmentFile=/opt/roconmqtt/.env
+WorkingDirectory=/opt/roconmqtt
+ExecStart=/opt/roconmqtt/RoconMqtt
+User=rocon
+Group=rocon
+SupplementaryGroups=can
+Restart=always
+RestartSec=10
+```
+
+**Option B: Direct Environment Variables in Service File**
+
+Alternatively, add environment variables directly to the service file:
+
+```bash
+sudo nano /etc/systemd/system/roconmqtt.service
+```
+
+Add these lines in the `[Service]` section:
+
+```ini
+[Service]
+Type=notify
+# Required settings
+Environment="ASPNETCORE_ENVIRONMENT=Production"
+Environment="Can__MachineType=EHSHXXPXXA"
+Environment="Mqtt__Host=192.168.0.254"
+Environment="Mqtt__Username=rocon"
+Environment="Mqtt__Password=your-secure-password"
+
+# Optional settings
+Environment="Mqtt__Port=1883"
+Environment="Mqtt__ClientId=rocon-mqtt"
+Environment="Mqtt__Topic=rocon"
+Environment="Can__CanInterfaceName=can0"
+
+WorkingDirectory=/opt/roconmqtt
+ExecStart=/opt/roconmqtt/RoconMqtt
+User=rocon
+Group=rocon
+SupplementaryGroups=can
+Restart=always
+RestartSec=10
+```
+
+**Note:** Option A (environment file) is more secure and easier to update without editing the service file.
+
+### 3. Enable and Start the Service
+
+```bash
+# Reload systemd to recognize the new service
+sudo systemctl daemon-reload
+
+# Enable the service to start on boot
+sudo systemctl enable roconmqtt
+
+# Start the service
+sudo systemctl start roconmqtt
+```
+
+### 4. Verify the Service is Running
+
+```bash
+# Check service status
+sudo systemctl status roconmqtt
+
+# Follow live logs
+sudo journalctl -u roconmqtt -f
+
+# View recent logs
+sudo journalctl -u roconmqtt -n 100
+```
+
+### Service Dependencies
 
 The service file includes these critical dependencies:
 ```ini
@@ -240,33 +415,7 @@ SupplementaryGroups=can
 
 **Important:** If you get socket errors indicating "network is down" on boot, verify that `setup-can.service` is installed and enabled (see [HARDWARE.md](HARDWARE.md)). The application uses native .NET sockets (AF_CAN) to communicate with the Linux SocketCAN kernel module.
 
-### 2. Enable and Start the Service
-
-```bash
-# Reload systemd to recognize the new service
-sudo systemctl daemon-reload
-
-# Enable the service to start on boot
-sudo systemctl enable roconmqtt
-
-# Start the service
-sudo systemctl start roconmqtt
-```
-
-### 3. Verify the Service is Running
-
-```bash
-# Check service status
-sudo systemctl status roconmqtt
-
-# Follow live logs
-sudo journalctl -u roconmqtt -f
-
-# View recent logs
-sudo journalctl -u roconmqtt -n 100
-```
-
-### 4. Verify Service Dependencies
+### Verify Service Dependencies
 
 Check that the service dependencies are correctly configured:
 
@@ -306,88 +455,46 @@ sudo systemctl is-enabled setup-can.service
 
 ---
 
-## Configuration
+---
 
-### Application Settings
+## Configuration Reference
 
-For detailed MQTT configuration options including:
-- Home Assistant auto-discovery
-- Compound parameters
-- Change detection thresholds
-- TLS/SSL configuration
-- Topic formats
+### Configuration Sources (Priority Order)
 
-See **[MQTT.md](MQTT.md)** for complete documentation.
+The application loads configuration from multiple sources in this order (later sources override earlier ones):
 
-### Environment Variables
+1. `appsettings.json` - Default settings
+2. `appsettings.{Environment}.json` - Environment-specific settings
+3. Environment variables - Runtime overrides (highest priority)
 
-The service runs in **Production** mode by default. To change the environment:
+### Environment Variables Format
 
-1. Edit the service file:
-   ```bash
-   sudo nano /etc/systemd/system/roconmqtt.service
-   ```
+Use double underscores (`__`) to represent nested settings:
 
-2. Change the environment variable:
-   ```ini
-   Environment="ASPNETCORE_ENVIRONMENT=Development"
-   ```
-
-3. Reload and restart:
-   ```bash
-   sudo systemctl daemon-reload
-   sudo systemctl restart roconmqtt
-   ```
-
-#### Using Environment Variables for Configuration
-
-You can override any `appsettings.json` value using environment variables. This is useful for keeping secrets out of configuration files.
-
-**Format:** Use double underscores (`__`) for nested settings:
-```ini
-Environment="Mqtt__Host=192.168.0.254"
-Environment="Mqtt__Username=rocon"
-Environment="Mqtt__Password=your-password"
-Environment="Can__MachineType=EHSHXXPXXA"
+```
+Section__Subsection__Property
 ```
 
-**Example systemd service with secrets:**
-```ini
-[Service]
-Environment="ASPNETCORE_ENVIRONMENT=Production"
-Environment="Mqtt__Host=192.168.0.254"
-Environment="Mqtt__Username=rocon"
-Environment="Mqtt__Password=secret-password"
-WorkingDirectory=/opt/roconmqtt
-ExecStart=/opt/roconmqtt/RoconMqtt
-```
+**Examples:**
+- `Mqtt__Host` → `"Mqtt": { "Host": "..." }`
+- `Can__Ssh__Username` → `"Can": { "Ssh": { "Username": "..." } }`
+- `Kestrel__Endpoints__Http__Url` → `"Kestrel": { "Endpoints": { "Http": { "Url": "..." } } }`
 
-**Alternative:** Use an environment file:
-```bash
-# Create environment file
-sudo nano /opt/roconmqtt/.env
+### Required Settings
 
-# Add variables (one per line)
-Mqtt__Host=192.168.0.254
-Mqtt__Username=rocon
-Mqtt__Password=secret-password
-```
+These settings MUST be configured (via environment variables or appsettings):
 
-Then reference it in the service:
-```ini
-[Service]
-EnvironmentFile=/opt/roconmqtt/.env
-WorkingDirectory=/opt/roconmqtt
-ExecStart=/opt/roconmqtt/RoconMqtt
-```
+- `Can__MachineType` - Machine type to determine which CAN registry to load (e.g., `EHSHXXPXXA`)
+- `Mqtt__Host` - MQTT broker hostname or IP address
+- `Mqtt__Username` - MQTT broker username
+- `Mqtt__Password` - MQTT broker password
 
-**Security tip:** Protect the environment file:
-```bash
-sudo chmod 600 /opt/roconmqtt/.env
-sudo chown roconmqtt:roconmqtt /opt/roconmqtt/.env
-```
+### Complete Configuration Documentation
 
-For a complete list of configurable settings, see [CONFIGURATION.md](CONFIGURATION.md).
+For a comprehensive list of all available settings, see:
+- **[CONFIGURATION.md](CONFIGURATION.md)** - Complete environment variable reference
+- **[MQTT.md](MQTT.md)** - MQTT-specific configuration (Home Assistant, TLS, etc.)
+- **[CAN.md](CAN.md)** - CAN bus configuration (SocketCAN, SSH CAN)
 
 ### Environment-Specific Settings
 

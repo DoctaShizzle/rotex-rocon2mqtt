@@ -96,25 +96,32 @@ This will:
 
 ### Application & MQTT Config (Device or Fleet level)
 
-**Set these in balenaCloud dashboard (Environment Variables):**
+**Copy-paste these environment variables into balenaCloud dashboard:**
 
-**Required:**
+Go to your fleet in balenaCloud → **Fleet Configuration** → **Fleet Variables** (or Device Variables for device-specific settings), and add:
+
+#### Required Environment Variables
+
+Copy this block and add each line as a separate variable in balenaCloud:
+
 ```
-# Application environment
 ASPNETCORE_ENVIRONMENT=Production
-
-# Machine type (determines which CAN registry to load)
 Can__MachineType=EHSHXXPXXA
-
-# MQTT broker connection
-Mqtt__Host=<your-mqtt-broker-ip>
-Mqtt__Username=<mqtt-username>
-Mqtt__Password=<mqtt-password>
+Mqtt__Host=192.168.0.254
+Mqtt__Username=rocon
+Mqtt__Password=your-mqtt-password-here
 ```
 
-**Optional (with defaults):**
+**Change these values:**
+- `Mqtt__Host`: Your MQTT broker IP address or hostname
+- `Mqtt__Username`: Your MQTT broker username
+- `Mqtt__Password`: Your MQTT broker password
+- `Can__MachineType`: Machine type (use `EHSHXXPXXA` for Daikin Altherma EHSH heat pumps)
+
+#### Optional Environment Variables (uncomment/add if needed)
+
+**MQTT Configuration:**
 ```
-# MQTT configuration
 Mqtt__Port=1883
 Mqtt__ClientId=rocon-mqtt
 Mqtt__Topic=rocon
@@ -122,22 +129,28 @@ Mqtt__PollingIntervalSeconds=30
 Mqtt__ResponseTimeoutSeconds=5
 Mqtt__ChangeThresholdPercent=2.0
 Mqtt__TimeZoneId=Europe/Brussels
+```
 
-# CAN configuration
+**CAN Configuration:**
+```
 Can__CanInterfaceName=can0
 Can__TimeZoneId=Europe/Brussels
+```
 
-# Kestrel web server
+**Kestrel Web Server:**
+```
 Kestrel__Endpoints__Http__Url=http://0.0.0.0:5000
 ```
 
-**For SSH CAN (remote CAN bus):**
+**SSH CAN (for remote CAN bus access):**
 ```
-Can__Ssh__Host=<can-device-ip>
+Can__Ssh__Host=192.168.0.100
 Can__Ssh__Port=22
-Can__Ssh__Username=<ssh-user>
-Can__Ssh__Password=<ssh-password>
+Can__Ssh__Username=pi
+Can__Ssh__Password=your-ssh-password
 ```
+
+**Note:** If SSH CAN variables are NOT set, the application uses local SocketCAN (`can0` on the device itself).
 
 **SocketCAN (local)** is used by default if `Can__Ssh__*` variables are not set. The app will use the CAN interface specified by `Can__CanInterfaceName` (default: `can0`).
 
