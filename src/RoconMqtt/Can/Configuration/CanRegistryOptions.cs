@@ -6,6 +6,31 @@ namespace RoconMqtt.Can.Configuration;
 public class CanRegistryOptions
 {
     /// <summary>
+    /// Machine type identifier (e.g., "EHSHXXPXXA")
+    /// </summary>
+    public string MachineType { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Human-readable description of the machine type
+    /// </summary>
+    public string MachineDescription { get; set; } = string.Empty;
+
+    /// <summary>
+    /// List of device names to query (e.g., "HG1", "HC1", "HCM1")
+    /// </summary>
+    public List<string> Devices { get; set; } = [];
+
+    /// <summary>
+    /// List of parameter names to publish to MQTT
+    /// </summary>
+    public List<string> MqttParameters { get; set; } = [];
+
+    /// <summary>
+    /// List of compound parameter names to create for MQTT
+    /// </summary>
+    public List<string> MqttCompoundParameters { get; set; } = [];
+
+    /// <summary>
     /// List of parameter definitions
     /// </summary>
     public List<ParameterDefinitionDto> Parameters { get; set; } = [];

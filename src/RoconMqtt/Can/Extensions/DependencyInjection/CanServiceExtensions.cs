@@ -9,8 +9,8 @@ namespace RoconMqtt.Can.Extensions.DependencyInjection;
 public static class CanServiceExtensions
 {
     private const string canSectionKey = "Can";
+    private const string machineTypeKey = "Can:MachineType";
     private const string registryFilePathKey = "Can:RegistryFilePath";
-    private const string defaultRegistryFile = "can-registry.json";
 
     public static CanServiceBuilder AddCanService(this IServiceCollection services, IConfiguration configuration)
     {
@@ -29,7 +29,17 @@ public static class CanServiceExtensions
             .ValidateOnStart();
 
         // Configure CAN parameter registry from external file
-        var registryFilePath = configuration[registryFilePathKey] ?? defaultRegistryFile;
+        // Use explicit path if provided, otherwise construct from machine type
+        var registryFilePath = configuration[registryFilePathKey];
+        if (string.IsNullOrEmpty(registryFilePath))
+        {
+            var machineType = configuration[machineTypeKey];
+            if (string.IsNullOrEmpty(machineType))
+            {
+                throw new InvalidOperationException($"Either '{machineTypeKey}' or '{registryFilePathKey}' must be configured.");
+            }
+            registryFilePath = $"can-registry-{machineType}.json";
+        }
         
         var registryConfiguration = new ConfigurationBuilder()
             .AddJsonFile(registryFilePath, optional: false, reloadOnChange: true)

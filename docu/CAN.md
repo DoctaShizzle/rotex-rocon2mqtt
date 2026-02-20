@@ -139,6 +139,99 @@ D2 1D FA 0A 06 01 E0
 └──┴──┴──────────── Header: Fixed
 ```
 
+## Machine Types and CAN Registry Files
+
+### Overview
+
+RoconMqtt supports multiple Rotex/Daikin heat pump models through **machine-type-specific CAN registry files**. Each machine type has its own registry file containing:
+- Parameter definitions (InfoNumbers, data types, scaling factors)
+- Device list (HG1, HC1, HCM1, etc.)
+- MQTT parameters (which parameters to publish)
+- Home Assistant metadata (device classes, units, etc.)
+
+### Configuration
+
+Set the machine type in `appsettings.json` or via environment variable:
+
+**appsettings.json:**
+```json
+{
+  "Can": {
+    "MachineType": "EHSHXXPXXA",
+    "CanInterfaceName": "can0"
+  }
+}
+```
+
+**Environment variable:**
+```bash
+Can__MachineType=EHSHXXPXXA
+```
+
+The app will dynamically load `can-registry-{MachineType}.json` (e.g., `can-registry-EHSHXXPXXA.json`).
+
+### Registry File Structure
+
+Each registry file follows this structure:
+
+```json
+{
+  "machineType": "EHSHXXPXXA",
+  "machineDescription": "Daikin Altherma EHSH Heat Pump",
+  "devices": ["HG1", "HC1", "HCM1"],
+  "mqttParameters": [
+    "OutdoorTemperature",
+    "BufferTemperatureActual",
+    ...
+  ],
+  "mqttCompoundParameters": ["Timestamp"],
+  "parameters": [
+    {
+      "originalName": "cAUSSENTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x0C",
+      "type": "Float",
+      "factor": 10,
+      "nameEnglish": "OutdoorTemperature",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature"
+    },
+    ...
+  ],
+  "heatGenerators": [...],
+  "heatingCircuits": [...],
+  "heatingCircuitModules": [...]
+}
+```
+
+### Available Machine Types
+
+| Machine Type | Description | Registry File |
+|--------------|-------------|---------------|
+| `EHSHXXPXXA` | Daikin Altherma EHSH Heat Pump | `can-registry-EHSHXXPXXA.json` |
+
+More types coming soon (EHBH, EHV, etc.).
+
+### Adding New Machine Types
+
+To add support for a new heat pump model:
+
+1. **Create registry file**: Copy `can-registry-EHSHXXPXXA.json` to `can-registry-{newtype}.json`
+2. **Update metadata**: Set `machineType` and `machineDescription`
+3. **Update devices**: List applicable device IDs (HG1-8, HC1-16, HCM1-16)
+4. **Update parameters**: Add/remove parameters specific to the model
+5. **Test**: Set `Can__MachineType={newtype}` and verify communication
+
+### Why Separate Registry Files?
+
+**Benefits:**
+- **Model-specific parameters**: Different heat pumps support different InfoNumbers
+- **Easy maintenance**: Update one model without affecting others
+- **Clear separation**: Machine config (CAN params) vs deployment config (MQTT broker)
+- **Extensibility**: Add new models without code changes
+
 ## Parameter System
 
 ### Parameter Registry

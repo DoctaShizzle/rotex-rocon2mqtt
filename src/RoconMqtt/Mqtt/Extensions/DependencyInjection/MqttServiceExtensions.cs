@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using RoconMqtt.Can.Configuration;
 using RoconMqtt.Mqtt.Options;
 using RoconMqtt.Mqtt.Resilience;
 
@@ -20,7 +21,27 @@ public static class MqttServiceExtensions
         services.AddOptions<MqttOptions>()
             .Bind(configuration.GetSection("Mqtt"))
             .ValidateDataAnnotations()
-            .ValidateOnStart();
+            .ValidateOnStart()
+            .PostConfigure<IOptions<CanRegistryOptions>>((mqttOptions, registryOptions) =>
+            {
+                // If MQTT options don't specify devices/parameters, use the ones from the CAN registry
+                var registry = registryOptions.Value;
+                
+                if (mqttOptions.Devices.Count == 0 && registry.Devices.Count > 0)
+                {
+                    mqttOptions.Devices = registry.Devices;
+                }
+                
+                if (mqttOptions.Parameters.Count == 0 && registry.MqttParameters.Count > 0)
+                {
+                    mqttOptions.Parameters = registry.MqttParameters;
+                }
+                
+                if (mqttOptions.CompoundParameters.Count == 0 && registry.MqttCompoundParameters.Count > 0)
+                {
+                    mqttOptions.CompoundParameters = registry.MqttCompoundParameters;
+                }
+            });
 
         services.AddOptions<ResilienceOptions>()
             .Bind(configuration.GetSection("Resilience"))

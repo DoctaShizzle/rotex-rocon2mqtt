@@ -339,6 +339,56 @@ The service runs in **Production** mode by default. To change the environment:
    sudo systemctl restart roconmqtt
    ```
 
+#### Using Environment Variables for Configuration
+
+You can override any `appsettings.json` value using environment variables. This is useful for keeping secrets out of configuration files.
+
+**Format:** Use double underscores (`__`) for nested settings:
+```ini
+Environment="Mqtt__Host=192.168.0.254"
+Environment="Mqtt__Username=rocon"
+Environment="Mqtt__Password=your-password"
+Environment="Can__MachineType=EHSHXXPXXA"
+```
+
+**Example systemd service with secrets:**
+```ini
+[Service]
+Environment="ASPNETCORE_ENVIRONMENT=Production"
+Environment="Mqtt__Host=192.168.0.254"
+Environment="Mqtt__Username=rocon"
+Environment="Mqtt__Password=secret-password"
+WorkingDirectory=/opt/roconmqtt
+ExecStart=/opt/roconmqtt/RoconMqtt
+```
+
+**Alternative:** Use an environment file:
+```bash
+# Create environment file
+sudo nano /opt/roconmqtt/.env
+
+# Add variables (one per line)
+Mqtt__Host=192.168.0.254
+Mqtt__Username=rocon
+Mqtt__Password=secret-password
+```
+
+Then reference it in the service:
+```ini
+[Service]
+EnvironmentFile=/opt/roconmqtt/.env
+WorkingDirectory=/opt/roconmqtt
+ExecStart=/opt/roconmqtt/RoconMqtt
+```
+
+**Security tip:** Protect the environment file:
+```bash
+sudo chmod 600 /opt/roconmqtt/.env
+sudo chown roconmqtt:roconmqtt /opt/roconmqtt/.env
+```
+
+For a complete list of configurable settings, see [CONFIGURATION.md](CONFIGURATION.md).
+
 ### Environment-Specific Settings
 
 - **Production** (`appsettings.Production.json`):

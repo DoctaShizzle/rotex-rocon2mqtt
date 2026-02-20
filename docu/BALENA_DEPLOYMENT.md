@@ -25,17 +25,19 @@ Balena simplifies deployment and management of containerized applications on Ras
 
 ---
 
-## Architecture & Files to Create
+## Architecture & Files
+
+The repository includes all necessary Docker and Balena files:
 
 ### 1. **Dockerfile** (multi-stage)
 
 Location: `Dockerfile` (repo root)
 
 - **Build stage**: Uses `mcr.microsoft.com/dotnet/sdk:10.0` to publish the RoconMqtt.csproj using the `RaspberryPi-ARM64` publish profile
-- **Runtime stage**: Uses `mcr.microsoft.com/dotnet/runtime-deps:10.0` (minimal, ~80 MB) to run the published binary
+- **Runtime stage**: Uses `mcr.microsoft.com/dotnet/runtime-deps:10.0-alpine` (minimal, ~80 MB) to run the published binary
 - Multi-stage keeps the final image small (~100–150 MB)
 
-**Key points:**
+**Key features:**
 - Publishes with `-c Release` and the existing `RaspberryPi-ARM64` profile (self-contained, trimmed)
 - Sets `ASPNETCORE_URLS=http://+:5000` for the Kestrel endpoint
 - Exposes port 5000
@@ -43,28 +45,17 @@ Location: `Dockerfile` (repo root)
 
 ### 2. **.dockerignore** (repo root)
 
-Excludes build artifacts, user files, and IDE files from the Docker build context.
+Excludes build artifacts, user files, and IDE files from the Docker build context for faster builds.
 
-```
-bin/
-obj/
-.vscode/
-.git/
-*.user
-*.suo
-.DS_Store
-```
+### 3. **docker-compose.yml** (repo root)
 
-### 3. **docker-compose.yml** (repo root; used by balena CLI)
-
-Location: `docker-compose.yml` (repo root)
+Defines two services:
 
 - **roconmqtt** service: Runs the .NET application with:
   - `network_mode: "host"` – Required to access host SocketCAN (`can0`)
   - `restart: always` – Auto-restart on crash
-  - Environment variables for runtime config (ASPNETCORE_ENVIRONMENT, MQTT credentials)
-  - Volume for persistent logs
-  - Depends on `setup-can` service being ready
+  - Environment variables for runtime config (ASPNETCORE_ENVIRONMENT, MQTT credentials, CAN settings)
+  - Healthcheck endpoint
 
 - **setup-can** service: Minimal Alpine container that:
   - Runs with `network_mode: "host"` and `privileged: true`
@@ -72,7 +63,11 @@ Location: `docker-compose.yml` (repo root)
   - Runs once (`restart: "no"`)
   - Executes before the main app starts
 
-**Important**: Balena balenaCloud reads this file to orchestrate multi-service deployments; each service maps to a separate container on the device.
+**Important**: Balena reads this file to orchestrate multi-service deployments.
+
+### 4. **.env.example** (repo root)
+
+Example environment variable configuration for local Docker Compose testing. Copy to `.env` and fill in your values.
 
 ---
 
@@ -103,44 +98,70 @@ This will:
 
 **Set these in balenaCloud dashboard (Environment Variables):**
 
+**Required:**
 ```
+# Application environment
 ASPNETCORE_ENVIRONMENT=Production
 
+# Machine type (determines which CAN registry to load)
+Can__MachineType=EHSHXXPXXA
+
+# MQTT broker connection
 Mqtt__Host=<your-mqtt-broker-ip>
 Mqtt__Username=<mqtt-username>
 Mqtt__Password=<mqtt-password>
+```
+
+**Optional (with defaults):**
+```
+# MQTT configuration
+Mqtt__Port=1883
 Mqtt__ClientId=rocon-mqtt
 Mqtt__Topic=rocon
 Mqtt__PollingIntervalSeconds=30
-Mqtt__ResponseTimeoutSeconds=1
-Mqtt__ChangeThresholdPercent=1.0
+Mqtt__ResponseTimeoutSeconds=5
+Mqtt__ChangeThresholdPercent=2.0
+Mqtt__TimeZoneId=Europe/Brussels
 
+# CAN configuration
+Can__CanInterfaceName=can0
+Can__TimeZoneId=Europe/Brussels
+
+# Kestrel web server
+Kestrel__Endpoints__Http__Url=http://0.0.0.0:5000
+```
+
+**For SSH CAN (remote CAN bus):**
+```
 Can__Ssh__Host=<can-device-ip>
+Can__Ssh__Port=22
 Can__Ssh__Username=<ssh-user>
 Can__Ssh__Password=<ssh-password>
 ```
 
-**Or use SocketCAN directly** (no SSH) if the Raspberry Pi has CAN interfaceslocally attached:
-- Leave `Can__Ssh__*` unset or empty
-- The app will auto-detect `can0` and use SocketCAN via host networking
+**SocketCAN (local)** is used by default if `Can__Ssh__*` variables are not set. The app will use the CAN interface specified by `Can__CanInterfaceName` (default: `can0`).
 
-For full MQTT options (Home Assistant auto-discovery, TLS, etc.), see [MQTT.md](MQTT.md).
+### Machine Types
+
+The `Can__MachineType` setting determines which CAN registry file to load:
+- `EHSHXXPXXA` → `can-registry-EHSHXXPXXA.json` (Daikin Altherma EHSH Heat Pump)
+- More types will be added for other Rotex/Daikin models
+
+Each registry file contains machine-specific configuration:
+- Device list (HG1, HC1, HCM1, etc.)
+- MQTT parameters to publish
+- CAN parameter definitions
+- Home Assistant metadata
+
+This means you **don't need to configure** `Mqtt__Devices__*` or `Mqtt__Parameters__*` - they're defined per machine type in the registry.
+
+For full configuration reference, see [CONFIGURATION.md](CONFIGURATION.md).
 
 ---
 
 ## Deployment Steps
 
-### 1. Prepare Files Locally
-
-Create the following files in the repo root (to be done in a future session):
-
-- `Dockerfile` (multi-stage .NET build + runtime)
-- `.dockerignore` (exclude build artifacts)
-- `docker-compose.yml` (roconmqtt + setup-can services)
-
-Reference the architecture section above for content guidelines.
-
-### 2. Set Up Balena Project
+### 1. Set Up Balena Project
 
 ```bash
 # Install balena CLI
@@ -158,14 +179,14 @@ balena login
 balena apps
 ```
 
-### 3. Add Device to Fleet
+### 2. Add Device to Fleet
 
 - In balenaCloud dashboard, click "Add Device"
 - Download and flash balenaOS to an SD card (balena CLI or Etcher)
 - Power on the Pi; it will auto-register to your fleet within ~5 minutes
 - Configure WiFi (if needed) via balenaCloud dashboard or QR code
 
-### 4. Deploy Application
+### 3. Deploy Application
 
 From the repo root:
 
@@ -183,7 +204,7 @@ Balena builder (cloud) will:
 3. Deploy to the device(s)
 4. Start the containers
 
-### 5. Configure Fleet Environment Variables
+### 4. Configure Fleet Environment Variables
 
 In balenaCloud dashboard:
 
@@ -195,7 +216,7 @@ In balenaCloud dashboard:
    - Set MQTT credentials, CAN settings, polling intervals, etc.
    - Containers will auto-restart and pick up new values
 
-### 6. Monitor & Logs
+### 5. Monitor & Logs
 
 In balenaCloud dashboard:
 
@@ -274,24 +295,49 @@ curl http://localhost:5000/health
 
 Mount a persistent volume for `/app/logs` in `docker-compose.yml` and manage log rotation via Serilog configuration. See [DEPLOYMENT.md](DEPLOYMENT.md#application-log-files).
 
+### Machine Type Not Found
+
+**Error:** `File not found: can-registry-{type}.json`
+
+**Cause:** The specified `Can__MachineType` doesn't have a corresponding registry file.
+
+**Fix:**
+- Verify the machine type is correct (e.g., `EHSHXXPXXA`)
+- Ensure the registry file exists in the image (check build logs)
+- Available types: `EHSHXXPXXA` (more coming soon)
+
 ---
 
-## Next Steps (Future Sessions)
+## Local Testing (Optional)
 
-1. **Create Dockerfile** – Multi-stage build using RaspberryPi-ARM64 profile
-2. **Create .dockerignore** – Exclude build artifacts
-3. **Create docker-compose.yml** – roconmqtt + setup-can services
-4. **Test locally** (optional) – `docker-compose up` on a PC with Docker Desktop (requires Linux or WSL for full CAN testing)
-5. **Create balenaCloud project** – Set up fleet and device type
-6. **Deploy & monitor** – Push changes and verify logs in dashboard
+Before deploying to Balena, you can test the Docker setup locally:
+
+1. **Copy `.env.example` to `.env`** and fill in your values:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your MQTT broker details
+   ```
+
+2. **Build and run:**
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Test the API:**
+   ```bash
+   curl http://localhost:5000/health
+   ```
+
+**Note:** Local testing requires Linux or WSL for full CAN support. The `setup-can` service will fail on non-Linux systems, but the main app will start.
 
 ---
 
 ## References
 
-- [RoconMqtt Deployment Guide](DEPLOYMENT.md)
-- [RoconMqtt Hardware Setup](HARDWARE.md)
-- [MQTT Configuration](MQTT.md)
+- [Configuration Guide](CONFIGURATION.md) - Comprehensive configuration reference
+- [RoconMqtt Deployment Guide](DEPLOYMENT.md) - Bare metal deployment
+- [RoconMqtt Hardware Setup](HARDWARE.md) - CAN HAT wiring and setup
+- [MQTT Configuration](MQTT.md) - MQTT and Home Assistant details
 - [Balena Documentation](https://www.balena.io/docs/)
 - [Balena Environment Variables](https://www.balena.io/docs/learn/manage/variables/)
 - [Docker Multi-stage Builds](https://docs.docker.com/build/building/multi-stage/)
@@ -304,11 +350,15 @@ Mount a persistent volume for `/app/logs` in `docker-compose.yml` and manage log
 |-----------|---------|
 | **Dockerfile** | Multi-stage build: SDK stage publishes .NET app, runtime stage runs the binary |
 | **.dockerignore** | Excludes build artifacts for faster Docker builds |
-| **docker-compose.yml** | Defines roconmqtt and setup-can services; balena uses this to deploy both |
+| **docker-compose.yml** | Defines roconmqtt and setup-can services; both deployed to device |
+| **.env.example** | Example environment variables for local Docker Compose testing |
+| **can-registry-{type}.json** | Machine-specific CAN parameters and MQTT config (per heat pump model) |
 | **BALENA_HOST_CONFIG_*** | Configure `/boot/firmware/config.txt` (SPI, MCP2515 overlays) at fleet level |
-| **Environment Variables** | Set MQTT credentials, CAN settings, and polling intervals per device or fleet |
+| **Environment Variables** | Set machine type, MQTT credentials, CAN settings per device or fleet |
 
-Once the Docker files are created, deployment is as simple as:
+Deployment is as simple as:
 ```bash
 balena push roconmqtt
 ```
+
+All configuration is managed through balenaCloud dashboard - no manual file editing needed!

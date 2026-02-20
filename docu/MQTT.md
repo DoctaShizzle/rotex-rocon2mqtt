@@ -4,6 +4,21 @@
 
 The RoconMqtt system publishes CAN bus data from Rotex Rocon G1 heating controllers to MQTT brokers with automatic Home Assistant discovery support. This document describes the MQTT architecture, publishing patterns, Home Assistant integration, and compound parameters.
 
+## Configuration Approach
+
+**Important:** As of the latest version, `Devices`, `Parameters`, and `CompoundParameters` are **defined in the CAN registry file** (e.g., `can-registry-EHSHXXPXXA.json`), not in `appsettings.json`.
+
+This means:
+- Each machine type (heat pump model) has its own parameter list
+- You configure the machine type via `Can:MachineType` setting
+- The app automatically loads the correct devices and parameters for that machine
+
+**To override** (optional, rarely needed):
+- You can still set `Mqtt:Devices`, `Mqtt:Parameters`, or `Mqtt:CompoundParameters` in `appsettings.json` or via environment variables
+- If set, they override the values from the CAN registry
+
+See [CONFIGURATION.md](CONFIGURATION.md) for complete configuration guide.
+
 ## System Architecture
 
 ```mermaid
@@ -116,7 +131,7 @@ homeassistant/sensor/rocon_heatingcircuit_12345678_room_temperature_actual/confi
   "object_id": "rocon_heatgenerator_12345678_outdoor_temperature",
   "state_topic": "rocon/heatgenerator/12345678/outdoor_temperature/state",
   "value_template": "{{ value }}",
-  "unit_of_measurement": "°C",
+  "unit_of_measurement": "ï¿½C",
   "device_class": "temperature",
   "state_class": "measurement",
   "device": {
@@ -174,9 +189,9 @@ homeassistant/sensor/rocon_heatingcircuit_12345678_room_temperature_actual/confi
 | `Password` | string | `null` | Optional authentication password |
 | `KeepAlivePeriodSeconds` | int | `30` | MQTT keep-alive interval |
 | `Topic` | string | - | Base topic for all publications |
-| `Devices` | string[] | `[]` | List of devices to query (HG1-HG8, HC1-HC16, HCM1-HCM16) |
-| `Parameters` | string[] | `[]` | List of parameters to query |
-| `CompoundParameters` | string[] | `[]` | List of compound parameters to create |
+| `Devices` | string[] | `[]` | List of devices to query (HG1-HG8, HC1-HC16, HCM1-HCM16).<br/>**Default:** Loaded from CAN registry file based on `Can:MachineType` |
+| `Parameters` | string[] | `[]` | List of parameters to query (by English name).<br/>**Default:** Loaded from CAN registry file (`mqttParameters`) |
+| `CompoundParameters` | string[] | `[]` | List of compound parameters to create.<br/>**Default:** Loaded from CAN registry file (`mqttCompoundParameters`) |
 | `PollingIntervalSeconds` | int | `30` | Interval between polling cycles |
 | `ResponseTimeoutSeconds` | int | `1` | Timeout waiting for CAN response |
 | `ChangeThresholdPercent` | double | `1.0` | Minimum change required to publish (%) |
@@ -352,7 +367,7 @@ When querying parameters, the system:
   "nameEnglish": "OutdoorTemperature",
   "deviceType": "HeatGenerator",
   "homeAssistantComponent": "sensor",
-  "unitOfMeasurement": "°C",
+  "unitOfMeasurement": "ï¿½C",
   "deviceClass": "temperature",
   "stateClass": "measurement"
 }
@@ -482,7 +497,7 @@ sensor:
 - unique_id: rocon_heatgenerator_12345678_outdoor_temperature
   name: Outdoor Temperature
   state_topic: rocon/heatgenerator/12345678/outdoor_temperature/state
-  unit_of_measurement: "°C"
+  unit_of_measurement: "ï¿½C"
   device_class: temperature
   state_class: measurement
   device:
@@ -495,7 +510,7 @@ sensor:
 **Result in Home Assistant:**
 - Entity: `sensor.rocon_heatgenerator_12345678_outdoor_temperature`
 - Display: "Outdoor Temperature"
-- Value: `15.5 °C`
+- Value: `15.5 ï¿½C`
 - Device: "Rotex HeatGenerator 12345678"
 
 ### Device Grouping
@@ -504,9 +519,9 @@ All parameters from the same device type and device ID are grouped under a singl
 
 ```
 Device: Rotex Rocon 12345678
-??? c_aussentemp (15.5 °C)
-??? c_vorlauftemp (45.0 °C)
-??? c_ruecklauftemp (38.0 °C)
+??? c_aussentemp (15.5 ï¿½C)
+??? c_vorlauftemp (45.0 ï¿½C)
+??? c_ruecklauftemp (38.0 ï¿½C)
 ??? Timestamp (2024-12-20T14:30:45)
 ```
 
@@ -693,7 +708,7 @@ automation:
       - service: notify.mobile_app
         data:
           title: "Heating Alert"
-          message: "Outside temperature dropped to {{ states('sensor.rocon_heatgenerator_12345678_outdoor_temperature') }}°C"
+          message: "Outside temperature dropped to {{ states('sensor.rocon_heatgenerator_12345678_outdoor_temperature') }}ï¿½C"
 ```
 
 ## See Also

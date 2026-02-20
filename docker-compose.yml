@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # ===========================
+  # CAN Interface Setup Service
+  # ===========================
+  # Brings up the CAN interface (can0) before the main application starts.
+  # Runs once with host networking and privileged mode for hardware access.
+  setup-can:
+    image: alpine:latest
+    container_name: roconmqtt-setup-can
+    network_mode: host
+    privileged: true
+    restart: "no"
+    command: >
+      sh -c "
+      echo 'Setting up CAN interface...';
+      if ! ip link show can0 > /dev/null 2>&1; then
+        echo 'ERROR: can0 interface not found. Ensure the MCP2515 device tree overlay is loaded.';
+        exit 1;
+      fi;
+      ip link set can0 type can bitrate 20000;
+      ip link set can0 up;
+      echo 'CAN interface can0 is up with bitrate 20000';
+      "
+
+  # ===========================
+  # RoconMqtt Application Service
+  # ===========================
+  roconmqtt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: roconmqtt
+    network_mode: host
+    restart: always
+    depends_on:
+      - setup-can
+    environment:
+      # Application environment
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT:-Production}
+      
+      # Kestrel configuration
+      - Kestrel__Endpoints__Http__Url=${KESTREL_URL:-http://0.0.0.0:5000}
+      
+      # CAN configuration
+      - Can__MachineType=${CAN_MACHINE_TYPE:-EHSHXXPXXA}
+      - Can__CanInterfaceName=${CAN_INTERFACE:-can0}
+      - Can__TimeZoneId=${CAN_TIMEZONE:-Europe/Brussels}
+      
+      # CAN SSH configuration (for remote CAN access, leave empty for local SocketCAN)
+      - Can__Ssh__Host=${CAN_SSH_HOST:-}
+      - Can__Ssh__Port=${CAN_SSH_PORT:-22}
+      - Can__Ssh__Username=${CAN_SSH_USERNAME:-}
+      - Can__Ssh__Password=${CAN_SSH_PASSWORD:-}
+      
+      # MQTT configuration
+      - Mqtt__Enabled=${MQTT_ENABLED:-true}
+      - Mqtt__Host=${MQTT_HOST}
+      - Mqtt__Port=${MQTT_PORT:-1883}
+      - Mqtt__UseTls=${MQTT_USE_TLS:-false}
+      - Mqtt__ValidateCertificate=${MQTT_VALIDATE_CERT:-true}
+      - Mqtt__ClientId=${MQTT_CLIENT_ID:-rocon-mqtt}
+      - Mqtt__Username=${MQTT_USERNAME}
+      - Mqtt__Password=${MQTT_PASSWORD}
+      - Mqtt__KeepAlivePeriodSeconds=${MQTT_KEEP_ALIVE:-30}
+      - Mqtt__Topic=${MQTT_TOPIC:-rocon}
+      - Mqtt__ChangeThresholdPercent=${MQTT_CHANGE_THRESHOLD:-2.0}
+      - Mqtt__TimeZoneId=${MQTT_TIMEZONE:-Europe/Brussels}
+      - Mqtt__PollingIntervalSeconds=${MQTT_POLLING_INTERVAL:-30}
+      - Mqtt__ResponseTimeoutSeconds=${MQTT_RESPONSE_TIMEOUT:-5}
+      
+      # Home Assistant MQTT Discovery
+      - Mqtt__HomeAssistant__Discovery=${HA_DISCOVERY:-true}
+      - Mqtt__HomeAssistant__DiscoveryPrefix=${HA_DISCOVERY_PREFIX:-homeassistant}
+      
+    volumes:
+      # Persistent logs (optional, uncomment if you want to keep logs across container restarts)
+      # - roconmqtt-logs:/app/logs
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+# Uncomment if using persistent log volume
+# volumes:
+#   roconmqtt-logs:

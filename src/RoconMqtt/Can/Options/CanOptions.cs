@@ -5,6 +5,12 @@ namespace RoconMqtt.Can.Options;
 public class CanOptions
 {
     /// <summary>
+    /// Machine type identifier (e.g., "EHSHXXPXXA") - determines which can-registry file to load
+    /// </summary>
+    [Required(ErrorMessage = "Machine type is required")]
+    public string MachineType { get; set; } = string.Empty;
+
+    /// <summary>
     /// CAN interface name (e.g., "can0") - used by SocketCanBus for local CAN access
     /// </summary>
     [Required(ErrorMessage = "CAN interface name is required")]

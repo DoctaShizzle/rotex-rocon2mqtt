@@ -1,0 +1,4568 @@
+{
+  "machineType": "EHSHXXPXXA",
+  "machineDescription": "Daikin Altherma EHSH Heat Pump",
+  "devices": [
+    "HG1",
+    "HC1",
+    "HCM1"
+  ],
+  "mqttParameters": [
+    "DeviceIdentifier",
+    "OutdoorTemperature",
+    "BufferTemperatureActual",
+    "BufferTemperatureSetpointAdjusted",
+    "BufferTemperatureSetpoint",
+    "HotWaterProductionActive",
+    "RoomTemperatureActual",
+    "RoomTemperatureSetpointAdjusted",
+    "RoomTargetTemperature1",
+    "HeaterTemperatureActual",
+    "HeaterTemperatureSetpoint",
+    "TR",
+    "V",
+    "n",
+    "ValveCH_DHW",
+    "ValveCH_Bypass",
+    "TVBH1",
+    "TVBHMIX",
+    "Defrost",
+    "PumpOperatingHours",
+    "CompressorOperatingHours",
+    "WeatherDependentCurveSetting",
+    "LeavingWaterTemperatureSetpoint",
+    "LeavingWaterTemperatureActual",
+    "CurrentError",
+    "WaterPressure"
+  ],
+  "mqttCompoundParameters": [
+    "Timestamp"
+  ],
+  "parameters": [
+    {
+      "originalName": "cGERAETE_KENNUNG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x48",
+      "type": "Enum",
+      "factor": 1,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "DeviceIdentifier",
+      "deviceType": null,
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
+    },
+    {
+      "originalName": "cAUSSENTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x0C",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "OutdoorTemperature",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cAUSSENTEMP_WAERMEPUMPE",
+      "infoNumberHigh": "0x0A",
+      "infoNumberLow": "0x0C",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "OutdoorTemperatureHeatPump"
+    },
+    {
+      "originalName": "cTAG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x22",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true
+    },
+    {
+      "originalName": "cMONAT",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x23",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "Month"
+    },
+    {
+      "originalName": "cJAHR",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x24",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "Day"
+    },
+    {
+      "originalName": "cSTUNDE",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x25",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "Hour",
+      "deviceType": "HeatGenerator"
+    },
+    {
+      "originalName": "cMINUTE",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x26",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "Minute",
+      "deviceType": "HeatGenerator"
+    },
+    {
+      "originalName": "cPROGRAMMSCHALTER",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x12",
+      "type": "Enum",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "enumValues": {
+        "1": "1",
+        "3": "3",
+        "4": "4",
+        "5": "5",
+        "11": "11",
+        "12": "12",
+        "17": "17"
+      },
+      "nameEnglish": "ProgramSwitch"
+    },
+    {
+      "originalName": "cSPEICHERISTTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x0E",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": true,
+      "bigEndian": true,
+      "nameEnglish": "BufferTemperatureActual",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cVERSTELLTE_SPEICHERSOLLTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x03",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 10,
+      "max": 70,
+      "default": 48,
+      "display": true,
+      "waterCircuit": true,
+      "bigEndian": true,
+      "nameEnglish": "BufferTemperatureSetpointAdjusted",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cEINSTELL_SPEICHERSOLLTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x13",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 10,
+      "max": 70,
+      "default": 48,
+      "display": true,
+      "waterCircuit": true,
+      "bigEndian": true,
+      "nameEnglish": "BufferTemperatureSetpoint",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cEINSTELL_SPEICHERSOLLTEMP2",
+      "infoNumberHigh": "0x0A",
+      "infoNumberLow": "0x06",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 10,
+      "max": 70,
+      "default": 48,
+      "display": true,
+      "waterCircuit": true,
+      "bigEndian": true,
+      "nameEnglish": "StorageTargetTemperatureSetting2"
+    },
+    {
+      "originalName": "cEINSTELL_SPEICHERSOLLTEMP3",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x3E",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 10,
+      "max": 70,
+      "default": 48,
+      "display": true,
+      "waterCircuit": true,
+      "bigEndian": true,
+      "nameEnglish": "StorageActualTemperature"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x00",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x10",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Monday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x11",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1MondaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x12",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1MondaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_DI",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x20",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Tuesday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_DI_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x21",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1TuesdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_DI_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x22",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1TuesdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MI",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x30",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Wednesday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MI_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x31",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1WednesdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MI_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x32",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1WednesdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_DO",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x40",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Thursday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_DO_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x41",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1ThursdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_DO_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x42",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1ThursdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_FR",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x50",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Friday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_FR_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x51",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1FridaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_FR_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x52",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1FridaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SA",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x60",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Saturday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SA_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x61",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1SaturdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SA_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x62",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1SaturdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SO",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x70",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-23:45",
+      "nameEnglish": "WaterProgram1Sunday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SO_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x71",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1SundaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SO_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x72",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram1SundaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_FR",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x80",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1MondayToFriday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_FR_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x81",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1MondayToFridaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_FR_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x82",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1MondayToFridaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SA_SO",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x90",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1Weekend"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SA_SO_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x91",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1WeekendSwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_SA_SO_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0x92",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1WeekendSwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_SO",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0xA0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1AllWeek"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_SO_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0xA1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1AllWeekSwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_SO_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0xA2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1AllWeekSwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_DO",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0xB0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1MondayToThursday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_DO_SCHALT_2",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0xB1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1MondayToThursdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_1_MO_DO_SCHALT_3",
+      "infoNumberHigh": "0x17",
+      "infoNumberLow": "0xB2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram1MondayToThursdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x00",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x10",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "05:00-21:00",
+      "nameEnglish": "WaterProgram2Monday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x11",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2MondaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x12",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2MondaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_DI",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x20",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "05:00-21:00",
+      "nameEnglish": "WaterProgram2Tuesday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_DI_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x21",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2TuesdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_DI_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x22",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2TuesdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MI",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x30",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "05:00-21:00",
+      "nameEnglish": "WaterProgram2Wednesday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MI_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x31",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2WednesdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MI_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x32",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2WednesdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_DO",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x40",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "05:00-21:00",
+      "nameEnglish": "WaterProgram2Thursday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_DO_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x41",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2ThursdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_DO_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x42",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2ThursdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_FR",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x50",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2Friday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_FR_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x51",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2FridaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_FR_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x52",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2FridaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SA",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x60",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-22:00",
+      "nameEnglish": "WaterProgram2Saturday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SA_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x61",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2SaturdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SA_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x62",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2SaturdaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SO",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x70",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-22:00",
+      "nameEnglish": "WaterProgram2Sunday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SO_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x71",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "StorageTargetTemperatureSetting3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SO_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x72",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "WaterProgram2SundaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_FR",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x80",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2MondayToFriday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_FR_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x81",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2MondayToFridaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_FR_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x82",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2MondayToFridaySwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SA_SO",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x90",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2Weekend"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SA_SO_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x91",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2WeekendSwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_SA_SO_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0x92",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2WeekendSwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_SO",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0xA0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2AllWeek"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_SO_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0xA1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2AllWeekSwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_SO_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0xA2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2AllWeekSwitch3"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_DO",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0xB0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2MondayToThursday"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_DO_SCHALT_2",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0xB1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2MondayToThursdaySwitch2"
+    },
+    {
+      "originalName": "cW_WASSERPROG_2_MO_DO_SCHALT_3",
+      "infoNumberHigh": "0x18",
+      "infoNumberLow": "0xB2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": true,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2MondayToThursdaySwitch3"
+    },
+    {
+      "originalName": "cEINMAL_WW_AKTIV",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x44",
+      "type": "Bool",
+      "factor": 1,
+      "writeable": true,
+      "default": 0,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "OneTimeHotWaterActive",
+      "homeAssistantComponent": "binary_sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
+    },
+    {
+      "originalName": "cWW_AKTIV",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x5E",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HotWaterProductionActive",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "binary_sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
+    },
+    {
+      "originalName": "cRAUMISTTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x11",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "RoomTemperatureActual",
+      "deviceType": "HeatingCircuit",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cVERSTELLTE_RAUMSOLLTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x12",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 5,
+      "max": 40,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "RoomTemperatureSetpointAdjusted",
+      "deviceType": "HeatingCircuit",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cRAUMSOLLTEMP_I",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x05",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 5,
+      "max": 40,
+      "default": 20,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "RoomTargetTemperature1",
+      "deviceType": "HeatingCircuit",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cRAUMSOLLTEMP_II",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x06",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 5,
+      "max": 40,
+      "default": 20,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "RoomTargetTemperature2"
+    },
+    {
+      "originalName": "cRAUMSOLLTEMP_III",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x07",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 5,
+      "max": 40,
+      "default": 20,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "RoomTargetTemperature3"
+    },
+    {
+      "originalName": "eNACHTRAUMSOLLTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x08",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 5,
+      "max": 40,
+      "default": 15,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "NightRoomTargetTemperature"
+    },
+    {
+      "originalName": "cHEIZPROG_1",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x00",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x10",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-22:00",
+      "nameEnglish": "HeatingProgram1Monday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x11",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1MondaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x12",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1MondaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_DI",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x20",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-22:00",
+      "nameEnglish": "HeatingProgram1Tuesday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_DI_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x21",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1TuesdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_DI_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x22",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1TuesdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MI",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x30",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-22:00",
+      "nameEnglish": "HeatingProgram1Wednesday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MI_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x31",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1WednesdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MI_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x32",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1WednesdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_DO",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x40",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1Thursday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_DO_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x41",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1ThursdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_DO_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x42",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1ThursdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_FR",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x50",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1Friday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_FR_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x51",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1FridaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_FR_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x52",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1FridaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SA",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x60",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "07:00-23:00",
+      "nameEnglish": "HeatingProgram1Saturday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SA_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x61",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1SaturdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SA_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x62",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1SaturdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SO",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x70",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "07:00-23:00",
+      "nameEnglish": "HeatingProgram1Sunday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SO_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x71",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1SundaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SO_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x72",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram1SundaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_FR",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x80",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1MondayToFriday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_FR_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x81",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1MondayToFridaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_FR_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x82",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1MondayToFridaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SA_SO",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x90",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1Weekend"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SA_SO_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x91",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1WeekendSwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_SA_SO_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0x92",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1WeekendSwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_SO",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0xA0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1AllWeek"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_SO_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0xA1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1AllWeekSwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_SO_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0xA2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1AllWeekSwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_DO",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0xB0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1MondayToThursday"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_DO_SCHALT_2",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0xB1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1MondayToThursdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_1_MO_DO_SCHALT_3",
+      "infoNumberHigh": "0x14",
+      "infoNumberLow": "0xB2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram1MondayToThursdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x00",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "WaterProgram2SundaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x10",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-08:00",
+      "nameEnglish": "HeatingProgram2Monday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x11",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2MondaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x12",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2MondaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_DI",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x20",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-08:00",
+      "nameEnglish": "HeatingProgram2Tuesday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_DI_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x21",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2TuesdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_DI_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x22",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2TuesdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MI",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x30",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-08:00",
+      "nameEnglish": "HeatingProgram2Wednesday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MI_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x31",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2WednesdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MI_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x32",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2WednesdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_DO",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x40",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "06:00-08:00",
+      "nameEnglish": "HeatingProgram2Thursday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_DO_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x41",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2ThursdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_DO_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x42",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2ThursdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_FR",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x50",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2Friday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_FR_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x51",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2FridaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_FR_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x52",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2FridaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SA",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x60",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "07:00-23:00",
+      "nameEnglish": "HeatingProgram2Saturday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SA_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x61",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2SaturdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SA_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x62",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "00:00-00:00",
+      "nameEnglish": "HeatingProgram2SaturdaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SO",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x70",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "defaultTimeRange": "07:00-23:00",
+      "nameEnglish": "HeatingProgram2Sunday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SO_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x71",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2SundaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SO_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x72",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2SundaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_FR",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x80",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2MondayToFriday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_FR_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x81",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2MondayToFridaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_FR_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x82",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2MondayToFridaySwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SA_SO",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x90",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2Weekend"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SA_SO_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x91",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2WeekendSwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_SA_SO_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0x92",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2WeekendSwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_SO",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0xA0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2AllWeek"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_SO_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0xA1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2AllWeekSwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_SO_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0xA2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2AllWeekSwitch3"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_DO",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0xB0",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2MondayToThursday"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_DO_SCHALT_2",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0xB1",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2MondayToThursdaySwitch2"
+    },
+    {
+      "originalName": "cHEIZPROG_2_MO_DO_SCHALT_3",
+      "infoNumberHigh": "0x15",
+      "infoNumberLow": "0xB2",
+      "type": "TimeRange",
+      "factor": 1,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingProgram2MondayToThursdaySwitch3"
+    },
+    {
+      "originalName": "cSOFTWARE_NUMMER",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x99",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "SoftwareNumber"
+    },
+    {
+      "originalName": "cSOFTWARE_VERSION",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x9A",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "SoftwareVersion"
+    },
+    {
+      "originalName": "cSOFTWARE_UNTERINDEX",
+      "infoNumberHigh": "0x02",
+      "infoNumberLow": "0x4B",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "SoftwareSubindex"
+    },
+    {
+      "originalName": "cMODUS_PARTY_DAUER",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x58",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 360,
+      "default": 0,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "PartyModeDuration"
+    },
+    {
+      "originalName": "cMODUS_URLAUB_ANFANG_TAG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x1B",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 31,
+      "default": 2,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "VacationModeStartDay"
+    },
+    {
+      "originalName": "cMODUS_URLAUB_ANFANG_MONAT",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x1C",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 12,
+      "default": 1,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "VacationModeStartMonth"
+    },
+    {
+      "originalName": "cMODUS_URLAUB_ANFANG_JAHR",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x1D",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 49,
+      "default": 1,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "VacationModeStartYear"
+    },
+    {
+      "originalName": "cMODUS_URLAUB_ENDE_TAG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x1E",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 31,
+      "default": 3,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "VacationModeEndDay"
+    },
+    {
+      "originalName": "cMODUS_URLAUB_ENDE_MONAT",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x1F",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 12,
+      "default": 1,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "VacationModeEndMonth"
+    },
+    {
+      "originalName": "cMODUS_URLAUB_ENDE_JAHR",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x20",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "min": 0,
+      "max": 49,
+      "default": 1,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "VacationModeEndYear"
+    },
+    {
+      "originalName": "cKESSELISTTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x0D",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeaterTemperatureActual",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cKESSELSOLLTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x02",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 40,
+      "max": 80,
+      "default": 55,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeaterTemperatureSetpoint",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cRUECKLAUFTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x16",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "TR",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cVOLUMENSTROM",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0xDA",
+      "type": "Float",
+      "factor": 1,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "V",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "L/h",
+      "deviceClass": null,
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cPWM_SIGNAL",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xF7",
+      "type": "Enum",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "n",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "%",
+      "deviceClass": null,
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cMISCHERSTELLUNG_1_3UV1",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x9B",
+      "type": "Enum",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "ValveCH_DHW",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "%",
+      "deviceClass": null,
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cMISCHERSTELLUNG_2_3UVB",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xFB",
+      "type": "Enum",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "ValveCH_Bypass",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "%",
+      "deviceClass": null,
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cT_TVBH1",
+      "infoNumberHigh": "0xC1",
+      "infoNumberLow": "0x02",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "TVBH1",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cT_TVBHMIX",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xFE",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "TVBHMIX",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "cT_TVBH",
+      "infoNumberHigh": "0xC1",
+      "infoNumberLow": "0xBF",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "TVBH"
+    },
+    {
+      "originalName": "cDEFROST_AKTIV",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xF6",
+      "type": "Enum",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "Defrost",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
+    },
+    {
+      "originalName": "cPUMPENLAUFZEIT",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0xA4",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "PumpOperatingHours",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "h",
+      "deviceClass": "duration",
+      "stateClass": "total_increasing"
+    },
+    {
+      "originalName": "cKOMPRESSORLAUFZEIT",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0xA5",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "CompressorOperatingHours",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "h",
+      "deviceClass": "duration",
+      "stateClass": "total_increasing"
+    },
+    {
+      "originalName": "cVMIN_A1",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x61",
+      "type": "Float",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "MinimumVolumeFlowA1"
+    },
+    {
+      "originalName": "cVMIN_WP",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x88",
+      "type": "Float",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "MinimumVolumeFlowHeatPump"
+    },
+    {
+      "originalName": "cVMIN_GCU",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0x9D",
+      "type": "Float",
+      "factor": 1,
+      "writeable": false,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "MinimumVolumeFlowGCU"
+    },
+    {
+      "originalName": "cFEHLER_AKTUELL",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x88",
+      "type": "Int",
+      "factor": 1,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "CurrentError",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": null
+    },
+    {
+      "originalName": "eZEITMASTER",
+      "infoNumberHigh": "0x0A",
+      "infoNumberLow": "0x1F",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "TimeMaster"
+    },
+    {
+      "originalName": "eSCHALTSCHWELLE_TDHW",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xB3",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SwitchingThresholdDHW"
+    },
+    {
+      "originalName": "eSONDERFKT_SCHALTKONTAKT",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xB1",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SpecialFunctionSwitchContact"
+    },
+    {
+      "originalName": "eWARTEZEIT_SONDERFKT",
+      "infoNumberHigh": "0xC0",
+      "infoNumberLow": "0xB2",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SpecialFunctionWaitTime"
+    },
+    {
+      "originalName": "eWASSER_MAX_DRUCKVERLUST",
+      "infoNumberHigh": "0x07",
+      "infoNumberLow": "0x26",
+      "type": "Float",
+      "factor": 1000,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WaterMaxPressureLoss"
+    },
+    {
+      "originalName": "eWASSER_MAXIMALDRUCK",
+      "infoNumberHigh": "0x07",
+      "infoNumberLow": "0x27",
+      "type": "Float",
+      "factor": 1000,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WaterMaximumPressure"
+    },
+    {
+      "originalName": "eWASSER_MINIMALDRUCK",
+      "infoNumberHigh": "0x07",
+      "infoNumberLow": "0x28",
+      "type": "Float",
+      "factor": 1000,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WaterMinimumPressure"
+    },
+    {
+      "originalName": "eWASSER_SOLLDRUCK",
+      "infoNumberHigh": "0x07",
+      "infoNumberLow": "0x25",
+      "type": "Float",
+      "factor": 1000,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WaterTargetPressure"
+    },
+    {
+      "originalName": "eWP_FLUESTERBETRIEB",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x96",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpQuietMode"
+    },
+    {
+      "originalName": "eWP_LEISTUNG_HEIZSTAB_S1",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x69",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpHeatingElementPowerS1"
+    },
+    {
+      "originalName": "eWP_LEISTUNG_HEIZSTAB_S2",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x6A",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpHeatingElementPowerS2"
+    },
+    {
+      "originalName": "eWP_LEISTUNG_HZU_BIV",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x6B",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpAuxiliaryHeatingPowerBivalent"
+    },
+    {
+      "originalName": "eWP_MAX_TEMP_HEIZUNG",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x6E",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpMaxHeatingTemperature"
+    },
+    {
+      "originalName": "eWP_MOD_HYST_DURCHFLUSS",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x82",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpModulationHysteresisFlow"
+    },
+    {
+      "originalName": "eWP_SOLLWERT_ANPASSUNG_HEIZEN",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0xA0",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpSetpointAdjustmentHeating"
+    },
+    {
+      "originalName": "eWP_SOLLWERT_ANPASSUNG_KUEHLEN",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0xA1",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpSetpointAdjustmentCooling"
+    },
+    {
+      "originalName": "eWP_SPREIZUNG_HZ_BETRIEB",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x83",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpSpreadHeatingOperation"
+    },
+    {
+      "originalName": "eWP_SPREIZUNG_WW_BETRIEB",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x84",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpSpreadHotWaterOperation"
+    },
+    {
+      "originalName": "eWP_START_MAX_TEMP",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x8C",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpStartMaxTemperature"
+    },
+    {
+      "originalName": "eWP_VERZ_ZEIT_PUMPE",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x85",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpPumpDelayTime"
+    },
+    {
+      "originalName": "eABSENKOPTIMIERUNG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x2E",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "LoweringOptimization"
+    },
+    {
+      "originalName": "eADAPTION",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x15",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "Adaptation"
+    },
+    {
+      "originalName": "eAUFHEIZOPTIMIERUNG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x03",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatingUpOptimization"
+    },
+    {
+      "originalName": "eFROSTSCHUTZTEMP",
+      "infoNumberHigh": "0x0A",
+      "infoNumberLow": "0x00",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "FrostProtectionTemperature"
+    },
+    {
+      "originalName": "eHEIZGRENZE_NACHT",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x17",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatingLimitNight"
+    },
+    {
+      "originalName": "eHEIZGRENZE_TAG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x16",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatingLimitDay"
+    },
+    {
+      "originalName": "eHZK_FUNKTION",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x41",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HeatingCircuitFunction"
+    },
+    {
+      "originalName": "eHZKKURVE",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x0E",
+      "type": "Float",
+      "factor": 100,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WeatherDependentCurveSetting",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": null,
+      "deviceClass": null,
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "eKUEHLSOLLWERT_KORR_HZK_0",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x59",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "CoolingSetpointCorrectionHeatingCircuit0"
+    },
+    {
+      "originalName": "eMAX_AUFHEIZVORVERLEGUNG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x10",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "MaxHeatingUpAdvance"
+    },
+    {
+      "originalName": "eMAX_KUEHLEN_AUSSENTEMP_HZK0",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x5C",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "MaxCoolingOutdoorTempHeatingCircuit0"
+    },
+    {
+      "originalName": "eMAX_VORLAUFTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x28",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "MaxSupplyTemperature"
+    },
+    {
+      "originalName": "eMIN_VORLAUFTEMP",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x2B",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "MinSupplyTemperature"
+    },
+    {
+      "originalName": "eRAUMEINFLUSS",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x0F",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "RoomInfluence"
+    },
+    {
+      "originalName": "eSTART_KUEHLEN_AUSSENTEMP_HZK0",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0xB5",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "StartCoolingOutdoorTempHeatingCircuit0"
+    },
+    {
+      "originalName": "eVL_SOLL_MAX_KUEHLEN_HZK0",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x5E",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SupplyTargetMaxCoolingHeatingCircuit0"
+    },
+    {
+      "originalName": "eVL_SOLL_START_KUEHLEN_HZK_0",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x5D",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SupplyTargetStartCoolingHeatingCircuit0"
+    },
+    {
+      "originalName": "eVORLAUFSOLLTEMP_NACHT",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x2A",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SupplyTargetTemperatureNight"
+    },
+    {
+      "originalName": "eVORLAUFSOLLTEMP_TAG",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x29",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 10,
+      "max": 70,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "SupplyTargetTemperatureDay"
+    },
+    {
+      "originalName": "eWP_AUSSENGERAET",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x9A",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpOutdoorUnit"
+    },
+    {
+      "originalName": "eWP_HT_NT_FKT_ANSCHLUSS",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x70",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpHighLowTariffFunctionConnection"
+    },
+    {
+      "originalName": "eWP_HT_NT_FUNKTION",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x6F",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpHighLowTariffFunction"
+    },
+    {
+      "originalName": "eWP_INNENGERAET",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x99",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpIndoorUnit"
+    },
+    {
+      "originalName": "eWP_INTERLINKFUNKTION",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x79",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpInterlinkFunction"
+    },
+    {
+      "originalName": "eWP_MODUS_SMART_GRID",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x94",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpSmartGridMode"
+    },
+    {
+      "originalName": "eWP_PWM_LEISTUNG_MAX",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x7E",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpPWMPowerMax"
+    },
+    {
+      "originalName": "eWP_PWM_LEISTUNG_MIN",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x7F",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpPWMPowerMin"
+    },
+    {
+      "originalName": "eWP_RAUMTHERMOSTAT",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x78",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpRoomThermostat"
+    },
+    {
+      "originalName": "eWP_SMART_GRID",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x93",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpSmartGrid"
+    },
+    {
+      "originalName": "eANTILEG_START_ZEIT",
+      "infoNumberHigh": "0xFD",
+      "infoNumberLow": "0x4F",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "AntiLegionellaStartTime"
+    },
+    {
+      "originalName": "eANTILEG_TEMP",
+      "infoNumberHigh": "0x05",
+      "infoNumberLow": "0x87",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "AntiLegionellaTemperature"
+    },
+    {
+      "originalName": "eZIRKPUMPE_BEI_WWFREIGABE",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x82",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "CirculationPumpAtHotWaterRelease"
+    },
+    {
+      "originalName": "eABWESEND_RAUMSOLLTEMP",
+      "infoNumberHigh": "0x01",
+      "infoNumberLow": "0x3D",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "min": 5,
+      "max": 40,
+      "default": 15,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "AwayRoomTargetTemperature"
+    },
+    {
+      "originalName": "eWP_HYSTERESE_DHW",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x91",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpHysteresisDHW"
+    },
+    {
+      "originalName": "eWP_WARTEZEIT_BOH",
+      "infoNumberHigh": "0x06",
+      "infoNumberLow": "0x92",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "HeatPumpWaitTimeBOH"
+    },
+    {
+      "originalName": "eFEIERTAGENDE_JAHR",
+      "infoNumberHigh": "0x13",
+      "infoNumberLow": "0x55",
+      "type": "Int",
+      "factor": 1,
+      "writeable": true,
+      "display": false,
+      "waterCircuit": false,
+      "bigEndian": false,
+      "nameEnglish": "HolidayEndYear"
+    },
+    {
+      "originalName": "eVORLAUFSOLLTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x04",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": true,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "LeavingWaterTemperatureSetpoint",
+      "deviceType": "HeatingCircuit",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "eVORLAUFISTTEMP",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x0F",
+      "type": "Float",
+      "factor": 10,
+      "transferThreshold": 0.5,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "LeavingWaterTemperatureActual",
+      "deviceType": "HeatingCircuitModule",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "°C",
+      "deviceClass": "temperature",
+      "stateClass": "measurement"
+    },
+    {
+      "originalName": "WaterPressure",
+      "infoNumberHigh": "0x00",
+      "infoNumberLow": "0x1C",
+      "type": "Float",
+      "factor": 1000,
+      "writeable": false,
+      "display": true,
+      "waterCircuit": false,
+      "bigEndian": true,
+      "nameEnglish": "WaterPressure",
+      "deviceType": "HeatGenerator",
+      "homeAssistantComponent": "sensor",
+      "unitOfMeasurement": "bar",
+      "deviceClass": "pressure",
+      "stateClass": "measurement"
+    }
+  ],
+  "heatGenerators": [
+    {
+      "name": "HG1",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG1",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x00",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x00",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x180",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG2",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG2",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x01",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x01",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x181",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG3",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG3",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x02",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x02",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x182",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG4",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG4",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x03",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x03",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x183",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG5",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG5",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x04",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x04",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x184",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG6",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG6",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x05",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x05",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x185",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG7",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG7",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x06",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x06",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x186",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HG8",
+      "type": "HeatGenerator",
+      "profile": {
+        "name": "HG8",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x31",
+            "0x07",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x30",
+            "0x07",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x187",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    }
+  ],
+  "heatingCircuits": [
+    {
+      "name": "HC1",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC1",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x00",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x00",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x300",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC2",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC2",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x01",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x01",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x301",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC3",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC3",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x02",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x02",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x302",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC4",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC4",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x03",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x03",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x303",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC5",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC5",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x04",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x04",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x304",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC6",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC6",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x05",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x05",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x305",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC7",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC7",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x06",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x06",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x306",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC8",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC8",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x07",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x07",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x307",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC9",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC9",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x08",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x08",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x308",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC10",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC10",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x09",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x09",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x309",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC11",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC11",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x0A",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x0A",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x30A",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC12",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC12",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x0B",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x0B",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x30B",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC13",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC13",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x0C",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x0C",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x30C",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC14",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC14",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x0D",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x0D",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x30D",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC15",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC15",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x0E",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x0E",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x30E",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HC16",
+      "type": "HeatingCircuit",
+      "profile": {
+        "name": "HC16",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x61",
+            "0x0F",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0x60",
+            "0x0F",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x30F",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    }
+  ],
+  "heatingCircuitModules": [
+    {
+      "name": "HCM1",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM1",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x00",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x00",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x600",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM2",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM2",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x01",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x01",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x601",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM3",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM3",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x02",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x02",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x602",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM4",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM4",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x03",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x03",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x603",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM5",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM5",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x04",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x04",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x604",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM6",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM6",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x05",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x05",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x605",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM7",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM7",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x06",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x06",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x606",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM8",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM8",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x07",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x07",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x607",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM9",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM9",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x08",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x08",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x608",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM10",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM10",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x09",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x09",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x609",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM11",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM11",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x0A",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x0A",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x60A",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM12",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM12",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x0B",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x0B",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x60B",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM13",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM13",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x0C",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x0C",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x60C",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM14",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM14",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x0D",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x0D",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x60D",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM15",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM15",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x0E",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x0E",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x60E",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    },
+    {
+      "name": "HCM16",
+      "type": "HeatingCircuitModule",
+      "profile": {
+        "name": "HCM16",
+        "get": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC1",
+            "0x0F",
+            "0xFA"
+          ]
+        },
+        "set": {
+          "canId": "0x69D",
+          "bytes": [
+            "0xC0",
+            "0x0F",
+            "0xFA"
+          ]
+        },
+        "answer": {
+          "canId": "0x60F",
+          "bytes": [
+            "0xD2",
+            "0x1D",
+            "0xFA"
+          ]
+        }
+      }
+    }
+  ]
+}
