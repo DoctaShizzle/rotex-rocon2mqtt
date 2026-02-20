@@ -10,6 +10,7 @@ Type=simple
 User=rocon
 Group=rocon
 SupplementaryGroups=can
+EnvironmentFile=/opt/roconmqtt/.env
 WorkingDirectory=/opt/roconmqtt
 ExecStart=/opt/roconmqtt/RoconMqtt
 Restart=always

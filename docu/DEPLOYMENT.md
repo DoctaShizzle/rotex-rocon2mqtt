@@ -304,6 +304,11 @@ Can__TimeZoneId=Europe/Brussels
 # Can__Ssh__Username=pi
 # Can__Ssh__Password=your-ssh-password
 
+# Seq Logging (Optional - for centralized log management)
+# Uncomment these to enable Seq logging:
+# Serilog__WriteTo__1__Name=Seq
+# Serilog__WriteTo__1__Args__serverUrl=http://192.168.0.254:5341
+
 # Kestrel Web Server (Optional)
 Kestrel__Endpoints__Http__Url=http://0.0.0.0:5000
 ```
