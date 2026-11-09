@@ -1,0 +1,1196 @@
+# Test
+type: panel
+title: Test
+path: test
+icon: mdi:test-tube
+cards:
+  - type: vertical-stack
+    cards:
+      - type: picture-elements
+        image:
+          media_content_id: media-source://image_upload/e09d6b0e44361f2e3ab0a3e7b2bcbd7a
+          media_content_type: image/png
+        elements:
+          - type: image
+            title: Achtergrond pomp
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Crect%20x%3D%22180%22%20y%3D%22350%22%20width%3D%22660%22%20height%3D%22645%22%20fill%3D%22%23fafbfc%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M205%20350V420H230%20M285%20350V360%20M583.6%20506V420H493%20M467%20420H300%20M270%20520V835%20M305%20850H575%20M480%20350V1000%20M820%20350V850H645%20M610%20612V835%20M235%20850H190V1000%20M610%20642V570%20M622%20722H630%22%2F%3E%3Cpath%20d%3D%22M464%20425L470%20415%20M490%20425L496%20415%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M230%20360H300L230%20520Z%22%20fill%3D%22%23009447%22%2F%3E%3Cpath%20d%3D%22M300%20360V520H230Z%22%20fill%3D%22%23e52c35%22%2F%3E%3C%2Fg%3E%3Ctext%20x%3D%22270%22%20y%3D%22545%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2217%22%20fill%3D%22%2372808b%22%3EPlatenwisselaar%3C%2Ftext%3E%3Crect%20x%3D%22598%22%20y%3D%22695%22%20width%3D%2224%22%20height%3D%2255%22%20fill%3D%22white%22%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%2F%3E%3Ccircle%20cx%3D%22480%22%20cy%3D%22850%22%20r%3D%227%22%20fill%3D%22%2320262c%22%2F%3E%3Cg%20transform%3D%22translate(0%20-80)%22%20fill%3D%22white%22%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M260%20915V898H280V915%20M250%20942V951H290V942%22%2F%3E%3Crect%20x%3D%22235%22%20y%3D%22915%22%20width%3D%2270%22%20height%3D%2230%22%20rx%3D%225%22%2F%3E%3Cpath%20d%3D%22M245%20951H295L290%20980H250Z%22%20fill%3D%22%23f0f3f5%22%2F%3E%3Cpath%20d%3D%22M258%20958V975%20M270%20958V975%20M282%20958V975%22%20stroke%3D%22%23929da6%22%20stroke-width%3D%221.5%22%2F%3E%3Cpath%20d%3D%22M600%20915V898H620V915%20M590%20942V951H630V942%22%2F%3E%3Crect%20x%3D%22575%22%20y%3D%22915%22%20width%3D%2270%22%20height%3D%2230%22%20rx%3D%225%22%2F%3E%3Cpath%20d%3D%22M585%20951H635L630%20980H590Z%22%20fill%3D%22%23f0f3f5%22%2F%3E%3Cpath%20d%3D%22M598%20958V975%20M610%20958V975%20M622%20958V975%22%20stroke%3D%22%23929da6%22%20stroke-width%3D%221.5%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23fafbfc%22%20stroke-width%3D%2214%22%3E%3Cpath%20d%3D%22M285%20319V331%20M190%201114V1126%20M480%201094V1106%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M285%20313V337%20M190%201108V1132%20M480%201088V1112%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+          - type: image
+            title: Stroming common
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M270%20520V835%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M270%20520V835%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M610%20835V612%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M610%20835V612%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-common, 0)
+              animation: var(--test-common, none)
+          - type: image
+            title: Stroming dhw-ch
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M305%20850H480%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M305%20850H480%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-dhw-ch, 0)
+              animation: var(--test-dhw-ch, none)
+          - type: image
+            title: Stroming dhw-tank
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M235%20850H190V1190H309%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M235%20850H190V1190H309%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M351%201190H480V850%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M351%201190H480V850%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-dhw-tank, 0)
+              animation: var(--test-dhw-tank, none)
+          - type: image
+            title: Stroming heating
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M820%20166V850H645%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M820%20166V850H645%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22floor-hot%22%20gradientUnits%3D%22userSpaceOnUse%22%20x1%3D%22530%22%20y1%3D%22129%22%20x2%3D%22770%22%20y2%3D%22129%22%3E%3Cstop%20stop-color%3D%22%23ef3434%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23b45f89%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22floor-mid%22%20gradientUnits%3D%22userSpaceOnUse%22%20x1%3D%22770%22%20y1%3D%22140%22%20x2%3D%22530%22%20y2%3D%22140%22%3E%3Cstop%20stop-color%3D%22%23b45f89%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23737fb8%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22floor-cold%22%20gradientUnits%3D%22userSpaceOnUse%22%20x1%3D%22530%22%20y1%3D%22151%22%20x2%3D%22820%22%20y2%3D%22151%22%3E%3Cstop%20stop-color%3D%22%23737fb8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23329bdf%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M480%20166V129H530%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20166V129H530%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M530%20129H770%22%20fill%3D%22none%22%20stroke%3D%22url(%23floor-hot)%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M530%20129H770%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M770%20129V140H530%22%20fill%3D%22none%22%20stroke%3D%22url(%23floor-mid)%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M770%20129V140H530%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M530%20140V151H820%22%20fill%3D%22none%22%20stroke%3D%22url(%23floor-cold)%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M530%20140V151H820%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M820%20151V166%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M820%20151V166%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-heating, 0)
+              animation: var(--test-heating, none)
+          - type: image
+            title: Stroming bypass
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-bypass, 0)
+              animation: var(--test-bypass, none)
+          - type: image
+            title: Stroming common-hot
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M610%20835V612%20M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M610%20835V612%20M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-common-hot, 0)
+              animation: var(--test-common-hot, none)
+          - type: image
+            title: Stroming heating-cool
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-heating-cool, 0)
+              animation: var(--test-heating-cool, none)
+          - type: image
+            title: Stroming bypass-cool
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-bypass-cool, 0)
+              animation: var(--test-bypass-cool, none)
+          - type: image
+            title: Sensorlabel achtergrond
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Crect%20x%3D%22200%22%20y%3D%221069%22%20width%3D%22260%22%20height%3D%2240%22%20fill%3D%22%23fafbfc%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+          - type: state-label
+            entity: input_number.warmtepomp_test_dhw
+            title: Klepstand DHW
+            style:
+              left: 27%
+              top: 67.08571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 9%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: |
+                div { display: none !important; }
+          - type: state-label
+            entity: input_number.warmtepomp_test_bypass
+            title: Klepstand bypass
+            style:
+              left: 61%
+              top: 67.08571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 9%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: |
+                div { display: none !important; }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_tr
+            title: t_R retour
+            style:
+              left: 37%
+              top: 26.43571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 11.5%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_tr'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-R"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_heater_temperature_actual
+            title: t_V aanvoer
+            style:
+              left: 35.5%
+              top: 47.88571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 11.5%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_heater_temperature_actual']
+                %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-V"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_tvbh_1
+            title: t_V,BH
+            style:
+              left: 40%
+              top: 54.71571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 14%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_tvbh_1'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-V,BH"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_buffer_temperature_actual
+            title: Warmwatervat
+            style:
+              left: 33%
+              top: 80.75%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 12.8%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_buffer_temperature_actual']
+                %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-DHW"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_n
+            title: Pomptoerental
+            style:
+              left: 72.5%
+              top: 40.83571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 10%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_n'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "n"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_v
+            title: V debiet
+            style:
+              left: 72.5%
+              top: 51.58571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 10%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_v'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "V"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_water_pressure
+            title: Pressure sensor
+            style:
+              left: 72.5%
+              top: 45.83571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 10%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_water_pressure'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "p"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: image
+            title: Centrifugaalpomp stilstand
+            image:
+              media_content_id: media-source://image_upload/f3803a1495e9a032f9778a1cd9472f3e
+              media_content_type: image/png
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 60.64%
+              top: 40.24285714%
+              width: 28.8%
+              clip-path: inset(8.6% 37% 12.3% 36.1%)
+              pointer-events: none
+              opacity: var(--upm3-static, 1)
+              animation: var(--upm3-static-animation, none)
+          - type: image
+            title: Centrifugaalpomp draaiend
+            image:
+              media_content_id: media-source://image_upload/3b3ce8b88c47d5e595664801c865576e
+              media_content_type: image/gif
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 60.64%
+              top: 40.24285714%
+              width: 28.8%
+              clip-path: inset(8.6% 37% 12.3% 36.1%)
+              pointer-events: none
+              opacity: var(--upm3-running, 0)
+              animation: var(--upm3-running-animation, none)
+          - type: image
+            title: Centrale pompinlaat
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cg%20transform%3D%22translate(0%20-80)%22%3E%3Cpath%20d%3D%22M610%20722V650%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M610%20722V650%22%20fill%3D%22none%22%20stroke%3D%22%23111827%22%20stroke-width%3D%222.5%22%2F%3E%3Ccircle%20cx%3D%22610%22%20cy%3D%22650%22%20r%3D%226%22%20fill%3D%22white%22%20stroke%3D%22%23111827%22%20stroke-width%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+          - type: image
+            title: Driewegklep DHW
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2038%2024%22%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%2234%22%20height%3D%2218%22%20rx%3D%222%22%20fill%3D%22white%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M19%204V20%20M10%2012H28%22%20fill%3D%22none%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: var(--dhw-position)
+              top: 60.71428429%
+              width: 3.8%
+              transition: left 1s linear
+              animation: var(--dhw-animation, none)
+          - type: image
+            title: Driewegklep bypass
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2038%2024%22%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%2234%22%20height%3D%2218%22%20rx%3D%222%22%20fill%3D%22white%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M19%204V20%20M10%2012H28%22%20fill%3D%22none%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: var(--bypass-position)
+              top: 60.71428429%
+              width: 3.8%
+              transition: left 1s linear
+              animation: var(--bypass-animation, none)
+          - type: image
+            title: Meetpunten en meetlijnen
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cg%20transform%3D%22translate(0%20-80)%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.6%22%20stroke-dasharray%3D%224%205%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M370%20500V474%20M270%20745H298%20M480%20930L430%20870%20M630%20802H650V722H675%20M610%20850H667V802H677%20M635%20650H685%20%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22white%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.8%22%3E%3Ccircle%20cx%3D%22370%22%20cy%3D%22500%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22270%22%20cy%3D%22745%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22480%22%20cy%3D%22930%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22630%22%20cy%3D%22802%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22610%22%20cy%3D%22850%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22635%22%20cy%3D%22650%22%20r%3D%224%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3Cpath%20d%3D%22M331%201188V1154%22%20fill%3D%22none%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.6%22%20stroke-dasharray%3D%224%205%22%2F%3E%3Ccircle%20cx%3D%22331%22%20cy%3D%221188%22%20r%3D%224%22%20fill%3D%22white%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.8%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+        card_mod:
+          style: >
+            ha-card { container-type: inline-size; max-width: 740px; margin: 0
+            auto; border: none; background: white; }
+
+            @keyframes pump-centered { from { transform: translate(-50%, -50%)
+            rotate(0deg); } to { transform: translate(-50%, -50%)
+            rotate(360deg); } }
+
+            @keyframes demo-pump { 0%, 10% { transform: translate(-50%, -50%)
+            rotate(0deg); } 100% { transform: translate(-50%, -50%)
+            rotate(5760deg); } }
+
+            @keyframes demo-dhw { 0%, 30%, 90%, 100% { left: 26%; } 40%, 55% {
+            left: 28%; } 65%, 80% { left: 27%; } }
+
+            @keyframes demo-bp { 0%, 30% { left: 60%; } 40%, 55%, 90%, 100% {
+            left: 62%; } 65%, 80% { left: 61%; } }
+
+            @keyframes demo-common { 0%, 10%, 100% { opacity: 0; } 15%, 95% {
+            opacity: 1; } }
+
+            @keyframes demo-ch { 0%, 10%, 40%, 55%, 100% { opacity: 0; } 15%,
+            30%, 90%, 95% { opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-tank { 0%, 30%, 90%, 100% { opacity: 0; } 40%, 55% {
+            opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-heating { 0%, 10%, 40%, 55%, 90%, 100% { opacity: 0;
+            } 15%, 30% { opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-bypass { 0%, 30%, 100% { opacity: 0; } 40%, 55%,
+            90%, 95% { opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-hot { 0%, 55%, 100% { opacity: 0; } 65%, 80% {
+            opacity: .25; } 90%, 95% { opacity: 1; } }
+
+            @keyframes demo-cool-ch { 0%, 55%, 90%, 100% { opacity: 0; } 65%,
+            80% { opacity: .25; } }
+
+            @keyframes demo-cool-bypass { 0%, 30%, 90%, 100% { opacity: 0; }
+            40%, 55% { opacity: 1; } 65%, 80% { opacity: .25; } }
+
+            {% set automatic =
+            is_state('input_boolean.warmtepomp_test_automatisch', 'on') %}
+
+            {% set pump = is_state('input_boolean.warmtepomp_test_pomp', 'on')
+            %}
+
+            {% set d = ([0, [states('input_number.warmtepomp_test_dhw') |
+            float(0), 100] | min] | max) / 100 %}
+
+            {% set b = ([0, [states('input_number.warmtepomp_test_bypass') |
+            float(0), 100] | min] | max) / 100 %}
+
+            :host {
+              --dhw-position: {{ 26 + 2 * d }}%;
+              --bypass-position: {{ 60 + 2 * b }}%;
+              --pump-state: {{ 'running' if automatic or pump else 'paused' }};
+              --pump-animation: {{ 'demo-pump 32s linear infinite' if automatic else 'pump-centered 1.5s linear infinite' }};
+              --dhw-animation: {{ 'demo-dhw 32s linear infinite' if automatic else 'none' }};
+              --bypass-animation: {{ 'demo-bp 32s linear infinite' if automatic else 'none' }};
+              --label-dhw-animation: {{ 'sim-dhw-label 32s steps(1, end) infinite' if automatic else 'none' }};
+              --label-bp-animation: {{ 'sim-bp-label 32s steps(1, end) infinite' if automatic else 'none' }};
+              --flow-common: {{ 1 if pump else 0 }};
+              --flow-dhw-ch: {{ 1 - d if pump else 0 }};
+              --flow-dhw-tank: {{ d if pump else 0 }};
+              --flow-heating: {{ 1 - b if pump else 0 }};
+              --flow-bypass: {{ b if pump else 0 }};
+              --flow-common-hot: {{ b * (1 - d) if pump else 0 }};
+              --flow-heating-cool: {{ d * (1 - b) if pump else 0 }};
+              --flow-bypass-cool: {{ d * b if pump else 0 }};
+              --test-common: {{ 'demo-common 32s linear infinite' if automatic else 'none' }};
+              --test-dhw-ch: {{ 'demo-ch 32s linear infinite' if automatic else 'none' }};
+              --test-dhw-tank: {{ 'demo-tank 32s linear infinite' if automatic else 'none' }};
+              --test-heating: {{ 'demo-heating 32s linear infinite' if automatic else 'none' }};
+              --test-bypass: {{ 'demo-bypass 32s linear infinite' if automatic else 'none' }};
+              --test-common-hot: {{ 'demo-hot 32s linear infinite' if automatic else 'none' }};
+              --test-heating-cool: {{ 'demo-cool-ch 32s linear infinite' if automatic else 'none' }};
+              --test-bypass-cool: {{ 'demo-cool-bypass 32s linear infinite' if automatic else 'none' }};
+            }
+
+            hui-state-label-element:nth-of-type(-n+2) { font-size: 0 !important;
+            visibility: hidden !important; }
+
+            hui-state-label-element:nth-of-type(-n+2)::after { position:
+            absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            visibility: visible; white-space: nowrap; font-size: clamp(10px,
+            2.4vw, 17px); color: #183d53; background: #fafbfc; padding: 1px 3px;
+            font-weight: 600; }
+
+            hui-state-label-element:nth-of-type(1)::after { content: "{{ (d *
+            100) | round(0) | int }}%"; animation: var(--label-dhw-animation,
+            none); }
+
+            hui-state-label-element:nth-of-type(2)::after { content: "{{ (b *
+            100) | round(0) | int }}%"; animation: var(--label-bp-animation,
+            none); }
+
+            @keyframes sim-dhw-label {
+              0% { content: "0%"; }
+              30.1% { content: "1%"; }
+              30.2% { content: "2%"; }
+              30.3% { content: "3%"; }
+              30.4% { content: "4%"; }
+              30.5% { content: "5%"; }
+              30.6% { content: "6%"; }
+              30.7% { content: "7%"; }
+              30.8% { content: "8%"; }
+              30.9% { content: "9%"; }
+              31% { content: "10%"; }
+              31.1% { content: "11%"; }
+              31.2% { content: "12%"; }
+              31.3% { content: "13%"; }
+              31.4% { content: "14%"; }
+              31.5% { content: "15%"; }
+              31.6% { content: "16%"; }
+              31.7% { content: "17%"; }
+              31.8% { content: "18%"; }
+              31.9% { content: "19%"; }
+              32% { content: "20%"; }
+              32.1% { content: "21%"; }
+              32.2% { content: "22%"; }
+              32.3% { content: "23%"; }
+              32.4% { content: "24%"; }
+              32.5% { content: "25%"; }
+              32.6% { content: "26%"; }
+              32.7% { content: "27%"; }
+              32.8% { content: "28%"; }
+              32.9% { content: "29%"; }
+              33% { content: "30%"; }
+              33.1% { content: "31%"; }
+              33.2% { content: "32%"; }
+              33.3% { content: "33%"; }
+              33.4% { content: "34%"; }
+              33.5% { content: "35%"; }
+              33.6% { content: "36%"; }
+              33.7% { content: "37%"; }
+              33.8% { content: "38%"; }
+              33.9% { content: "39%"; }
+              34% { content: "40%"; }
+              34.1% { content: "41%"; }
+              34.2% { content: "42%"; }
+              34.3% { content: "43%"; }
+              34.4% { content: "44%"; }
+              34.5% { content: "45%"; }
+              34.6% { content: "46%"; }
+              34.7% { content: "47%"; }
+              34.8% { content: "48%"; }
+              34.9% { content: "49%"; }
+              35% { content: "50%"; }
+              35.1% { content: "51%"; }
+              35.2% { content: "52%"; }
+              35.3% { content: "53%"; }
+              35.4% { content: "54%"; }
+              35.5% { content: "55%"; }
+              35.6% { content: "56%"; }
+              35.7% { content: "57%"; }
+              35.8% { content: "58%"; }
+              35.9% { content: "59%"; }
+              36% { content: "60%"; }
+              36.1% { content: "61%"; }
+              36.2% { content: "62%"; }
+              36.3% { content: "63%"; }
+              36.4% { content: "64%"; }
+              36.5% { content: "65%"; }
+              36.6% { content: "66%"; }
+              36.7% { content: "67%"; }
+              36.8% { content: "68%"; }
+              36.9% { content: "69%"; }
+              37% { content: "70%"; }
+              37.1% { content: "71%"; }
+              37.2% { content: "72%"; }
+              37.3% { content: "73%"; }
+              37.4% { content: "74%"; }
+              37.5% { content: "75%"; }
+              37.6% { content: "76%"; }
+              37.7% { content: "77%"; }
+              37.8% { content: "78%"; }
+              37.9% { content: "79%"; }
+              38% { content: "80%"; }
+              38.1% { content: "81%"; }
+              38.2% { content: "82%"; }
+              38.3% { content: "83%"; }
+              38.4% { content: "84%"; }
+              38.5% { content: "85%"; }
+              38.6% { content: "86%"; }
+              38.7% { content: "87%"; }
+              38.8% { content: "88%"; }
+              38.9% { content: "89%"; }
+              39% { content: "90%"; }
+              39.1% { content: "91%"; }
+              39.2% { content: "92%"; }
+              39.3% { content: "93%"; }
+              39.4% { content: "94%"; }
+              39.5% { content: "95%"; }
+              39.6% { content: "96%"; }
+              39.7% { content: "97%"; }
+              39.8% { content: "98%"; }
+              39.9% { content: "99%"; }
+              40% { content: "100%"; }
+              55.2% { content: "99%"; }
+              55.4% { content: "98%"; }
+              55.6% { content: "97%"; }
+              55.7% { content: "96%"; }
+              56% { content: "95%"; }
+              56.2% { content: "94%"; }
+              56.4% { content: "93%"; }
+              56.6% { content: "92%"; }
+              56.7% { content: "91%"; }
+              57% { content: "90%"; }
+              57.2% { content: "89%"; }
+              57.4% { content: "88%"; }
+              57.6% { content: "87%"; }
+              57.7% { content: "86%"; }
+              58% { content: "85%"; }
+              58.2% { content: "84%"; }
+              58.4% { content: "83%"; }
+              58.6% { content: "82%"; }
+              58.7% { content: "81%"; }
+              59% { content: "80%"; }
+              59.2% { content: "79%"; }
+              59.4% { content: "78%"; }
+              59.6% { content: "77%"; }
+              59.7% { content: "76%"; }
+              60% { content: "75%"; }
+              60.2% { content: "74%"; }
+              60.4% { content: "73%"; }
+              60.6% { content: "72%"; }
+              60.7% { content: "71%"; }
+              61% { content: "70%"; }
+              61.2% { content: "69%"; }
+              61.4% { content: "68%"; }
+              61.6% { content: "67%"; }
+              61.7% { content: "66%"; }
+              62% { content: "65%"; }
+              62.2% { content: "64%"; }
+              62.4% { content: "63%"; }
+              62.6% { content: "62%"; }
+              62.7% { content: "61%"; }
+              63% { content: "60%"; }
+              63.1% { content: "59%"; }
+              63.4% { content: "58%"; }
+              63.6% { content: "57%"; }
+              63.7% { content: "56%"; }
+              64% { content: "55%"; }
+              64.2% { content: "54%"; }
+              64.4% { content: "53%"; }
+              64.6% { content: "52%"; }
+              64.7% { content: "51%"; }
+              64.9% { content: "50%"; }
+              80.2% { content: "49%"; }
+              80.4% { content: "48%"; }
+              80.6% { content: "47%"; }
+              80.7% { content: "46%"; }
+              80.9% { content: "45%"; }
+              81.2% { content: "44%"; }
+              81.4% { content: "43%"; }
+              81.6% { content: "42%"; }
+              81.7% { content: "41%"; }
+              81.9% { content: "40%"; }
+              82.2% { content: "39%"; }
+              82.4% { content: "38%"; }
+              82.6% { content: "37%"; }
+              82.7% { content: "36%"; }
+              82.9% { content: "35%"; }
+              83.2% { content: "34%"; }
+              83.4% { content: "33%"; }
+              83.6% { content: "32%"; }
+              83.7% { content: "31%"; }
+              83.9% { content: "30%"; }
+              84.2% { content: "29%"; }
+              84.4% { content: "28%"; }
+              84.6% { content: "27%"; }
+              84.7% { content: "26%"; }
+              84.9% { content: "25%"; }
+              85.2% { content: "24%"; }
+              85.4% { content: "23%"; }
+              85.6% { content: "22%"; }
+              85.7% { content: "21%"; }
+              85.9% { content: "20%"; }
+              86.2% { content: "19%"; }
+              86.4% { content: "18%"; }
+              86.6% { content: "17%"; }
+              86.7% { content: "16%"; }
+              86.9% { content: "15%"; }
+              87.2% { content: "14%"; }
+              87.4% { content: "13%"; }
+              87.6% { content: "12%"; }
+              87.7% { content: "11%"; }
+              87.9% { content: "10%"; }
+              88.2% { content: "9%"; }
+              88.4% { content: "8%"; }
+              88.6% { content: "7%"; }
+              88.7% { content: "6%"; }
+              88.9% { content: "5%"; }
+              89.2% { content: "4%"; }
+              89.4% { content: "3%"; }
+              89.6% { content: "2%"; }
+              89.7% { content: "1%"; }
+              89.9% { content: "0%"; }
+              100% { content: "0%"; }
+            }
+
+            @keyframes sim-bp-label {
+              0% { content: "0%"; }
+              30.1% { content: "1%"; }
+              30.2% { content: "2%"; }
+              30.3% { content: "3%"; }
+              30.4% { content: "4%"; }
+              30.5% { content: "5%"; }
+              30.6% { content: "6%"; }
+              30.7% { content: "7%"; }
+              30.8% { content: "8%"; }
+              30.9% { content: "9%"; }
+              31% { content: "10%"; }
+              31.1% { content: "11%"; }
+              31.2% { content: "12%"; }
+              31.3% { content: "13%"; }
+              31.4% { content: "14%"; }
+              31.5% { content: "15%"; }
+              31.6% { content: "16%"; }
+              31.7% { content: "17%"; }
+              31.8% { content: "18%"; }
+              31.9% { content: "19%"; }
+              32% { content: "20%"; }
+              32.1% { content: "21%"; }
+              32.2% { content: "22%"; }
+              32.3% { content: "23%"; }
+              32.4% { content: "24%"; }
+              32.5% { content: "25%"; }
+              32.6% { content: "26%"; }
+              32.7% { content: "27%"; }
+              32.8% { content: "28%"; }
+              32.9% { content: "29%"; }
+              33% { content: "30%"; }
+              33.1% { content: "31%"; }
+              33.2% { content: "32%"; }
+              33.3% { content: "33%"; }
+              33.4% { content: "34%"; }
+              33.5% { content: "35%"; }
+              33.6% { content: "36%"; }
+              33.7% { content: "37%"; }
+              33.8% { content: "38%"; }
+              33.9% { content: "39%"; }
+              34% { content: "40%"; }
+              34.1% { content: "41%"; }
+              34.2% { content: "42%"; }
+              34.3% { content: "43%"; }
+              34.4% { content: "44%"; }
+              34.5% { content: "45%"; }
+              34.6% { content: "46%"; }
+              34.7% { content: "47%"; }
+              34.8% { content: "48%"; }
+              34.9% { content: "49%"; }
+              35% { content: "50%"; }
+              35.1% { content: "51%"; }
+              35.2% { content: "52%"; }
+              35.3% { content: "53%"; }
+              35.4% { content: "54%"; }
+              35.5% { content: "55%"; }
+              35.6% { content: "56%"; }
+              35.7% { content: "57%"; }
+              35.8% { content: "58%"; }
+              35.9% { content: "59%"; }
+              36% { content: "60%"; }
+              36.1% { content: "61%"; }
+              36.2% { content: "62%"; }
+              36.3% { content: "63%"; }
+              36.4% { content: "64%"; }
+              36.5% { content: "65%"; }
+              36.6% { content: "66%"; }
+              36.7% { content: "67%"; }
+              36.8% { content: "68%"; }
+              36.9% { content: "69%"; }
+              37% { content: "70%"; }
+              37.1% { content: "71%"; }
+              37.2% { content: "72%"; }
+              37.3% { content: "73%"; }
+              37.4% { content: "74%"; }
+              37.5% { content: "75%"; }
+              37.6% { content: "76%"; }
+              37.7% { content: "77%"; }
+              37.8% { content: "78%"; }
+              37.9% { content: "79%"; }
+              38% { content: "80%"; }
+              38.1% { content: "81%"; }
+              38.2% { content: "82%"; }
+              38.3% { content: "83%"; }
+              38.4% { content: "84%"; }
+              38.5% { content: "85%"; }
+              38.6% { content: "86%"; }
+              38.7% { content: "87%"; }
+              38.8% { content: "88%"; }
+              38.9% { content: "89%"; }
+              39% { content: "90%"; }
+              39.1% { content: "91%"; }
+              39.2% { content: "92%"; }
+              39.3% { content: "93%"; }
+              39.4% { content: "94%"; }
+              39.5% { content: "95%"; }
+              39.6% { content: "96%"; }
+              39.7% { content: "97%"; }
+              39.8% { content: "98%"; }
+              39.9% { content: "99%"; }
+              40% { content: "100%"; }
+              55.2% { content: "99%"; }
+              55.4% { content: "98%"; }
+              55.6% { content: "97%"; }
+              55.7% { content: "96%"; }
+              56% { content: "95%"; }
+              56.2% { content: "94%"; }
+              56.4% { content: "93%"; }
+              56.6% { content: "92%"; }
+              56.7% { content: "91%"; }
+              57% { content: "90%"; }
+              57.2% { content: "89%"; }
+              57.4% { content: "88%"; }
+              57.6% { content: "87%"; }
+              57.7% { content: "86%"; }
+              58% { content: "85%"; }
+              58.2% { content: "84%"; }
+              58.4% { content: "83%"; }
+              58.6% { content: "82%"; }
+              58.7% { content: "81%"; }
+              59% { content: "80%"; }
+              59.2% { content: "79%"; }
+              59.4% { content: "78%"; }
+              59.6% { content: "77%"; }
+              59.7% { content: "76%"; }
+              60% { content: "75%"; }
+              60.2% { content: "74%"; }
+              60.4% { content: "73%"; }
+              60.6% { content: "72%"; }
+              60.7% { content: "71%"; }
+              61% { content: "70%"; }
+              61.2% { content: "69%"; }
+              61.4% { content: "68%"; }
+              61.6% { content: "67%"; }
+              61.7% { content: "66%"; }
+              62% { content: "65%"; }
+              62.2% { content: "64%"; }
+              62.4% { content: "63%"; }
+              62.6% { content: "62%"; }
+              62.7% { content: "61%"; }
+              63% { content: "60%"; }
+              63.1% { content: "59%"; }
+              63.4% { content: "58%"; }
+              63.6% { content: "57%"; }
+              63.7% { content: "56%"; }
+              64% { content: "55%"; }
+              64.2% { content: "54%"; }
+              64.4% { content: "53%"; }
+              64.6% { content: "52%"; }
+              64.7% { content: "51%"; }
+              64.9% { content: "50%"; }
+              80.2% { content: "51%"; }
+              80.4% { content: "52%"; }
+              80.5% { content: "53%"; }
+              80.7% { content: "54%"; }
+              80.9% { content: "55%"; }
+              81.2% { content: "56%"; }
+              81.4% { content: "57%"; }
+              81.5% { content: "58%"; }
+              81.7% { content: "59%"; }
+              81.9% { content: "60%"; }
+              82.2% { content: "61%"; }
+              82.4% { content: "62%"; }
+              82.5% { content: "63%"; }
+              82.7% { content: "64%"; }
+              82.9% { content: "65%"; }
+              83.2% { content: "66%"; }
+              83.4% { content: "67%"; }
+              83.5% { content: "68%"; }
+              83.7% { content: "69%"; }
+              83.9% { content: "70%"; }
+              84.2% { content: "71%"; }
+              84.4% { content: "72%"; }
+              84.5% { content: "73%"; }
+              84.7% { content: "74%"; }
+              84.9% { content: "75%"; }
+              85.2% { content: "76%"; }
+              85.4% { content: "77%"; }
+              85.5% { content: "78%"; }
+              85.7% { content: "79%"; }
+              85.9% { content: "80%"; }
+              86.2% { content: "81%"; }
+              86.4% { content: "82%"; }
+              86.5% { content: "83%"; }
+              86.7% { content: "84%"; }
+              86.9% { content: "85%"; }
+              87.2% { content: "86%"; }
+              87.4% { content: "87%"; }
+              87.5% { content: "88%"; }
+              87.7% { content: "89%"; }
+              87.9% { content: "90%"; }
+              88.2% { content: "91%"; }
+              88.4% { content: "92%"; }
+              88.5% { content: "93%"; }
+              88.7% { content: "94%"; }
+              88.9% { content: "95%"; }
+              89.2% { content: "96%"; }
+              89.4% { content: "97%"; }
+              89.5% { content: "98%"; }
+              89.7% { content: "99%"; }
+              89.9% { content: "100%"; }
+              100% { content: "100%"; }
+            }
+
+            hui-state-label-element:nth-of-type(-n+2)::after { padding: 4px 7px
+            !important; line-height: 1.15 !important; border: 1.5px solid
+            #2586a4; border-radius: 6px; background: #e7f4f8; color: #11566f;
+            font-size: clamp(11px, 2.2vw, 18px); font-weight: 700; white-space:
+            nowrap; }
+
+            hui-state-label-element:nth-of-type(-n+2)::before { position:
+            absolute; bottom: calc(100% + 4px); left: 0; width: max-content;
+            padding: 0 19px 0 0; font-family: Arial, sans-serif; font-size:
+            clamp(10px, 1.6vw, 14px); line-height: 1.15; font-weight: 600;
+            color: #147b9d; background-color: #fafbfc; background-size: 15px
+            15px; background-position: right center; background-repeat:
+            no-repeat; visibility: visible; bottom: calc(50% + 20px); left: 50%;
+            background-image:
+            url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E");
+            }
+
+            hui-state-label-element:nth-of-type(1)::before { content: "SIM DHW";
+            }
+
+            hui-state-label-element:nth-of-type(2)::before { content: "SIM
+            Bypass"; }
+
+            hui-state-label-element:nth-of-type(-n+2) { display: inline-grid;
+            grid-template-columns: max-content; gap: 4px; padding: 0 !important;
+            }
+
+            hui-state-label-element:nth-of-type(-n+2)::before,
+            hui-state-label-element:nth-of-type(-n+2)::after { position: static;
+            transform: none; }
+
+            hui-state-label-element:nth-of-type(-n+2)::after { width:
+            fit-content; } @keyframes upm3-demo-running { 0%, 10%, 100% {
+            opacity: 0; } 10.01%, 99.99% { opacity: 1; } } @keyframes
+            upm3-demo-static { 0%, 10%, 100% { opacity: 1; } 10.01%, 99.99% {
+            opacity: 0; } } {% set upm3_auto =
+            is_state('input_boolean.warmtepomp_test_automatisch', 'on') %} {%
+            set upm3_on = is_state('input_boolean.warmtepomp_test_pomp', 'on')
+            %} :host {
+              --upm3-running: {{ 1 if upm3_on else 0 }};
+              --upm3-static: {{ 0 if upm3_on else 1 }};
+              --upm3-running-animation: {{ 'upm3-demo-running 32s linear infinite' if upm3_auto else 'none' }};
+              --upm3-static-animation: {{ 'upm3-demo-static 32s linear infinite' if upm3_auto else 'none' }};
+            }
+
+            hui-state-label-element:nth-of-type(-n+2) { visibility: visible
+            !important; display: flex; flex-direction: column; align-items:
+            stretch; box-sizing: border-box; font-family: Arial, sans-serif;
+            font-size: clamp(5px, 1.65cqw, 13px) !important; line-height: 1.25;
+            gap: .15em; padding: .25em 1.05em .25em .3em !important;
+            background-color: #e7f4f8; border: 1.5px solid #2586a4;
+            border-radius: 6px; background-image:
+            url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E");
+            background-size: .6em .6em; background-position: right .3em center;
+            background-repeat: no-repeat; }
+            hui-state-label-element:nth-of-type(-n+2)::before { position: static
+            !important; transform: none !important; visibility: visible; width:
+            100%; padding: 0 !important; margin: 0; font-family: Arial,
+            sans-serif; font-size: .82em; line-height: 1.25; text-align: center;
+            color: #147b9d; background: none !important; }
+            hui-state-label-element:nth-of-type(1)::before { content: "DHW"; }
+            hui-state-label-element:nth-of-type(2)::before { content: "Bypass";
+            } hui-state-label-element:nth-of-type(-n+2)::after { position:
+            static !important; transform: none !important; visibility: visible;
+            width: 100% !important; padding: 0 !important; margin: 0;
+            font-family: Arial, sans-serif; font-size: inherit; line-height:
+            1.25 !important; text-align: center; border: 0; border-radius: 0;
+            color: #11566f; background: none !important; }
+      - type: entities
+        title: Simulatiebediening
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.warmtepomp_test_automatisch
+            name: Automatische cyclus
+          - type: section
+            label: Cyclus uit = handbediening (alleen testwaarden)
+          - entity: input_boolean.warmtepomp_test_pomp
+            name: Pomp aan / uit
+          - entity: input_number.warmtepomp_test_dhw
+            name: DHW (%)
+          - entity: input_number.warmtepomp_test_bypass
+            name: Bypass (%)
+        card_mod:
+          style: >
+            ha-card { container-type: inline-size; max-width: 740px; margin: 0
+            auto; }

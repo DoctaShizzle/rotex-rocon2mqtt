@@ -1,0 +1,865 @@
+# Live Dashboard
+type: panel
+title: Live
+path: live
+icon: mdi:heat-pump
+cards:
+  - type: custom:config-template-card
+    entities:
+      - sensor.rocon_heatgenerator_0_valve_ch_dhw
+      - sensor.rocon_heatgenerator_0_valve_ch_bypass
+      - sensor.rocon_heatgenerator_0_tr
+      - sensor.rocon_heatgenerator_0_heater_temperature_actual
+      - sensor.rocon_heatgenerator_0_tvbh_1
+      - sensor.rocon_heatgenerator_0_buffer_temperature_actual
+      - sensor.rocon_heatgenerator_0_n
+      - sensor.rocon_heatgenerator_0_v
+      - sensor.rocon_heatgenerator_0_water_pressure
+    variables:
+      - |-
+        (function () {
+                      const tag='ehsh-thermal-events-oct2026-v1';
+                      if (!customElements.get(tag)) {
+                        class PumpEvents extends HTMLElement {
+                          constructor(){super();this.attachShadow({mode:'open'});this._events=[];this._data=new Map();this._generation=0;this._selected=null;this._busy=false;}
+                          setConfig(config){if(!config.schema)throw new Error('Schema ontbreekt');this.config=config;if(!this._mounted)this.mount();}
+                          set hass(hass){this._hass=hass;if(this.child&&!this._selected)this.child.hass=hass;if(hass&&!this._loaded&&!this._busy){this._loaded=true;this.refresh();}}
+                          getCardSize(){return 20;}
+                          disconnectedCallback(){this.pause();clearInterval(this._refreshTimer);this._refreshTimer=null;}
+                          connectedCallback(){if(!this._refreshTimer)this._refreshTimer=setInterval(()=>{if(!this._selected&&!this._busy)this.refresh();},300000);}
+                          async mount(){this._mounted=true;this.shadowRoot.innerHTML='<style>:host{display:block;max-width:740px;margin:auto;color:var(--primary-text-color,#183d53);font-family:Arial,sans-serif}.mode{position:sticky;top:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 14px;background:#e7f4f8;border:1px solid #b9d9e3;border-radius:9px;color:#11566f}.mode.history{background:#fff2cf;border-color:#e4c16c;color:#77551b}.events{margin:14px 0 30px;padding:18px;border:1px solid #cbdce2;border-radius:12px;background:var(--card-background-color,#fff)}h2{font-size:19px;margin:0 0 7px}.sub,.status{font-size:13px;line-height:1.5;color:var(--secondary-text-color,#58717b)}.toolbar{display:flex;gap:9px;margin:12px 0;flex-wrap:wrap}button,input{font:inherit}button{padding:8px 12px;border:1px solid #9bc4d3;background:#e7f4f8;color:#11566f;border-radius:7px;cursor:pointer}button:disabled{opacity:.5;cursor:default}details{border-top:1px solid #dce7eb;padding:12px 0}summary{cursor:pointer;list-style:none;display:flex;gap:10px;justify-content:space-between;font-size:14px;line-height:1.5}summary::-webkit-details-marker{display:none}.duration{color:#147b9d;white-space:nowrap}.controls{padding-top:12px}input[type=range]{display:block;width:100%;accent-color:#147b9d;margin:15px 0}.limits{display:flex;justify-content:space-between;font-size:12px;color:#58717b}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:11px}input[type=datetime-local]{max-width:100%;box-sizing:border-box;padding:7px;border:1px solid #9bc4d3;border-radius:6px;background:var(--card-background-color,#fff);color:inherit}.selection{font-size:13px;color:#77551b}.current{margin:10px 0;padding:9px;background:#edf7ef;border-radius:7px;color:#27653a;font-size:13px}[hidden]{display:none!important}</style><div class="mode"><span id="modeText">● Live</span><button id="live" hidden>Naar live</button></div><div id="diagram"></div><section class="events"><h2>Laatste 5 events</h2><div class="sub">Afgeleid uit temperatuurstijgingen en klepstanden. Namen, tijdgrenzen en stroming zijn indicatief; n en V worden niet gebruikt.</div><div class="toolbar"><button id="refresh">Vernieuwen</button><button id="older" hidden>Verder terugzoeken</button></div><div id="current" class="current" hidden></div><div id="status" class="status" role="status"></div><div id="list"></div><details><summary>Gebruikte gegevens en detectieregels</summary><div id="quality" class="sub"></div><p class="sub">DHW: stijging van de vattemperatuur en/of verwarmingswater met DHW-klep ≥ 80%. Woning: opwarmend water met beide kleppen ≤ 20%. Bypass: opwarmend water met bypass ≥ 80%. Tussenstanden krijgen Gemengd; onbekende standen blijven onzeker.</p><p class="sub">Drempels: 0,5 °C voor aanvoer of 0,3 °C voor vat/retour binnen 10 minuten; aanvoer warmer dan retour. Signalen met dezelfde route binnen 15 minuten vormen één periode, met 5 minuten naloop. Begin en einde zijn schattingen, geen vastgestelde pompstarts of pompstops.</p></details><div class="sub">Alleen bestaande Home Assistant-historiek · geen aparte opslag · ontbrekende waarden worden als onbekend getoond.</div></section>';
+                            this.$=id=>this.shadowRoot.getElementById(id);this.$('live').onclick=()=>this.toLive();this.$('refresh').onclick=()=>this.refresh();this.$('older').onclick=()=>this.refresh(Math.min((this._days||30)*4,3650));
+                            try{const helpers=await window.loadCardHelpers();this.child=helpers.createCardElement(this.config.schema);this.$('diagram').append(this.child);if(this._hass)this.child.hass=this._hass;}catch(e){this.$('status').textContent='Schema kon niet laden: '+e.message;}
+                          }
+                          static thermalEvents(histories, periodStart, periodEnd) {
+          const prefix='sensor.rocon_heatgenerator_0_';
+          const keys=['heater_temperature_actual','tvbh_1','tr','buffer_temperature_actual','valve_ch_dhw','valve_ch_bypass'];
+          const series=Object.fromEntries(keys.map(key=>[key,(histories[prefix+key]||[]).filter(r=>Number.isFinite(r.time)).slice().sort((a,b)=>a.time-b.time)]));
+          const numeric=state=>state!==null&&state!==undefined&&String(state).trim()!==''&&Number.isFinite(Number(state))?Number(state):NaN;
+          const valid=(key,row)=>row&&Number.isFinite(numeric(row.state))&&(key.startsWith('valve')?numeric(row.state)>=0&&numeric(row.state)<=100:numeric(row.state)>=-50&&numeric(row.state)<=120);
+          const at=(key,time)=>{const rows=series[key];let lo=0,hi=rows.length-1,result=null;while(lo<=hi){const mid=(lo+hi)>>1;if(rows[mid].time<=time){result=rows[mid];lo=mid+1;}else hi=mid-1;}return valid(key,result)?numeric(result.state):NaN;};
+          const window=10*60000,tail=5*60000,join=15*60000;
+          const barriers=[...new Set(keys.flatMap(key=>series[key].filter(r=>!valid(key,r)).map(r=>r.time)))].sort((a,b)=>a-b);
+          const barrierIndex=time=>{let lo=0,hi=barriers.length-1,index=-1;while(lo<=hi){const mid=(lo+hi)>>1;if(barriers[mid]<=time){index=mid;lo=mid+1;}else hi=mid-1;}return index;};
+          const hasGap=(start,end)=>{const index=barrierIndex(start)+1;return index<barriers.length&&barriers[index]<=end;};
+          const delta=(key,time)=>hasGap(time-window,time)?NaN:at(key,time)-at(key,time-window);
+          const times=[...new Set(keys.flatMap(key=>series[key].map(r=>r.time)))].filter(t=>t>=periodStart&&t<periodEnd).sort((a,b)=>a-b);
+          const events=[];
+          for(const time of times){
+            const supply=at('heater_temperature_actual',time),bh=at('tvbh_1',time),ret=at('tr',time),d=at('valve_ch_dhw',time),b=at('valve_ch_bypass',time);
+            const supplyRise=Math.max(...[delta('heater_temperature_actual',time),delta('tvbh_1',time)].filter(Number.isFinite));
+            const tankRise=delta('buffer_temperature_actual',time),returnRise=delta('tr',time);
+            const thermalHead=Math.max(...[supply,bh].filter(Number.isFinite))-ret;
+            const waterHeating=(supplyRise>=0.5&&thermalHead>=1)||(returnRise>=0.3&&thermalHead>=2);
+            const tankHeating=d>=80&&tankRise>=0.3;
+            if(!waterHeating&&!tankHeating)continue;
+            let name='Thermische activiteit',reason='Temperatuurstijging; route onvoldoende bekend',routeKnown=false;
+            if(d>=80){name='DHW';reason=tankHeating?'Warmwatervat warmt op; DHW-klep ≥ 80%':'Water warmt op; DHW-klep ≥ 80%';routeKnown=true;}
+            else if(d<=20&&b<=20){name='Woning';reason='Water warmt op; DHW- en bypassklep ≤ 20%';routeKnown=true;}
+            else if(d<=20&&b>=80){name='Bypass / opwarming';reason='Water warmt op; bypassklep ≥ 80%';routeKnown=true;}
+            else if(Number.isFinite(d)&&Number.isFinite(b)){name=d>20?'Gemengd DHW / woning':'Gemengd woning / bypass';reason='Temperatuurstijging met tussenstand van de kleppen';routeKnown=true;}
+            const corroborated=tankHeating&&waterHeating||supplyRise>=0.5&&returnRise>=0.3;
+            const confidence=routeKnown&&corroborated?'waarschijnlijk':'onzeker';
+            let start=Math.max(periodStart,time-window),end=Math.min(periodEnd,time+tail);
+            const index=barrierIndex(time),previousBarrier=barriers[index],nextBarrier=barriers[index+1];
+            if(previousBarrier!==undefined)start=Math.max(start,previousBarrier);
+            if(nextBarrier!==undefined)end=Math.min(end,nextBarrier);
+            const prior=events.at(-1);
+            if(prior&&prior.name===name&&time-prior.lastEvidence<=join&&!hasGap(prior.lastEvidence,time)){
+              prior.end=Math.max(prior.end,end);prior.lastEvidence=time;prior.reasons.add(reason);if(confidence==='onzeker')prior.confidence='onzeker';
+            }else{
+              if(prior&&start<prior.end){prior.end=Math.min(prior.end,time);start=Math.max(start,prior.end);}
+              events.push({start,end,lastEvidence:time,name,confidence,source:'thermal',reasons:new Set([reason]),inferred:true});
+            }
+          }
+          return {events:events.filter(e=>e.end>e.start).map(e=>({...e,reasons:[...e.reasons]})).reverse(),gaps:barriers.filter(t=>t>=periodStart&&t<periodEnd).length};
+        }
+                          static pumpCycles(rows){let previous=null,start=null,incomplete=false;const events=[];const sorted=rows.filter(r=>Number.isFinite(r.time)).sort((a,b)=>a.time-b.time);for(const r of sorted){const value=r.state===null||r.state===''?NaN:Number(r.state);if(!Number.isFinite(value)||value<0){previous=null;start=null;incomplete=true;continue;}if(value>0&&previous===0)start=r.time;if(value===0&&previous!==null&&previous>0&&start!==null){if(r.time>start)events.push({start,end:r.time});start=null;}previous=value;}return{events:events.reverse(),current:previous>0?{start}:null,incomplete};}
+                          normalize(groups,ids){return ids.reduce((out,id,i)=>{const group=groups.find(g=>g.some(r=>r.entity_id===id))||[];out[id]=group.map(r=>({time:(typeof(r.last_changed??r.last_updated)==='number'?(r.last_changed??r.last_updated)*((r.last_changed??r.last_updated)<1e12?1000:1):Date.parse(r.last_changed||r.last_updated)),state:r.state,attributes:r.attributes})).filter(r=>Number.isFinite(r.time)).sort((a,b)=>a.time-b.time);return out;},{});}
+                          async history(ids,start,end){const path='history/period/'+encodeURIComponent(new Date(start).toISOString())+'?filter_entity_id='+encodeURIComponent(ids.join(','))+'&end_time='+encodeURIComponent(new Date(end).toISOString())+'&minimal_response&no_attributes&significant_changes_only=0';const result=await this._hass.callApi('GET',path);if(!Array.isArray(result))throw new Error('Onverwacht antwoord van de historiek');return this.normalize(result,ids);}
+                          async refresh(){
+          if(!this._hass||!this.$||this._busy)return;
+          if(this._selected)this.toLive();
+          this._busy=true;this.$('refresh').disabled=true;this.$('older').hidden=true;
+          this.$('status').textContent='Temperatuurverloop en klepstanden van oktober 2026 laden…';
+          const start=Date.parse('2026-10-01T00:00:00+02:00'),end=Date.parse('2026-11-01T00:00:00+01:00');
+          const sensors=[['heater_temperature_actual','t-V','°C'],['tvbh_1','t-V,BH','°C'],['tr','t-R','°C'],['buffer_temperature_actual','t-DHW','°C'],['valve_ch_dhw','DHW-klep','%'],['valve_ch_bypass','Bypassklep','%']];
+          const ids=sensors.map(([key])=>'sensor.rocon_heatgenerator_0_'+key);
+          try{
+            const histories=await this.history(ids,start,end),analysis=PumpEvents.thermalEvents(histories,start,end);
+            this._events=analysis.events.slice(0,5);this.renderEvents();this.$('current').hidden=true;
+            this.$('status').textContent=(this._events.length?this._events.length+' afgeleide verwarmingsperiode(n) gevonden.':'Geen verwarmingsperiode af te leiden uit de beschikbare temperatuurveranderingen en klepstanden.')+' Oktober 2026.'+(analysis.gaps?' Er zijn hiaten; daarover worden geen periodes samengevoegd.':'');
+            this.$('quality').replaceChildren();
+            for(const [key,label,unit] of sensors){const rows=histories['sensor.rocon_heatgenerator_0_'+key]||[],values=rows.filter(r=>r.state!==null&&String(r.state).trim()!==''&&Number.isFinite(Number(r.state))).map(r=>Number(r.state)),unique=new Set(values),range=values.length?values.reduce((r,v)=>[Math.min(r[0],v),Math.max(r[1],v)],[Infinity,-Infinity]):null,line=document.createElement('div');line.textContent=label+': '+(range?range.map(v=>v.toLocaleString('nl-BE',{maximumFractionDigits:2})).join('–')+' '+unit:'geen geldige waarden')+' · '+unique.size+' verschillende waarde(n) · '+(rows.length-values.length)+' onbekend/onbeschikbaar';this.$('quality').append(line);}
+          }catch(e){this.$('status').textContent='Historiek kon niet worden geladen: '+e.message;}
+          finally{this._busy=false;this.$('refresh').disabled=false;}
+        }
+                          date(t){return new Date(t).toLocaleString('nl-BE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+                          local(t){const d=new Date(t);return new Date(t-d.getTimezoneOffset()*60000).toISOString().slice(0,19);}
+                          renderEvents(){this.$('list').replaceChildren();for(const event of this._events){const details=document.createElement('details');const summary=document.createElement('summary');const label=document.createElement('span');label.textContent=event.name+' ('+event.confidence+', afgeleid) · '+this.date(event.start)+' → '+new Date(event.end).toLocaleTimeString('nl-BE');const duration=document.createElement('span');duration.className='duration';duration.textContent=Math.floor((event.end-event.start)/60000)+' min '+Math.floor((event.end-event.start)%60000/1000)+' s';summary.append(label,duration);details.append(summary);const why=document.createElement('p');why.className='sub';why.textContent=event.reasons.join(' · ');details.append(why);const c=document.createElement('div');c.className='controls';c.innerHTML='<div class="limits"><span></span><span></span></div><input type="range" aria-label="Tijdstip binnen pompcyclus"><div class="row"><button type="button">▶ Afspelen</button><label>Tijdstip <input type="datetime-local" step="1" aria-label="Historisch tijdstip"></label><label>Snelheid <select aria-label="Afspeelsnelheid"><option value="1">1×</option><option value="10">10×</option><option value="60" selected>60×</option></select></label></div><p class="selection"></p>';details.append(c);this.$('list').append(details);const range=c.querySelector('input[type=range]'),date=c.querySelector('input[type=datetime-local]'),play=c.querySelector('button'),speed=c.querySelector('select'),note=c.querySelector('.selection');c.querySelector('.limits span').textContent=new Date(event.start).toLocaleTimeString('nl-BE');c.querySelectorAll('.limits span')[1].textContent=new Date(event.end).toLocaleTimeString('nl-BE');range.min=String(event.start);range.max=String(event.end);range.step='1000';range.value=String(event.start);date.min=this.local(event.start);date.max=this.local(event.end);date.value=this.local(event.start);event.controls={range,date,play,speed,note,details};details.ontoggle=()=>{if(details.open){for(const other of this._events)if(other!==event&&other.controls)other.controls.details.open=false;this.select(event,Number(range.value));}else if(this._selected===event)this.toLive();};range.oninput=()=>{this.pause();this.select(event,Number(range.value));};date.onchange=()=>{const time=new Date(date.value).getTime();if(Number.isFinite(time)){this.pause();this.select(event,Math.max(event.start,Math.min(event.end,time)));}};play.onclick=()=>this._timer?this.pause():this.play(event);}}
+                          async select(event,time){this._selected=event;const generation=++this._generation;time=Math.max(event.start,Math.min(event.end,time));event.time=time;const c=event.controls;c.range.value=String(time);c.date.value=this.local(time);this.$('modeText').textContent='◷ '+(event.inferred?'Afgeleid: '+event.name+' · ':'Historiek · ')+this.date(time);this.shadowRoot.querySelector('.mode').classList.add('history');this.$('live').hidden=false;c.note.textContent='Historische metingen laden…';const ids=this.config.schema.elements.filter(e=>e.type==='state-label').map(e=>e.entity);try{if(!this._data.has(event.start)){const data=await this.history(ids,event.start,event.end+1000);this._data.set(event.start,data);}if(generation!==this._generation||this._selected!==event)return;const data=this._data.get(event.start),states={...this._hass.states};let missing=0;for(const id of ids){const rows=data[id]||[];let lo=0,hi=rows.length-1,last=null;while(lo<=hi){const mid=(lo+hi)>>1;if(rows[mid].time<=time){last=rows[mid];lo=mid+1;}else hi=mid-1;}const value=last?last.state:'unavailable';if(!last||['unknown','unavailable','none'].includes(value))missing++;states[id]={...(states[id]||{entity_id:id,attributes:{}}),state:value,last_changed:last?new Date(last.time).toISOString():new Date(time).toISOString(),last_updated:last?new Date(last.time).toISOString():new Date(time).toISOString()};}const snapshot={...this._hass,states};if(this.child){const historical=this.historicalSchema(states),signature=JSON.stringify(historical);if(signature!==this._historicalSignature){this.child.setConfig(historical);this._historicalSignature=signature;}this.child.hass=snapshot;}c.note.textContent='Stroming en activiteit zijn afgeleid; n en V bepalen deze animatie niet. Laatst geregistreerde meting op of vóór '+this.date(time)+'.'+(missing?' '+missing+' sensorwaarde(n) ontbreken; bij onbekende klepstanden wordt geen stromingsroute aangenomen.':'');}catch(e){if(generation===this._generation)c.note.textContent='Historische metingen konden niet laden: '+e.message;}}
+                          historicalSchema(states){const schema=JSON.parse(JSON.stringify(this.config.schema));const n=id=>{const v=states['sensor.rocon_heatgenerator_0_'+id]?.state;return v!==''&&Number.isFinite(Number(v))?Number(v):NaN;};const running=this._selected?.source==='thermal'?this._selected.time<this._selected.end:n(this._selected?.source==='V'?'v':'n')>0,d=n('valve_ch_dhw')/100,b=n('valve_ch_bypass')/100;const known=Number.isFinite(d)&&Number.isFinite(b),D=Math.min(1,Math.max(0,d)),B=Math.min(1,Math.max(0,b));let vars='--dhw-position:'+(Number.isFinite(D)?26+2*D:26)+'%;--bypass-position:'+(Number.isFinite(B)?60+2*B:60)+'%;--dhw-animation:none;--bypass-animation:none;--pump-state:'+(running?'running':'paused')+';--upm3-running:'+(running?1:0)+';--upm3-static:'+(running?0:1)+';--upm3-running-animation:none;--upm3-static-animation:none;';const flows={'common':running?1:0,'dhw-ch':known&&running?1-D:0,'dhw-tank':known&&running?D:0,'heating':known&&running?1-B:0,'bypass':known&&running?B:0,'common-hot':known&&running?B*(1-D):0,'heating-cool':known&&running?D*(1-B):0,'bypass-cool':known&&running?D*B:0};for(const key in flows)vars+='--flow-'+key+':'+flows[key]+';--test-'+key+':none;';schema.card_mod={style:'ha-card {container-type:inline-size;max-width:740px;margin:auto;border:none;background:white;} :host {'+vars+'}'};for(const e of schema.elements){e.tap_action={action:'none'};e.hold_action={action:'none'};if(e.type==='state-label'&&e.card_mod?.style){let css=e.card_mod.style;css=css.replace(/{%[\s\S]*?%}/g,'').replace(/{{[\s\S]*?}}/g,'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E');e.card_mod={style:css};}if(e.title==='Driewegklep DHW'&&!Number.isFinite(d))e.style.opacity=0.25;if(e.title==='Driewegklep bypass'&&!Number.isFinite(b))e.style.opacity=0.25;}return schema;}
+                          play(event){this.pause();if(!this._data.has(event.start)){event.controls.note.textContent='Open eerst de cyclus om de metingen te laden.';return;}if((event.time||event.start)>=event.end)event.time=event.start;event.controls.play.textContent='❚❚ Pauzeren';let last=performance.now();this._timer=setInterval(()=>{const now=performance.now(),next=Math.min(event.end,(event.time||event.start)+(now-last)*Number(event.controls.speed.value));last=now;this.select(event,next);if(next>=event.end)this.pause();},500);}
+                          pause(){clearInterval(this._timer);this._timer=null;for(const event of this._events)if(event.controls)event.controls.play.textContent='▶ Afspelen';}
+                          toLive(){this.pause();this._generation++;this._selected=null;this._historicalSignature=null;this.$('modeText').textContent='● Live';this.shadowRoot.querySelector('.mode').classList.remove('history');this.$('live').hidden=true;if(this.child){this.child.setConfig(this.config.schema);this.child.hass=this._hass;}}
+                        }
+                        customElements.define(tag,PumpEvents);
+                      }
+                      return 'custom:'+tag;
+                    })();
+    card:
+      type: ${vars[0]}
+      schema:
+        type: picture-elements
+        image:
+          media_content_id: media-source://image_upload/e09d6b0e44361f2e3ab0a3e7b2bcbd7a
+          media_content_type: image/png
+        elements:
+          - type: image
+            title: Achtergrond pomp
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Crect%20x%3D%22180%22%20y%3D%22350%22%20width%3D%22660%22%20height%3D%22645%22%20fill%3D%22%23fafbfc%22%2F%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M205%20350V420H230%20M285%20350V360%20M583.6%20506V420H493%20M467%20420H300%20M270%20520V835%20M305%20850H575%20M480%20350V1000%20M820%20350V850H645%20M610%20612V835%20M235%20850H190V1000%20M610%20642V570%20M622%20722H630%22%2F%3E%3Cpath%20d%3D%22M464%20425L470%20415%20M490%20425L496%20415%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M230%20360H300L230%20520Z%22%20fill%3D%22%23009447%22%2F%3E%3Cpath%20d%3D%22M300%20360V520H230Z%22%20fill%3D%22%23e52c35%22%2F%3E%3C%2Fg%3E%3Ctext%20x%3D%22270%22%20y%3D%22545%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2217%22%20fill%3D%22%2372808b%22%3EPlatenwisselaar%3C%2Ftext%3E%3Crect%20x%3D%22598%22%20y%3D%22695%22%20width%3D%2224%22%20height%3D%2255%22%20fill%3D%22white%22%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%2F%3E%3Ccircle%20cx%3D%22480%22%20cy%3D%22850%22%20r%3D%227%22%20fill%3D%22%2320262c%22%2F%3E%3Cg%20transform%3D%22translate(0%20-80)%22%20fill%3D%22white%22%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M260%20915V898H280V915%20M250%20942V951H290V942%22%2F%3E%3Crect%20x%3D%22235%22%20y%3D%22915%22%20width%3D%2270%22%20height%3D%2230%22%20rx%3D%225%22%2F%3E%3Cpath%20d%3D%22M245%20951H295L290%20980H250Z%22%20fill%3D%22%23f0f3f5%22%2F%3E%3Cpath%20d%3D%22M258%20958V975%20M270%20958V975%20M282%20958V975%22%20stroke%3D%22%23929da6%22%20stroke-width%3D%221.5%22%2F%3E%3Cpath%20d%3D%22M600%20915V898H620V915%20M590%20942V951H630V942%22%2F%3E%3Crect%20x%3D%22575%22%20y%3D%22915%22%20width%3D%2270%22%20height%3D%2230%22%20rx%3D%225%22%2F%3E%3Cpath%20d%3D%22M585%20951H635L630%20980H590Z%22%20fill%3D%22%23f0f3f5%22%2F%3E%3Cpath%20d%3D%22M598%20958V975%20M610%20958V975%20M622%20958V975%22%20stroke%3D%22%23929da6%22%20stroke-width%3D%221.5%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%23fafbfc%22%20stroke-width%3D%2214%22%3E%3Cpath%20d%3D%22M285%20319V331%20M190%201114V1126%20M480%201094V1106%22%2F%3E%3C%2Fg%3E%3Cg%20stroke%3D%22%2320262c%22%20stroke-width%3D%222.5%22%3E%3Cpath%20d%3D%22M285%20313V337%20M190%201108V1132%20M480%201088V1112%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+          - type: image
+            title: Stroming common
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M270%20520V835%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M270%20520V835%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M610%20835V612%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M610%20835V612%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-common, 0)
+              animation: var(--test-common, none)
+          - type: image
+            title: Stroming dhw-ch
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M305%20850H480%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M305%20850H480%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-dhw-ch, 0)
+              animation: var(--test-dhw-ch, none)
+          - type: image
+            title: Stroming dhw-tank
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M235%20850H190V1190H309%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M235%20850H190V1190H309%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M351%201190H480V850%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M351%201190H480V850%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-dhw-tank, 0)
+              animation: var(--test-dhw-tank, none)
+          - type: image
+            title: Stroming heating
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M820%20166V850H645%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M820%20166V850H645%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22floor-hot%22%20gradientUnits%3D%22userSpaceOnUse%22%20x1%3D%22530%22%20y1%3D%22129%22%20x2%3D%22770%22%20y2%3D%22129%22%3E%3Cstop%20stop-color%3D%22%23ef3434%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23b45f89%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22floor-mid%22%20gradientUnits%3D%22userSpaceOnUse%22%20x1%3D%22770%22%20y1%3D%22140%22%20x2%3D%22530%22%20y2%3D%22140%22%3E%3Cstop%20stop-color%3D%22%23b45f89%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23737fb8%22%2F%3E%3C%2FlinearGradient%3E%3ClinearGradient%20id%3D%22floor-cold%22%20gradientUnits%3D%22userSpaceOnUse%22%20x1%3D%22530%22%20y1%3D%22151%22%20x2%3D%22820%22%20y2%3D%22151%22%3E%3Cstop%20stop-color%3D%22%23737fb8%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23329bdf%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M480%20166V129H530%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20166V129H530%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M530%20129H770%22%20fill%3D%22none%22%20stroke%3D%22url(%23floor-hot)%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M530%20129H770%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M770%20129V140H530%22%20fill%3D%22none%22%20stroke%3D%22url(%23floor-mid)%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M770%20129V140H530%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M530%20140V151H820%22%20fill%3D%22none%22%20stroke%3D%22url(%23floor-cold)%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M530%20140V151H820%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3Cpath%20d%3D%22M820%20151V166%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M820%20151V166%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-heating, 0)
+              animation: var(--test-heating, none)
+          - type: image
+            title: Stroming bypass
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-bypass, 0)
+              animation: var(--test-bypass, none)
+          - type: image
+            title: Stroming common-hot
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M610%20835V612%20M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22%23ef3434%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M610%20835V612%20M583.6%20506V420H493%20M467%20420H300%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-common-hot, 0)
+              animation: var(--test-common-hot, none)
+          - type: image
+            title: Stroming heating-cool
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850V166%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-heating-cool, 0)
+              animation: var(--test-heating-cool, none)
+          - type: image
+            title: Stroming bypass-cool
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22%23329bdf%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22%2F%3E%3Cpath%20d%3D%22M480%20850H575%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%225.5%22%20stroke-linecap%3D%22round%22%20stroke-dasharray%3D%221%2022%22%3E%3Canimate%20attributeName%3D%22stroke-dashoffset%22%20from%3D%220%22%20to%3D%22-46%22%20dur%3D%221.2s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+              opacity: var(--flow-bypass-cool, 0)
+              animation: var(--test-bypass-cool, none)
+          - type: image
+            title: Sensorlabel achtergrond
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Crect%20x%3D%22200%22%20y%3D%221069%22%20width%3D%22260%22%20height%3D%2240%22%20fill%3D%22%23fafbfc%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_valve_ch_dhw
+            title: Klepstand DHW
+            style:
+              left: 27%
+              top: 67.08571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 9%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_valve_ch_dhw'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "DHW"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_valve_ch_bypass
+            title: Klepstand bypass
+            style:
+              left: 61%
+              top: 67.08571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 9%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_valve_ch_bypass'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "Bypass"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_tr
+            title: t_R retour
+            style:
+              left: 37%
+              top: 26.43571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 11.5%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_tr'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-R"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_heater_temperature_actual
+            title: t_V aanvoer
+            style:
+              left: 35.5%
+              top: 47.88571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 11.5%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_heater_temperature_actual']
+                %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-V"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_tvbh_1
+            title: t_V,BH
+            style:
+              left: 40%
+              top: 54.71571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 14%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_tvbh_1'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-V,BH"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_buffer_temperature_actual
+            title: Warmwatervat
+            style:
+              left: 33%
+              top: 80.75%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 12.8%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_buffer_temperature_actual']
+                %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "t-DHW"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_n
+            title: Pomptoerental
+            style:
+              left: 72.5%
+              top: 40.83571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 10%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_n'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "n"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_v
+            title: V debiet
+            style:
+              left: 72.5%
+              top: 51.58571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 10%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor = states['sensor.rocon_heatgenerator_0_v'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "V"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: state-label
+            entity: sensor.rocon_heatgenerator_0_water_pressure
+            title: Pressure sensor
+            style:
+              left: 72.5%
+              top: 45.83571429%
+              font-size: clamp(11px, 2.6vw, 19px)
+              font-weight: 600
+              color: '#183d53'
+              width: 10%
+              padding: 0
+              border-radius: 3px
+            card_mod:
+              style: >
+                {% set sensor =
+                states['sensor.rocon_heatgenerator_0_water_pressure'] %}
+
+                {% set available = sensor is defined and sensor.state not in
+                ['unknown', 'unavailable', 'none'] %}
+
+                {% set reported = as_timestamp(sensor.last_reported |
+                default(sensor.last_updated), 0) if available else 0 %}
+
+                {% set fresh = available and (as_timestamp(now()) - reported) <
+                900 %}
+
+                div { box-sizing: border-box; display: flex; flex-direction:
+                column; position: relative; align-items: center;
+                justify-content: center; gap: .15em; width: 100%; padding: .25em
+                1.05em .25em .3em !important; line-height: 1.25 !important;
+                border: 1.5px solid #2586a4; border-radius: 6px; background:
+                #e7f4f8; color: #11566f; font-family: Arial, sans-serif;
+                font-size: clamp(5px, 1.65cqw, 13px); font-weight: 700;
+                white-space: nowrap; }
+
+                div::before { position: static !important; transform: none
+                !important; content: "p"; color: #147b9d; font-size: .82em;
+                font-weight: 600; margin-right: 0; }
+
+                div::after { position: absolute; right: .3em; top: 50%;
+                transform: translateY(-50%); content: ""; flex: 0 0 .6em; width:
+                .6em; height: .6em; margin-left: 0; background-size: contain;
+                background-position: center; background-repeat: no-repeat;
+                background-image: url("{{
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%224%22%20fill%3D%22%23159b58%22%20opacity%3D%22.3%22%3E%3Canimate%20attributeName%3D%22r%22%20values%3D%224%3B8%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B0%22%20dur%3D%221.6s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23159b58%22%2F%3E%3C%2Fsvg%3E'
+                if fresh else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%23d29a25%22%2F%3E%3C%2Fsvg%3E'
+                if available else
+                'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2016%2016%22%3E%3Ccircle%20cx%3D%228%22%20cy%3D%228%22%20r%3D%223.5%22%20fill%3D%22%2389949c%22%2F%3E%3C%2Fsvg%3E'
+                }}"); }
+          - type: image
+            title: Centrifugaalpomp stilstand
+            image:
+              media_content_id: media-source://image_upload/f3803a1495e9a032f9778a1cd9472f3e
+              media_content_type: image/png
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 60.64%
+              top: 40.24285714%
+              width: 28.8%
+              clip-path: inset(8.6% 37% 12.3% 36.1%)
+              pointer-events: none
+              opacity: var(--upm3-static, 1)
+              animation: var(--upm3-static-animation, none)
+          - type: image
+            title: Centrifugaalpomp draaiend
+            image:
+              media_content_id: media-source://image_upload/3b3ce8b88c47d5e595664801c865576e
+              media_content_type: image/gif
+            tap_action:
+              action: none
+            hold_action:
+              action: none
+            style:
+              left: 60.64%
+              top: 40.24285714%
+              width: 28.8%
+              clip-path: inset(8.6% 37% 12.3% 36.1%)
+              pointer-events: none
+              opacity: var(--upm3-running, 0)
+              animation: var(--upm3-running-animation, none)
+          - type: image
+            title: Centrale pompinlaat
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cg%20transform%3D%22translate(0%20-80)%22%3E%3Cpath%20d%3D%22M610%20722V650%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M610%20722V650%22%20fill%3D%22none%22%20stroke%3D%22%23111827%22%20stroke-width%3D%222.5%22%2F%3E%3Ccircle%20cx%3D%22610%22%20cy%3D%22650%22%20r%3D%226%22%20fill%3D%22white%22%20stroke%3D%22%23111827%22%20stroke-width%3D%222%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+          - type: image
+            title: Driewegklep DHW
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2038%2024%22%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%2234%22%20height%3D%2218%22%20rx%3D%222%22%20fill%3D%22white%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M19%204V20%20M10%2012H28%22%20fill%3D%22none%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: var(--dhw-position)
+              top: 60.71428429%
+              width: 3.8%
+              transition: left 1s linear
+              animation: var(--dhw-animation, none)
+          - type: image
+            title: Driewegklep bypass
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2038%2024%22%3E%3Crect%20x%3D%222%22%20y%3D%223%22%20width%3D%2234%22%20height%3D%2218%22%20rx%3D%222%22%20fill%3D%22white%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3Cpath%20d%3D%22M19%204V20%20M10%2012H28%22%20fill%3D%22none%22%20stroke%3D%22%23ec3540%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: var(--bypass-position)
+              top: 60.71428429%
+              width: 3.8%
+              transition: left 1s linear
+              animation: var(--bypass-animation, none)
+          - type: image
+            title: Meetpunten en meetlijnen
+            image: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201000%201400%22%3E%3Cg%20transform%3D%22translate(0%20-80)%22%3E%3Cg%20fill%3D%22none%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.6%22%20stroke-dasharray%3D%224%205%22%20stroke-linecap%3D%22round%22%3E%3Cpath%20d%3D%22M370%20500V474%20M270%20745H298%20M480%20930L430%20870%20M630%20802H650V722H675%20M610%20850H667V802H677%20M635%20650H685%20%22%2F%3E%3C%2Fg%3E%3Cg%20fill%3D%22white%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.8%22%3E%3Ccircle%20cx%3D%22370%22%20cy%3D%22500%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22270%22%20cy%3D%22745%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22480%22%20cy%3D%22930%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22630%22%20cy%3D%22802%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22610%22%20cy%3D%22850%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22635%22%20cy%3D%22650%22%20r%3D%224%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3Cpath%20d%3D%22M331%201188V1154%22%20fill%3D%22none%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.6%22%20stroke-dasharray%3D%224%205%22%2F%3E%3Ccircle%20cx%3D%22331%22%20cy%3D%221188%22%20r%3D%224%22%20fill%3D%22white%22%20stroke%3D%22%2382959f%22%20stroke-width%3D%221.8%22%2F%3E%3C%2Fsvg%3E
+            tap_action:
+              action: none
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              pointer-events: none
+        card_mod:
+          style: >
+            ha-card { container-type: inline-size; max-width: 740px; margin: 0
+            auto; border: none; background: white; }
+
+            @keyframes pump-centered { from { transform: translate(-50%, -50%)
+            rotate(0deg); } to { transform: translate(-50%, -50%)
+            rotate(360deg); } }
+
+            @keyframes demo-pump { 0%, 10% { transform: translate(-50%, -50%)
+            rotate(0deg); } 100% { transform: translate(-50%, -50%)
+            rotate(5760deg); } }
+
+            @keyframes demo-dhw { 0%, 30%, 90%, 100% { left: 26%; } 40%, 55% {
+            left: 28%; } 65%, 80% { left: 27%; } }
+
+            @keyframes demo-bp { 0%, 30% { left: 60%; } 40%, 55%, 90%, 100% {
+            left: 62%; } 65%, 80% { left: 61%; } }
+
+            @keyframes demo-common { 0%, 10%, 100% { opacity: 0; } 15%, 95% {
+            opacity: 1; } }
+
+            @keyframes demo-ch { 0%, 10%, 40%, 55%, 100% { opacity: 0; } 15%,
+            30%, 90%, 95% { opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-tank { 0%, 30%, 90%, 100% { opacity: 0; } 40%, 55% {
+            opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-heating { 0%, 10%, 40%, 55%, 90%, 100% { opacity: 0;
+            } 15%, 30% { opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-bypass { 0%, 30%, 100% { opacity: 0; } 40%, 55%,
+            90%, 95% { opacity: 1; } 65%, 80% { opacity: .5; } }
+
+            @keyframes demo-hot { 0%, 55%, 100% { opacity: 0; } 65%, 80% {
+            opacity: .25; } 90%, 95% { opacity: 1; } }
+
+            @keyframes demo-cool-ch { 0%, 55%, 90%, 100% { opacity: 0; } 65%,
+            80% { opacity: .25; } }
+
+            @keyframes demo-cool-bypass { 0%, 30%, 90%, 100% { opacity: 0; }
+            40%, 55% { opacity: 1; } 65%, 80% { opacity: .25; } }
+
+            {% set automatic = false %}
+
+            {% set pump = states('sensor.rocon_heatgenerator_0_n') | float(0) >
+            0 %}
+
+            {% set d = ([0, [states('sensor.rocon_heatgenerator_0_valve_ch_dhw')
+            | float(0), 100] | min] | max) / 100 %}
+
+            {% set b = ([0,
+            [states('sensor.rocon_heatgenerator_0_valve_ch_bypass') | float(0),
+            100] | min] | max) / 100 %}
+
+            :host {
+              --dhw-position: {{ 26 + 2 * d }}%;
+              --bypass-position: {{ 60 + 2 * b }}%;
+              --pump-state: {{ 'running' if automatic or pump else 'paused' }};
+              --pump-animation: {{ 'demo-pump 32s linear infinite' if automatic else 'pump-centered 1.5s linear infinite' }};
+              --dhw-animation: {{ 'demo-dhw 32s linear infinite' if automatic else 'none' }};
+              --bypass-animation: {{ 'demo-bp 32s linear infinite' if automatic else 'none' }};
+              --label-dhw-animation: {{ 'sim-dhw-label 32s steps(1, end) infinite' if automatic else 'none' }};
+              --label-bp-animation: {{ 'sim-bp-label 32s steps(1, end) infinite' if automatic else 'none' }};
+              --flow-common: {{ 1 if pump else 0 }};
+              --flow-dhw-ch: {{ 1 - d if pump else 0 }};
+              --flow-dhw-tank: {{ d if pump else 0 }};
+              --flow-heating: {{ 1 - b if pump else 0 }};
+              --flow-bypass: {{ b if pump else 0 }};
+              --flow-common-hot: {{ b * (1 - d) if pump else 0 }};
+              --flow-heating-cool: {{ d * (1 - b) if pump else 0 }};
+              --flow-bypass-cool: {{ d * b if pump else 0 }};
+              --test-common: {{ 'demo-common 32s linear infinite' if automatic else 'none' }};
+              --test-dhw-ch: {{ 'demo-ch 32s linear infinite' if automatic else 'none' }};
+              --test-dhw-tank: {{ 'demo-tank 32s linear infinite' if automatic else 'none' }};
+              --test-heating: {{ 'demo-heating 32s linear infinite' if automatic else 'none' }};
+              --test-bypass: {{ 'demo-bypass 32s linear infinite' if automatic else 'none' }};
+              --test-common-hot: {{ 'demo-hot 32s linear infinite' if automatic else 'none' }};
+              --test-heating-cool: {{ 'demo-cool-ch 32s linear infinite' if automatic else 'none' }};
+              --test-bypass-cool: {{ 'demo-cool-bypass 32s linear infinite' if automatic else 'none' }};
+            } @keyframes upm3-demo-running { 0%, 10%, 100% { opacity: 0; }
+            10.01%, 99.99% { opacity: 1; } } @keyframes upm3-demo-static { 0%,
+            10%, 100% { opacity: 1; } 10.01%, 99.99% { opacity: 0; } } {% set
+            upm3_auto = false %} {% set upm3_on =
+            states('sensor.rocon_heatgenerator_0_n') | float(0) > 0 %} :host {
+              --upm3-running: {{ 1 if upm3_on else 0 }};
+              --upm3-static: {{ 0 if upm3_on else 1 }};
+              --upm3-running-animation: {{ 'upm3-demo-running 32s linear infinite' if upm3_auto else 'none' }};
+              --upm3-static-animation: {{ 'upm3-demo-static 32s linear infinite' if upm3_auto else 'none' }};
+            }
